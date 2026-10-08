@@ -24,7 +24,7 @@ Siga o [checklist de preparação](docs/setup.md) e rode o notebook de teste:
 | 2 | Primeiro a pergunta, depois a técnica · [NB02 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB02_fundamentos_python.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula02_pergunta_tecnica.html) · [Tarefa 2](tarefas/T2_enunciado.md) |
 | 3 | pandas: a planilha que não trava · [NB03 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB03_pandas_olist.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula03_dado_ruim.html) · [Tarefa 3](tarefas/T3_enunciado.md) |
 | 4 | Média sozinha engana · [NB04 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB04_distribuicoes_outliers.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula04_erro_fraude_excecao.html) · [Tarefa 4](tarefas/T4_enunciado.md) |
-| 5 | Da amostra à decisão |
+| 5 | Da amostra à decisão · [NB05 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB05_amostra_decisao.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula05_amostra_decisao.html) |
 
 ## Fontes dos dados
 Cada arquivo em `dados/` traz, no `dados/README.md`, a fonte original, o link e a data de extração.

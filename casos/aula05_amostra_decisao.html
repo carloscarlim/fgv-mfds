@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Da Amostra à Decisão</title>
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2433; --muted:#5d6577; --line:#e2e0d8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --pos:#2f7d4f; --neg:#b4443a; --warn:#a86b00; --chip:#efede6; --bar:#9bb7cc;
+  --c1:#1f5f8b; --c2:#c26a1b; --c3:#2f7d4f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+    --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --chip:#262b36; --bar:#3e5f78;
+    --c1:#6fb0de; --c2:#e89a52; --c3:#5cc08a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+  --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --chip:#262b36; --bar:#3e5f78;
+  --c1:#6fb0de; --c2:#e89a52; --c3:#5cc08a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:1240px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;max-width:1240px;margin:12px auto 0;padding:0 16px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:1240px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-size:18px;margin:0 0 6px}
+.card h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:16px 0 8px}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin:0 6px 4px 0}
+.notice{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
+.qs li{margin-bottom:6px}
+.ctl{padding:4px 0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.ctl label b{font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.opts{font-size:13px;padding:3px 0}
+.opts label{display:inline-flex;gap:6px;align-items:center;margin-right:14px}
+.btn{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;margin:6px 8px 0 0}
+.btn.sec{background:var(--chip);color:var(--ink);border-color:var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+@media (max-width:560px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--chip);border-radius:8px;padding:8px 10px}
+.kpi span{display:block;font-size:12px;color:var(--muted)}
+.kpi b{font-size:17px;font-variant-numeric:tabular-nums}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+svg text{fill:var(--ink);font-size:12px;font-family:inherit}
+svg .muted{fill:var(--muted)}
+@media (max-width:560px){svg text{font-size:17px}}
+.chart{width:100%;height:auto;display:block;margin-top:8px}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+.pitch ol{padding-left:20px;margin:0}
+.timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:1240px;margin:0 auto;padding:0 16px 24px}
+.timer button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.timer output{font-size:22px;font-variant-numeric:tabular-nums;min-width:80px}
+footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Da Amostra à Decisão</h1>
+  <p class="sub">Aula 5 · Métodos e Ferramentas de Data Science · FGV MBA. Seis armadilhas comuns quando se decide com amostras. Cada grupo investiga uma, roda a simulação várias vezes e explica à diretoria como não cair nela.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<main>
+  <section class="card" id="caso"></section>
+  <section class="card" id="sim"></section>
+</main>
+<div class="timer">
+  <span>Cronômetro:</span>
+  <button data-min="25">Trabalho em grupo · 25 min</button>
+  <button data-min="5">Apresentação · 5 min</button>
+  <button id="stop">Parar</button>
+  <output id="clock">--:--</output>
+</div>
+<footer>Empresas e dados fictícios, gerados por simulação para fins didáticos. Cada clique em "rodar" sorteia uma nova amostra.</footer>
+
+<script>
+// ---------- utilidades ----------
+let SEED = 1;
+function rngFrom(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r){ let u = 0, v = 0; while(!u) u = r(); while(!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function Phi(x){ const t = 1 / (1 + 0.2316419 * Math.abs(x)); const d = 0.3989423 * Math.exp(-x * x / 2); const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return x > 0 ? 1 - p : p; }
+const pval = z => 2 * (1 - Phi(Math.abs(z)));
+const binom = (r, n, p) => { if (n * p > 30 && n * (1 - p) > 30) return Math.max(0, Math.round(n * p + Math.sqrt(n * p * (1 - p)) * gauss(r))); let k = 0; for (let i = 0; i < n; i++) if (r() < p) k++; return k; };
+const fmt = (v, d = 0) => v.toLocaleString("pt-BR", {maximumFractionDigits: d, minimumFractionDigits: d});
+const pct = (v, d = 2) => fmt(v * 100, d) + "%";
+const pfmt = p => p < 0.001 ? "< 0,001" : fmt(p, 3);
+const brl = v => (v < 0 ? "−" : "") + "R$ " + (Math.abs(v) >= 1e6 ? fmt(Math.abs(v) / 1e6, 1) + " mi" : Math.abs(v) >= 1e3 ? fmt(Math.abs(v) / 1e3, 0) + " mil" : fmt(Math.abs(v), 0));
+const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+const sd = a => { const m = mean(a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); };
+const corr = (x, y) => { const mx = mean(x), my = mean(y); let a = 0, b = 0, c = 0; x.forEach((v, i) => { a += (v - mx) * (y[i] - my); b += (v - mx) ** 2; c += (y[i] - my) ** 2; }); return a / Math.sqrt(b * c); };
+
+function el(tag, cls, html){ const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+function svg(){ const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.classList.add("chart"); return s; }
+function slider(host, id, rot, min, max, step, val, f, cb){
+  const d = el("div", "ctl", `<label for="s_${id}">${rot}<b id="v_${id}">${f(val)}</b></label><input type="range" id="s_${id}" min="${min}" max="${max}" step="${step}" value="${val}">`);
+  host.appendChild(d); d.querySelector("input").addEventListener("input", e => { document.getElementById("v_" + id).textContent = f(+e.target.value); cb(+e.target.value); });
+}
+function check(host, rot, val, cb){ const d = el("div", "opts", `<label><input type="checkbox" ${val ? "checked" : ""}> ${rot}</label>`); d.querySelector("input").addEventListener("change", e => cb(e.target.checked)); host.appendChild(d); }
+function botao(host, rot, cb, sec){ const b = el("button", "btn" + (sec ? " sec" : ""), rot); b.addEventListener("click", cb); host.appendChild(b); }
+function kpis(host, itens){ host.innerHTML = itens.map(([n, v, c]) => `<div class="kpi"><span>${n}</span><b class="${c || ""}">${v}</b></div>`).join(""); }
+function hist(s, vals, opt){
+  const W = 640, H = 200, L = 40, R = 12, T = 14, B = 36, n = opt.bins || 30;
+  const lo = opt.lo ?? Math.min(...vals), hi = opt.hi ?? Math.max(...vals), w = (hi - lo) / n || 1, cont = new Array(n).fill(0);
+  vals.forEach(v => { const b = Math.min(n - 1, Math.max(0, Math.floor((v - lo) / w))); cont[b]++; });
+  const mx = Math.max(...cont, 1), sx = x => L + (x - lo) / (hi - lo) * (W - L - R), bw = (W - L - R) / n;
+  let o = ""; cont.forEach((c, i) => { const h = c / mx * (H - T - B); const x0 = lo + i * w; o += `<rect x="${L + i * bw + 1}" y="${H - B - h}" width="${bw - 2}" height="${h}" fill="${opt.cor ? opt.cor(x0 + w / 2) : "var(--bar)"}"></rect>`; });
+  for (let k = 0; k <= 4; k++){ const x = lo + (hi - lo) * k / 4; o += `<text class="muted" x="${sx(x)}" y="${H - 18}" text-anchor="middle">${opt.fx ? opt.fx(x) : fmt(x, 2)}</text>`; }
+  (opt.linhas || []).forEach(([x, rot, cor]) => { if (x < lo || x > hi) return; o += `<line x1="${sx(x)}" x2="${sx(x)}" y1="${T}" y2="${H - B}" stroke="${cor}" stroke-width="2" stroke-dasharray="5 4"></line><text x="${sx(x) + 5}" y="${T + 10}">${rot}</text>`; });
+  o += `<text class="muted" x="${(L + W - R) / 2}" y="${H - 2}" text-anchor="middle">${opt.xlab}</text>`;
+  s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.innerHTML = o;
+}
+function scatter(s, pts, opt){
+  const W = 640, H = 280, L = 56, R = 14, T = 14, B = 38;
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const sx = x => L + (x - x0) / (x1 - x0) * (W - L - R), sy = y => T + (y1 - y) / (y1 - y0) * (H - T - B);
+  let o = ""; for (let k = 0; k <= 4; k++){ const x = x0 + (x1 - x0) * k / 4, y = y0 + (y1 - y0) * k / 4; o += `<text class="muted" x="${sx(x)}" y="${H - 18}" text-anchor="middle">${fmt(x, 0)}</text><text class="muted" x="${L - 6}" y="${sy(y) + 4}" text-anchor="end">${fmt(y, 0)}</text>`; }
+  pts.forEach(p => o += `<circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="3.5" fill="${p.c}" fill-opacity="0.75"></circle>`);
+  o += `<text class="muted" x="${(L + W - R) / 2}" y="${H - 2}" text-anchor="middle">${opt.xlab}</text><text class="muted" transform="translate(12 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">${opt.ylab}</text>`;
+  let lx = L + 8; (opt.legend || []).forEach(([n, c]) => { o += `<circle cx="${lx}" cy="${T + 4}" r="4" fill="${c}"></circle><text x="${lx + 8}" y="${T + 8}">${n}</text>`; lx += 20 + n.length * 7; });
+  s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.innerHTML = o;
+}
+
+const PITCH = `<h3>Roteiro da apresentação (5 min)</h3><div class="pitch"><ol>
+  <li>A armadilha, em uma frase que a diretoria entenda.</li><li>O que a simulação mostrou (um número ou gráfico).</li>
+  <li>Um exemplo real de onde essa armadilha aparece na empresa de vocês.</li><li>A regra para não cair nela.</li>
+  <li>Como apresentar o resultado com honestidade sobre a incerteza.</li></ol></div>`;
+
+// ---------- cenários ----------
+const CEN = {
+  ab: {nome: "Teste A/B de frete grátis", empresa: "Loja Online Beta (fictícia)", foco: "intervalo de confiança e p-valor",
+    contexto: "A loja testou frete grátis (versão B) contra o frete normal (versão A) com uma parte dos visitantes. A taxa de conversão (visitante que compra) da versão A é 3%. Só a simulação sabe o efeito verdadeiro do frete grátis; a diretoria só vê o resultado do experimento.",
+    questoes: ["Rode o experimento algumas vezes com 2.000 visitantes por grupo. O resultado muda muito?", "Rode 200 experimentos. Em quantos o p-valor ficou abaixo de 0,05? Isso é o poder do teste.", "Aumente o número de visitantes. O que acontece com o intervalo de confiança?", "Coloque efeito verdadeiro zero. Quantos experimentos dão \"significativo\" por acaso?", "Como apresentar à diretoria um resultado com intervalo de −0,2 a +0,8 ponto percentual?"],
+    render(host){
+      const st = {n: 2000, ef: 0.3}; const base = 0.03;
+      const ctl = el("div"); host.appendChild(ctl);
+      slider(ctl, "n", "Visitantes por grupo", 500, 50000, 500, st.n, v => fmt(v), v => { st.n = v; });
+      slider(ctl, "ef", "Efeito verdadeiro do frete grátis (pontos percentuais)", 0, 1, 0.05, st.ef, v => "+" + fmt(v, 2) + " p.p.", v => { st.ef = v; });
+      const k = el("div", "kpis"), g = svg(), nota = el("p", "notice");
+      botao(ctl, "Rodar 1 experimento", () => um()); botao(ctl, "Rodar 200 experimentos", () => muitos(), true);
+      host.append(k, g, nota);
+      const rodar = r => { const a = binom(r, st.n, base), b = binom(r, st.n, base + st.ef / 100); const pa = a / st.n, pb = b / st.n, d = pb - pa;
+        const se = Math.sqrt(pa * (1 - pa) / st.n + pb * (1 - pb) / st.n), pp = (a + b) / (2 * st.n), z = d / Math.sqrt(pp * (1 - pp) * 2 / st.n);
+        return {pa, pb, d, lo: d - 1.96 * se, hi: d + 1.96 * se, p: pval(z)}; };
+      function um(){ const r = rodar(rngFrom(++SEED * 7919)); kpis(k, [["Conversão A", pct(r.pa)], ["Conversão B", pct(r.pb)], ["Diferença (IC 95%)", `${fmt(r.d * 100, 2)} p.p. [${fmt(r.lo * 100, 2)}; ${fmt(r.hi * 100, 2)}]`], ["p-valor", pfmt(r.p), r.p < 0.05 ? "pos" : "neg"]]);
+        nota.innerHTML = r.p < 0.05 ? "Resultado <b>estatisticamente significativo</b> (p < 0,05): é improvável ver uma diferença assim se o frete grátis não tivesse efeito." : "Resultado <b>não significativo</b>: a diferença observada pode ser só acaso. Isso não prova que o efeito é zero."; g.innerHTML = ""; }
+      function muitos(){ const r = rngFrom(++SEED * 104729), res = []; for (let i = 0; i < 200; i++) res.push(rodar(r)); const sig = res.filter(x => x.p < 0.05).length, contra = res.filter(x => x.d < 0).length;
+        kpis(k, [["Experimentos", "200"], ["Com p < 0,05", `${sig} (${fmt(sig / 2, 0)}%)`], ["Com diferença negativa", `${contra}`], ["Efeito verdadeiro", "+" + fmt(st.ef, 2) + " p.p."]]);
+        hist(g, res.map(x => x.d * 100), {xlab: "diferença observada (p.p.) em 200 experimentos", fx: x => fmt(x, 2), linhas: [[st.ef, "verdadeiro", "var(--pos)"], [0, "zero", "var(--neg)"]]});
+        nota.innerHTML = `Com ${fmt(st.n)} visitantes por grupo, ${fmt(sig / 2, 0)}% dos experimentos detectam o efeito. Cada experimento real é <b>um</b> desses 200 resultados.`; }
+      um();
+    }},
+  pesquisa: {nome: "Pesquisa de satisfação", empresa: "Rede de Academias Ritmo (fictícia)", foco: "erro amostral × viés",
+    contexto: "A rede tem 100 mil alunos e manda uma pesquisa de satisfação (nota de 1 a 5). A diretoria quer saber a nota média de todos os alunos. Nem todos respondem: quem está insatisfeito tende a responder menos.",
+    questoes: ["Sem viés, aumente a amostra. O que acontece com a margem de erro?", "Ligue o viés de não resposta. A estimativa erra para cima ou para baixo?", "Com viés, aumentar a amostra resolve? Por quê?", "Rode 100 pesquisas. Em quantas o intervalo de confiança contém a verdade, com e sem viés?", "Como reduzir o viés na prática (lembre-se da Aula 3)?"],
+    render(host){
+      const st = {n: 400, vies: false};
+      const r0 = rngFrom(31), POP = []; for (let i = 0; i < 100000; i++){ const u = r0(); POP.push(u < 0.06 ? 1 : u < 0.13 ? 2 : u < 0.27 ? 3 : u < 0.6 ? 4 : 5); }
+      const VER = mean(POP);
+      const ctl = el("div"); host.appendChild(ctl);
+      slider(ctl, "n", "Respostas obtidas", 50, 10000, 50, st.n, v => fmt(v), v => { st.n = v; });
+      check(ctl, "Viés de não resposta: notas 1 e 2 respondem com 1/4 da chance das demais", st.vies, v => { st.vies = v; });
+      const k = el("div", "kpis"), g = svg(), nota = el("p", "notice");
+      botao(ctl, "Fazer 1 pesquisa", () => um()); botao(ctl, "Fazer 100 pesquisas", () => muitos(), true);
+      host.append(k, g, nota);
+      const pesquisar = r => { const s = []; while (s.length < st.n){ const x = POP[Math.floor(r() * POP.length)]; if (!st.vies || x > 2 || r() < 0.25) s.push(x); } const m = mean(s), e = 1.96 * sd(s) / Math.sqrt(s.length); return {m, lo: m - e, hi: m + e, e}; };
+      function um(){ const p = pesquisar(rngFrom(++SEED * 613)); kpis(k, [["Nota estimada", fmt(p.m, 2)], ["Margem de erro (95%)", "± " + fmt(p.e, 2)], ["Intervalo", `[${fmt(p.lo, 2)}; ${fmt(p.hi, 2)}]`], ["Nota verdadeira (todos)", fmt(VER, 2)]]);
+        const ok = p.lo <= VER && VER <= p.hi; nota.innerHTML = ok ? "O intervalo <b>contém</b> a nota verdadeira." : "O intervalo <b>não contém</b> a nota verdadeira."; g.innerHTML = ""; }
+      function muitos(){ const r = rngFrom(++SEED * 1543), res = []; for (let i = 0; i < 100; i++) res.push(pesquisar(r)); const cob = res.filter(p => p.lo <= VER && VER <= p.hi).length;
+        kpis(k, [["Pesquisas", "100"], ["Intervalos que contêm a verdade", cob + "%", cob >= 90 ? "pos" : "neg"], ["Média das estimativas", fmt(mean(res.map(p => p.m)), 2)], ["Nota verdadeira", fmt(VER, 2)]]);
+        hist(g, res.map(p => p.m), {xlab: "nota estimada em 100 pesquisas", lo: 3.5, hi: 4.5, linhas: [[VER, "verdade", "var(--pos)"]]});
+        nota.innerHTML = st.vies ? "Com viés, as estimativas se concentram <b>no lugar errado</b>. Mais respostas só deixam o erro mais preciso." : "Sem viés, cerca de 95% dos intervalos contêm a verdade: é isso que \"95% de confiança\" quer dizer."; }
+      um();
+    }},
+  relevancia: {nome: "Significativo, mas vale a pena?", empresa: "Marketplace Gama (fictício)", foco: "significância × relevância",
+    contexto: "Com milhões de visitantes, qualquer diferença minúscula vira \"estatisticamente significativa\". O time de produto quer implantar um novo botão de compra que, num teste enorme, aumentou a conversão. A mudança tem um custo anual de manutenção.",
+    questoes: ["Com 10 milhões de visitantes por grupo e efeito de 0,02 ponto percentual, o resultado é significativo?", "Esse efeito paga o custo da mudança?", "Reduza o tamanho do teste. Quando o mesmo efeito deixa de ser significativo?", "O que importa mais para a diretoria: o p-valor ou o tamanho do efeito em reais?", "Como escrever o resultado num slide sem enganar ninguém?"],
+    render(host){
+      const st = {n: 10000000, ef: 0.02, custo: 600000, ticket: 150, visitas: 60000000};
+      const ctl = el("div"); host.appendChild(ctl);
+      const k = el("div", "kpis"), nota = el("p", "notice");
+      const upd = () => { const p0 = 0.03, p1 = p0 + st.ef / 100, se = Math.sqrt(p0 * (1 - p0) / st.n + p1 * (1 - p1) / st.n), z = (p1 - p0) / se, p = pval(z);
+        const ganho = st.visitas * (st.ef / 100) * st.ticket * 0.1, liq = ganho - st.custo;
+        kpis(k, [["p-valor esperado", pfmt(p), p < 0.05 ? "pos" : "neg"], ["Significativo?", p < 0.05 ? "sim" : "não", p < 0.05 ? "pos" : "neg"], ["Ganho anual (margem de 10%)", brl(ganho)], ["Ganho líquido do custo", brl(liq), liq >= 0 ? "pos" : "neg"]]);
+        nota.innerHTML = `IC 95% do efeito: [${fmt((p1 - p0 - 1.96 * se) * 100, 3)}; ${fmt((p1 - p0 + 1.96 * se) * 100, 3)}] p.p. ` + (p < 0.05 && liq < 0 ? "<b>Significativo, mas não paga o custo.</b>" : p >= 0.05 && liq > 0 ? "<b>Pode valer a pena, mas o teste não tem tamanho para confirmar.</b>" : ""); };
+      slider(ctl, "n", "Visitantes por grupo no teste", 10000, 20000000, 10000, st.n, v => fmt(v), v => { st.n = v; upd(); });
+      slider(ctl, "ef", "Efeito do novo botão (pontos percentuais)", 0.005, 0.5, 0.005, st.ef, v => "+" + fmt(v, 3) + " p.p.", v => { st.ef = v; upd(); });
+      slider(ctl, "custo", "Custo anual da mudança", 0, 3000000, 50000, st.custo, brl, v => { st.custo = v; upd(); });
+      host.append(el("p", "notice", "Premissas hipotéticas: 60 milhões de visitas por ano, conversão de 3%, ticket médio de R$ 150 e margem de 10%."), k, nota);
+      upd();
+    }},
+  confusao: {nome: "Mais vendedores, mais vendas?", empresa: "Rede Lar & Cia (fictícia)", foco: "correlação × causalidade",
+    contexto: "O diretor comercial mostrou um gráfico: lojas com mais vendedores vendem muito mais. Ele quer contratar dois vendedores em cada loja. Mas lojas grandes têm, ao mesmo tempo, mais vendedores e mais clientes.",
+    questoes: ["Qual a correlação entre vendedores e vendas, olhando todas as lojas?", "Separe as lojas por porte. A correlação continua?", "Qual é a variável de confusão aqui?", "Mude o efeito real de um vendedor. Como saber esse efeito de verdade?", "Que experimento você proporia antes de contratar?"],
+    render(host){
+      const st = {ef: 0, sep: false};
+      const ctl = el("div"); host.appendChild(ctl);
+      const k = el("div", "kpis"), g = svg(), nota = el("p", "notice"); host.append(k, g, nota);
+      const r0 = rngFrom(77), lojas = []; [["P", 80, 4, 300], ["M", 70, 9, 700], ["G", 50, 16, 1300]].forEach(([p, n, v, b]) => { for (let i = 0; i < n; i++) lojas.push({p, vend: Math.max(1, Math.round(v + gauss(r0) * 1.8)), base: b + gauss(r0) * b * 0.15}); });
+      const upd = () => { lojas.forEach(l => l.vendas = l.base + st.ef * l.vend);
+        const cor = {P: "var(--c1)", M: "var(--c2)", G: "var(--c3)"};
+        scatter(g, lojas.map(l => ({x: l.vend, y: l.vendas, c: st.sep ? cor[l.p] : "var(--c1)"})), {xlab: "vendedores na loja", ylab: "vendas mensais (R$ mil)", legend: st.sep ? [["pequena", cor.P], ["média", cor.M], ["grande", cor.G]] : []});
+        const r = corr(lojas.map(l => l.vend), lojas.map(l => l.vendas)), dentro = ["P", "M", "G"].map(p => { const g = lojas.filter(l => l.p === p); return corr(g.map(l => l.vend), g.map(l => l.vendas)); });
+        kpis(k, [["Correlação (todas as lojas)", fmt(r, 2)], ["Dentro das pequenas", fmt(dentro[0], 2)], ["Dentro das médias", fmt(dentro[1], 2)], ["Dentro das grandes", fmt(dentro[2], 2)]]);
+        nota.innerHTML = `Efeito real de cada vendedor nesta simulação: <b>R$ ${fmt(st.ef, 0)} mil por mês</b>. O porte da loja explica a maior parte da correlação.`; };
+      slider(ctl, "ef", "Efeito real de 1 vendedor nas vendas (R$ mil/mês)", 0, 40, 5, st.ef, v => "R$ " + v + " mil", v => { st.ef = v; upd(); });
+      check(ctl, "Separar as lojas por porte (pequena, média, grande)", st.sep, v => { st.sep = v; upd(); });
+      upd();
+    }},
+  multiplas: {nome: "Procurar até achar", empresa: "Banco Delta (fictício)", foco: "comparações múltiplas",
+    contexto: "Uma campanha de marketing não teve efeito nenhum (na simulação, o efeito verdadeiro é zero em todos os segmentos). Mesmo assim, o analista testou a campanha em vários segmentos de clientes (idade, região, renda, canal...) e encontrou alguns com \"resultado significativo\".",
+    questoes: ["Teste 1 segmento várias vezes. Com que frequência aparece um falso positivo?", "Teste 20 segmentos. Quantos dão p < 0,05 mesmo sem efeito?", "Ligue a correção de Bonferroni. O que muda?", "Por que \"achamos um segmento em que funcionou\" é perigoso?", "Que regra a empresa deveria adotar antes de começar uma análise?"],
+    render(host){
+      const st = {k: 20, bonf: false};
+      const ctl = el("div"); host.appendChild(ctl);
+      slider(ctl, "k", "Segmentos testados", 1, 60, 1, st.k, v => v, v => { st.k = v; });
+      check(ctl, "Correção de Bonferroni (exigir p < 0,05 ÷ número de testes)", st.bonf, v => { st.bonf = v; });
+      const k = el("div", "kpis"), g = svg(), nota = el("p", "notice");
+      botao(ctl, "Rodar a análise", () => um()); host.append(k, g, nota);
+      function um(){ const r = rngFrom(++SEED * 2711), ps = []; for (let i = 0; i < st.k; i++) ps.push(r()); const lim = st.bonf ? 0.05 / st.k : 0.05, sig = ps.filter(p => p < lim).length;
+        kpis(k, [["Segmentos testados", st.k], ["\"Significativos\"", sig, sig ? "neg" : "pos"], ["Esperado por acaso", fmt(st.k * 0.05, 1)], ["Limite do p-valor", fmt(lim, 4)]]);
+        hist(g, ps, {lo: 0, hi: 1, bins: 20, xlab: "p-valores dos segmentos (sem efeito real, eles se espalham uniformemente)", fx: x => fmt(x, 2), cor: x => x < lim ? "var(--neg)" : "var(--bar)", linhas: [[lim, "limite", "var(--neg)"]]});
+        nota.innerHTML = sig ? `${sig} segmento(s) parecem ter respondido à campanha, mas é só acaso: o efeito verdadeiro é zero em todos.` : "Nenhum falso positivo nesta rodada. Rode de novo."; }
+      um();
+    }},
+  regressao: {nome: "O piloto nas piores lojas", empresa: "Supermercados Ômega (fictícios)", foco: "regressão à média e grupo de controle",
+    contexto: "A rede escolheu as lojas com as piores vendas do trimestre para um programa de treinamento. No trimestre seguinte, essas lojas melhoraram muito, e o RH quer expandir o programa. Na simulação, você controla o efeito verdadeiro do treinamento.",
+    questoes: ["Com efeito verdadeiro zero, as lojas do piloto melhoraram? Por quê?", "O que é regressão à média, em uma frase para a diretoria?", "Ligue o grupo de controle sorteado. Qual é a estimativa agora?", "Aumente o efeito verdadeiro. O grupo de controle o encontra?", "Como desenhar o próximo piloto?"],
+    render(host){
+      const st = {ef: 0, pct: 15, ctrl: false};
+      const ctl = el("div"); host.appendChild(ctl);
+      const k = el("div", "kpis"), g = svg(), nota = el("p", "notice"); host.append(k, g, nota);
+      const upd = () => { const r = rngFrom(4246), lojas = []; for (let i = 0; i < 2000; i++){ const nivel = 100 + gauss(r) * 8; lojas.push({nivel, t1: nivel + gauss(r) * 10, ruido2: gauss(r) * 10, sorteio: r()}); }
+        const ord = lojas.slice().sort((a, b) => a.t1 - b.t1), nP = Math.round(2000 * st.pct / 100), piores = ord.slice(0, nP);
+        let estim;
+        if (st.ctrl){ const trat = piores.filter(l => l.sorteio < 0.5), cont = piores.filter(l => l.sorteio >= 0.5); trat.forEach(l => l.t2 = l.nivel + l.ruido2 + st.ef); cont.forEach(l => l.t2 = l.nivel + l.ruido2);
+          const dt = trat.map(l => l.t2 - l.t1), dc = cont.map(l => l.t2 - l.t1); estim = mean(dt) - mean(dc);
+          var margem = 1.96 * Math.sqrt(sd(dt) ** 2 / dt.length + sd(dc) ** 2 / dc.length); }
+        else { piores.forEach(l => l.t2 = l.nivel + l.ruido2 + st.ef); estim = mean(piores.map(l => l.t2 - l.t1)); }
+        lojas.forEach(l => { if (l.t2 === undefined) l.t2 = l.nivel + l.ruido2; });
+        const melhora = mean(piores.map(l => l.t2 - l.t1)), outras = mean(ord.slice(nP).map(l => l.t2 - l.t1));
+        kpis(k, [["Melhora das lojas do piloto", "+" + fmt(melhora, 1), "pos"], ["Variação das demais lojas", fmt(outras, 1)], [st.ctrl ? "Efeito estimado com controle (IC 95%)" : "\"Efeito\" que o RH vai reportar", st.ctrl ? `${fmt(estim, 1)} [${fmt(estim - margem, 1)}; ${fmt(estim + margem, 1)}]` : fmt(estim, 1), st.ctrl ? (Math.abs(estim - st.ef) <= margem ? "pos" : "neg") : "neg"], ["Efeito verdadeiro", fmt(st.ef, 1)]]);
+        scatter(g, lojas.filter((_, i) => i % 4 === 0 || piores.includes(lojas[i])).map(l => ({x: l.t1, y: l.t2 - l.t1, c: piores.includes(l) ? "var(--neg)" : "var(--bar)"})), {xlab: "vendas no trimestre 1 (índice)", ylab: "variação no trimestre 2", legend: [["lojas do piloto", "var(--neg)"], ["demais", "var(--bar)"]]});
+        nota.innerHTML = st.ctrl ? "Metade das lojas escolhidas recebeu o treinamento, e a outra metade, sorteada, ficou como controle. A diferença entre elas estima o efeito verdadeiro." : "As lojas escolhidas tiveram um trimestre ruim em parte por azar. No trimestre seguinte, o azar some e elas \"melhoram\" mesmo sem treinamento."; };
+      slider(ctl, "ef", "Efeito verdadeiro do treinamento (pontos do índice)", 0, 10, 1, st.ef, v => "+" + v, v => { st.ef = v; upd(); });
+      slider(ctl, "pct", "Lojas escolhidas para o piloto (as piores)", 5, 50, 5, st.pct, v => v + "%", v => { st.pct = v; upd(); });
+      check(ctl, "Sortear metade das lojas escolhidas como grupo de controle", st.ctrl, v => { st.ctrl = v; upd(); });
+      upd();
+    }}
+};
+const ORDEM = ["ab", "pesquisa", "relevancia", "confusao", "multiplas", "regressao"];
+function abrir(k){
+  history.replaceState(null, "", "#" + k);
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.k === k));
+  const c = CEN[k];
+  document.getElementById("caso").innerHTML = `<span class="tag">${c.empresa}</span><span class="tag">foco: ${c.foco}</span><h2 style="margin-top:6px">${c.nome}</h2><p>${c.contexto}</p>
+    <h3>Perguntas para o grupo</h3><ol class="qs">${c.questoes.map(q => `<li>${q}</li>`).join("")}</ol>${PITCH}`;
+  const sim = document.getElementById("sim"); sim.innerHTML = "<h2>Simulação</h2>"; c.render(sim);
+}
+const tabs = document.getElementById("tabs");
+ORDEM.forEach((k, i) => { const b = el("button", "tab", `Grupo ${i + 1} · ${CEN[k].nome}`); b.role = "tab"; b.dataset.k = k; b.addEventListener("click", () => abrir(k)); tabs.appendChild(b); });
+let tm = null;
+document.querySelectorAll(".timer button[data-min]").forEach(b => b.addEventListener("click", () => { clearInterval(tm); let r = +b.dataset.min * 60; const o = document.getElementById("clock"); const tick = () => { o.textContent = String(Math.floor(r / 60)).padStart(2, "0") + ":" + String(r % 60).padStart(2, "0"); if (r-- <= 0){ clearInterval(tm); o.textContent = "Tempo!"; } }; tick(); tm = setInterval(tick, 1000); }));
+document.getElementById("stop").addEventListener("click", () => { clearInterval(tm); document.getElementById("clock").textContent = "--:--"; });
+const h = location.hash.slice(1); abrir(CEN[h] ? h : "ab");
+</script>
+</body>
+</html>
