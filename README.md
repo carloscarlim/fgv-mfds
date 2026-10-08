@@ -23,7 +23,7 @@ Siga o [checklist de preparação](docs/setup.md) e rode o notebook de teste:
 | 1 | Dado não é valor: é matéria-prima · [NB01 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB01_primeiro_voo.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula01_valor_e_risco.html) · [Tarefa 1](tarefas/T1_enunciado.md) |
 | 2 | Primeiro a pergunta, depois a técnica · [NB02 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB02_fundamentos_python.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula02_pergunta_tecnica.html) · [Tarefa 2](tarefas/T2_enunciado.md) |
 | 3 | pandas: a planilha que não trava · [NB03 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB03_pandas_olist.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula03_dado_ruim.html) · [Tarefa 3](tarefas/T3_enunciado.md) |
-| 4 | Média sozinha engana |
+| 4 | Média sozinha engana · [NB04 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB04_distribuicoes_outliers.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula04_erro_fraude_excecao.html) · [Tarefa 4](tarefas/T4_enunciado.md) |
 | 5 | Da amostra à decisão |
 
 ## Fontes dos dados
