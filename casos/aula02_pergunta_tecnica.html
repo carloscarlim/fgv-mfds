@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Da Pergunta à Técnica</title>
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2433; --muted:#5d6577; --line:#e2e0d8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --pos:#2f7d4f; --neg:#b4443a; --warn:#a86b00; --risk:#7a4fa0; --chip:#efede6;
+  --c1:#1f5f8b; --c2:#c26a1b; --c3:#2f7d4f; --c4:#7a4fa0; --c5:#b4443a; --c6:#3c8d93; --c7:#8a6d1f; --c8:#5d6577;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+    --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --risk:#b892dd; --chip:#262b36;
+    --c1:#6fb0de; --c2:#e89a52; --c3:#5cc08a; --c4:#b892dd; --c5:#ec7a6f; --c6:#6cc4c9; --c7:#d6b75a; --c8:#a2a9b8;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+  --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --risk:#b892dd; --chip:#262b36;
+  --c1:#6fb0de; --c2:#e89a52; --c3:#5cc08a; --c4:#b892dd; --c5:#ec7a6f; --c6:#6cc4c9; --c7:#d6b75a; --c8:#a2a9b8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:1240px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;max-width:1240px;margin:12px auto 0;padding:0 16px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:1240px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px}
+main.full{grid-template-columns:1fr}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{font-size:18px;margin:0 0 6px}
+.card h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:16px 0 8px}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin:0 6px 4px 0}
+.notice{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
+.qs li{margin-bottom:6px}
+.ctl{padding:4px 0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.ctl label b{font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.radios label,.checks label{display:inline-flex;gap:6px;align-items:center;margin:2px 14px 2px 0;font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+@media (max-width:560px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--chip);border-radius:8px;padding:8px 10px}
+.kpi span{display:block;font-size:12px;color:var(--muted)}
+.kpi b{font-size:18px;font-variant-numeric:tabular-nums}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+svg text{fill:var(--ink);font-size:12px;font-family:inherit}
+svg .muted{fill:var(--muted)}
+@media (max-width:560px){svg text{font-size:17px}}
+.chart{width:100%;height:auto;display:block;margin-top:8px}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+.cm td,.cm th{text-align:center}
+.btn{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.reveal{display:none;margin-top:8px}
+.reveal.on{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;min-height:130px}
+.qcard .n{font-size:12px;color:var(--muted)}
+.qcard .q{font-weight:600;margin:4px 0 8px}
+.qcard .a{display:none;font-size:13px}
+.qcard.on .a{display:block}
+.qcard.on{border-color:var(--accent)}
+.gloss dt{font-weight:600;margin-top:8px}
+.gloss dd{margin:2px 0 0 0;color:var(--muted)}
+.samples div{border-left:3px solid var(--line);padding:4px 8px;margin:6px 0;font-size:13px}
+.timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:1240px;margin:0 auto;padding:0 16px 24px}
+.timer button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.timer output{font-size:22px;font-variant-numeric:tabular-nums;min-width:80px}
+footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Da Pergunta à Técnica</h1>
+  <p class="sub">Aula 2 · Métodos e Ferramentas de Data Science · FGV MBA. Comece pelo Jogo do mapeamento. Depois, cada grupo abre o seu cenário, descobre que tipo de problema é, explora a simulação e prepara 5 minutos de conclusões.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<main id="main"></main>
+<div class="timer">
+  <span>Cronômetro:</span>
+  <button data-min="25">Trabalho em grupo · 25 min</button>
+  <button data-min="5">Apresentação · 5 min</button>
+  <button id="stop">Parar</button>
+  <output id="clock">--:--</output>
+</div>
+<footer>Empresas e dados dos cenários são fictícios e gerados por simulação, para fins didáticos. Os casos reais citados como inspiração usam apenas informação pública.</footer>
+
+<script>
+// ---------- utilidades ----------
+function rngFrom(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r){ let u = 0, v = 0; while(!u) u = r(); while(!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function Phi(x){ const t = 1 / (1 + 0.2316419 * Math.abs(x)); const d = 0.3989423 * Math.exp(-x * x / 2); const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return x > 0 ? 1 - p : p; }
+const fmt = (v, d = 0) => v.toLocaleString("pt-BR", {maximumFractionDigits: d, minimumFractionDigits: d});
+const pct = (v, d = 1) => fmt(v * 100, d) + "%";
+const brl = v => { const a = Math.abs(v), s = v < 0 ? "−" : ""; if (a >= 1e6) return s + "R$ " + fmt(a / 1e6, 1) + " mi"; if (a >= 1e3) return s + "R$ " + fmt(a / 1e3, 0) + " mil"; return s + "R$ " + fmt(a, 0); };
+const COLORS = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var(--c6)", "var(--c7)", "var(--c8)"];
+function slider(host, id, rot, min, max, step, val, f, cb){
+  const d = document.createElement("div"); d.className = "ctl";
+  id = "s_" + id;   // prefixo evita colisão com ids de gráficos e painéis
+  d.innerHTML = `<label for="${id}">${rot}<b id="${id}_v">${f(val)}</b></label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}">`;
+  host.appendChild(d);
+  const i = d.querySelector("input");
+  i.addEventListener("input", () => { document.getElementById(id + "_v").textContent = f(+i.value); cb(+i.value); });
+  return i;
+}
+function lineChart(svg, series, opt){
+  const W = 640, H = opt.H || 240, L = 64, R = 16, T = 14, B = 34;
+  const xs = series.flatMap(s => s.pts.map(p => p[0])), ys = series.flatMap(s => s.pts.map(p => p[1])).concat(opt.yExtra || []);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs); let ymin = opt.ymin ?? Math.min(...ys), ymax = opt.ymax ?? Math.max(...ys); if (ymax === ymin) ymax += 1;
+  const sx = x => L + (x - xmin) / (xmax - xmin || 1) * (W - L - R), sy = y => T + (ymax - y) / (ymax - ymin) * (H - T - B);
+  let s = "";
+  for (let k = 0; k <= 4; k++){ const y = ymin + (ymax - ymin) * k / 4; s += `<line x1="${L}" x2="${W - R}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"></line><text class="muted" x="${L - 6}" y="${sy(y) + 4}" text-anchor="end">${opt.fy ? opt.fy(y) : fmt(y)}</text>`; }
+  (opt.xticks || []).forEach(x => s += `<text class="muted" x="${sx(x)}" y="${H - 14}" text-anchor="middle">${opt.fx ? opt.fx(x) : x}</text>`);
+  series.forEach(se => s += `<polyline fill="none" stroke="${se.color}" stroke-width="${se.w || 2}" ${se.dash ? 'stroke-dasharray="5 4"' : ""} points="${se.pts.map(p => sx(p[0]) + "," + sy(p[1])).join(" ")}"></polyline>`);
+  (opt.marks || []).forEach(m => s += `<circle cx="${sx(m[0])}" cy="${sy(m[1])}" r="5" fill="${m[2] || "var(--ink)"}"></circle>` + (m[3] ? `<text x="${sx(m[0])}" y="${sy(m[1]) + (m[4] || -10)}" text-anchor="middle">${m[3]}</text>` : ""));
+  if (opt.xlab) s += `<text class="muted" x="${(L + W - R) / 2}" y="${H}" text-anchor="middle">${opt.xlab}</text>`;
+  let lx = L + 6; (opt.legend || []).forEach(([n, c]) => { s += `<rect x="${lx}" y="${T}" width="12" height="4" fill="${c}"></rect><text x="${lx + 16}" y="${T + 6}">${n}</text>`; lx += 16 + n.length * 7 + 18; });
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = s;
+}
+function scatter(svg, pts, opt){
+  const W = 640, H = opt.H || 300, L = 56, R = 16, T = 14, B = 38;
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs), ymin = Math.min(...ys), ymax = Math.max(...ys);
+  const sx = x => L + (x - xmin) / (xmax - xmin) * (W - L - R), sy = y => T + (ymax - y) / (ymax - ymin) * (H - T - B);
+  let s = "";
+  for (let k = 0; k <= 4; k++){ const y = ymin + (ymax - ymin) * k / 4, x = xmin + (xmax - xmin) * k / 4;
+    s += `<text class="muted" x="${L - 6}" y="${sy(y) + 4}" text-anchor="end">${fmt(y, opt.dy || 0)}</text><text class="muted" x="${sx(x)}" y="${H - 18}" text-anchor="middle">${fmt(x, opt.dx || 0)}</text>`; }
+  pts.forEach(p => s += `<circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="${p.r || 3.2}" fill="${p.c}" fill-opacity="${p.o ?? 0.75}" ${p.stroke ? `stroke="${p.stroke}" stroke-width="2"` : ""}></circle>`);
+  (opt.labels || []).forEach(l => s += `<text x="${sx(l.x)}" y="${sy(l.y) - 8}" text-anchor="middle" font-weight="700">${l.t}</text>`);
+  s += `<text class="muted" x="${(L + W - R) / 2}" y="${H - 2}" text-anchor="middle">${opt.xlab}</text><text class="muted" transform="translate(12 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">${opt.ylab}</text>`;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = s;
+}
+
+// ---------- conteúdo ----------
+const GLOSS = [
+  ["Dado estruturado", "Organizado em linhas e colunas, como uma planilha ou tabela de sistema (ERP, CRM, sensores)."],
+  ["Dado não estruturado", "Texto, imagem, áudio, vídeo. Precisa ser transformado em números antes de ser analisado."],
+  ["Aprendizado supervisionado", "O modelo aprende com exemplos que já têm a resposta (o rótulo): pedidos que atrasaram ou não, transações que eram fraude ou não."],
+  ["Aprendizado não supervisionado", "Não há resposta conhecida. O modelo procura padrões, grupos ou pontos fora do padrão."],
+  ["Classificação", "Prever uma categoria: sim/não, fraude/não fraude, assunto A/B/C."],
+  ["Previsão (regressão)", "Prever um número: carga de energia de amanhã, prazo de entrega, vendas do trimestre."],
+  ["Agrupamento (clustering)", "Formar grupos de itens parecidos sem rótulo prévio, como segmentos de clientes."],
+  ["Redução de dimensionalidade", "Resumir muitas variáveis em poucas, preservando o máximo de informação. Exemplo: transformar 12 indicadores em 2 índices."],
+  ["Detecção de anomalias", "Encontrar casos fora do padrão, em geral sem rótulos: gasto estranho, leitura de sensor incomum."]
+];
+const JOGO = [
+  ["Telecom", "Este cliente vai cancelar o plano no próximo mês?", "Classificação · supervisionado · estruturado"],
+  ["Siderurgia", "Quantas toneladas de aço vamos vender no próximo trimestre?", "Previsão (regressão de série temporal) · supervisionado · estruturado"],
+  ["Varejo", "Que perfis de clientes nós temos?", "Agrupamento · não supervisionado · estruturado"],
+  ["Mineração", "Esta foto da correia transportadora mostra um rasgo?", "Classificação de imagem · supervisionado · não estruturado"],
+  ["Energia", "Qual será o preço do diesel na próxima semana em cada estado?", "Previsão · supervisionado · estruturado"],
+  ["Serviços", "Que reclamações do SAC falam do mesmo problema?", "Agrupamento de textos · não supervisionado · não estruturado"],
+  ["Bancos", "Esta transação de cartão é fraude? (temos histórico de fraudes confirmadas)", "Classificação · supervisionado · estruturado"],
+  ["Óleo e gás", "Quais leituras de sensor estão fora do padrão? (não temos histórico de falhas)", "Detecção de anomalias · não supervisionado · estruturado"],
+  ["Varejo", "Como resumir 50 indicadores de desempenho das lojas em poucos índices?", "Redução de dimensionalidade · não supervisionado · estruturado"],
+  ["Jurídico", "Este contrato tem cláusula de multa por atraso?", "Classificação de texto · supervisionado · não estruturado"],
+  ["Logística", "Quanto tempo esta entrega vai levar?", "Previsão (regressão) · supervisionado · estruturado"],
+  ["Saúde", "Este paciente vai faltar à consulta marcada?", "Classificação · supervisionado · estruturado"]
+];
+const PITCH = `<h3>Roteiro da apresentação (5 min)</h3><ol>
+  <li>Que tipo de problema é: técnica, supervisionado ou não, dado estruturado ou não.</li>
+  <li>O que a simulação mostrou (um número ou gráfico).</li>
+  <li>Que dado é necessário e quem o tem.</li>
+  <li>A principal limitação.</li>
+  <li>Recomendação para a diretoria.</li></ol>`;
+
+const CEN = {
+  falha: {
+    nome: "Falha em laminador", setor: "Siderurgia",
+    empresa: "Siderúrgica Aço Forte (fictícia)",
+    contexto: "A siderúrgica tem 200 laminadores monitorados por sensores de vibração e temperatura. Uma falha inesperada para a linha e custa caro. A engenharia tem cinco anos de histórico semanal de sensores, com as semanas que antecederam falhas marcadas. Um fornecedor oferece um modelo com 98% de acurácia.",
+    pergunta: "Vale comprar o modelo? Que número a diretoria deveria olhar no lugar da acurácia?",
+    inspiracao: "Na Aula 1 vimos o WEG Motor Scan, que monitora padrões e desvios de motores.",
+    revela: "Classificação · supervisionado (há falhas marcadas no histórico) · estruturado (sensores)",
+    questoes: ["Que tipo de problema é este? Por que é supervisionado?", "Coloque a frequência de falhas em 1%. Qual a acurácia de um modelo que sempre diz \"não vai falhar\"?", "Mexa no limiar de alerta. O que acontece com falhas perdidas e alarmes falsos?", "Qual limiar minimiza o custo total? Ele coincide com a maior acurácia?", "Que pergunta você faria ao fornecedor antes de comprar?"]
+  },
+  segmento: {
+    nome: "Segmentar clientes", setor: "Varejo farmacêutico",
+    empresa: "Rede Farma Mais (fictícia)",
+    contexto: "A rede tem um programa de fidelidade e quer criar ações diferentes para tipos diferentes de clientes. Ninguém definiu quais são esses tipos. Os dados disponíveis são, para cada cliente, quantas compras faz por mês e o valor médio de cada compra.",
+    pergunta: "Quantos segmentos faz sentido criar, e que ação de marketing cada um recebe?",
+    inspiracao: "Na Aula 1, o CTO do Nubank citou o uso de clusters de clientes para recomendar produtos.",
+    revela: "Agrupamento · não supervisionado (não existe rótulo de segmento) · estruturado",
+    questoes: ["Por que este problema é não supervisionado?", "Teste de 2 a 8 grupos. Qual número de grupos é útil para o negócio, e não só para a estatística?", "Dê um nome de negócio a cada grupo usando a tabela.", "O gráfico do cotovelo ajuda a escolher? E se ele discordar do que o marketing consegue executar?", "Que variável faltando mudaria os grupos?"]
+  },
+  carga: {
+    nome: "Prever a carga de energia", setor: "Energia elétrica",
+    empresa: "Distribuidora Planalto Energia (fictícia)",
+    contexto: "A distribuidora compra energia com antecedência. Se compra de menos, paga caro no mercado de curto prazo; se compra de mais, sobra energia paga. Ela tem o histórico diário de consumo e de temperatura dos últimos anos.",
+    pergunta: "Que informação mais melhora a previsão, e até quantos dias à frente dá para confiar nela?",
+    inspiracao: "O ONS usa previsões de carga de até oito dias à frente, produzidas por modelo do CEPEL, para programar a operação e formar preços.",
+    revela: "Previsão (regressão de série temporal) · supervisionado (o histórico tem a carga real) · estruturado",
+    questoes: ["Que número estamos prevendo? Por que isto é previsão, e não classificação?", "Compare os três modelos. Quanto o dia da semana ajuda? E a temperatura?", "Aumente o horizonte. Por que o erro do modelo com temperatura cresce?", "Quanto vale cada ponto de erro a menos (veja o custo estimado)?", "Que eventos o histórico não ensina ao modelo?"]
+  },
+  texto: {
+    nome: "Classificar petições", setor: "Justiça",
+    empresa: "Tribunal de Justiça do Estado Litorâneo (fictício)",
+    contexto: "O tribunal recebe 100 mil petições por ano. Servidores leem cada uma para identificar o assunto e encaminhar ao setor certo. Há um acervo de petições antigas já classificadas por assunto. Um modelo de texto pode sugerir o assunto e dizer o quão confiante está.",
+    pergunta: "Quanto automatizar? Onde o humano continua necessário?",
+    inspiracao: "O STF, com a UnB, desenvolveu o Victor, que lê recursos extraordinários e os identifica pelo tema de repercussão geral.",
+    revela: "Classificação de texto · supervisionado (acervo já classificado) · não estruturado (texto)",
+    questoes: ["O dado é estruturado ou não? Como texto vira algo que um modelo entende?", "Suba o limiar de confiança. O que acontece com a automação e com os erros?", "Qual limiar você escolheria se um erro de encaminhamento custasse muito caro?", "Por que manter o humano revisando os casos de baixa confiança?", "Que risco existe se o acervo antigo tiver classificações erradas?"]
+  },
+  dimensao: {
+    nome: "Resumir indicadores", setor: "Setor público",
+    empresa: "Prefeitura de Nova Esperança (fictícia)",
+    contexto: "A prefeitura acompanha 12 indicadores para cada um dos seus 60 bairros e quer um painel simples para o prefeito priorizar investimentos. Ninguém consegue olhar 12 gráficos ao mesmo tempo.",
+    pergunta: "Dá para resumir os 12 indicadores em poucos índices sem perder o essencial?",
+    inspiracao: "Índices sintéticos, como o IDH, combinam várias dimensões em poucos números.",
+    revela: "Redução de dimensionalidade (análise de componentes principais) · não supervisionado · estruturado",
+    questoes: ["Por que este problema é não supervisionado?", "Quantos componentes são necessários para explicar 80% da variação?", "Olhe os pesos: que nome de negócio você daria ao componente 1? E ao 2?", "O que se perde ao usar só 2 índices?", "Que risco existe em decidir investimentos só por um índice?"]
+  },
+  anomalia: {
+    nome: "Gastos suspeitos", setor: "Serviços financeiros",
+    empresa: "Corporativa Cartões (fictícia)",
+    contexto: "A empresa administra cartões corporativos de 300 clientes. Quer encontrar gastos suspeitos, mas nunca registrou de forma organizada quais gastos eram fraude. Há muitos gastos incomuns e legítimos: viagens a trabalho e equipes de plantão noturno. A auditoria consegue verificar 100 transações por mês.",
+    pergunta: "Dá para começar sem histórico de fraudes? Vale a pena investir para criar esse histórico?",
+    inspiracao: "Na Aula 4, vamos analisar gastos reais com cartão de pagamento do governo federal.",
+    revela: "Detecção de anomalias · não supervisionado (sem rótulos), podendo virar supervisionado quando houver rótulos · estruturado",
+    questoes: ["Sem saber quais gastos eram fraude, o problema é supervisionado ou não?", "Com 100 verificações por mês, quantas fraudes o modelo sem rótulos encontra?", "Ative os rótulos. Quanto melhora? Quanto custou criar esses rótulos?", "Toda anomalia é fraude? Dê um exemplo de gasto estranho e legítimo.", "Como a auditoria de hoje gera os rótulos de amanhã?"]
+  }
+};
+const ORDEM = ["falha", "segmento", "carga", "texto", "dimensao", "anomalia"];
+
+// ---------- telas ----------
+const main = document.getElementById("main");
+function caseCard(c){
+  return `<section class="card">
+    <span class="tag">${c.setor}</span><span class="tag">empresa fictícia</span>
+    <h2 style="margin-top:6px">${c.empresa}</h2>
+    <p>${c.contexto}</p>
+    <h3>A pergunta da diretoria</h3><p><b>${c.pergunta}</b></p>
+    <p class="notice">Inspiração real: ${c.inspiracao}</p>
+    <h3>Perguntas para o grupo</h3><ol class="qs">${c.questoes.map(q => `<li>${q}</li>`).join("")}</ol>
+    ${PITCH}
+    <button class="btn" onclick="this.nextElementSibling.classList.toggle('on')">Revelar a classificação do professor</button>
+    <div class="reveal"><span class="tag" style="font-size:13px">${c.revela}</span></div>
+  </section>`;
+}
+
+function telaJogo(){
+  main.className = "full";
+  main.innerHTML = `<section class="card"><h2>Jogo do mapeamento</h2><p>Para cada pergunta de negócio: que técnica resolve? É supervisionado? O dado é estruturado? Discuta, vote no chat e clique no cartão para ver a resposta.</p>
+    <div class="cards">${JOGO.map((j, i) => `<div class="qcard" tabindex="0"><div class="n">${i + 1} · ${j[0]}</div><div class="q">${j[1]}</div><div class="a">${j[2]}</div></div>`).join("")}</div>
+    <h3>Glossário</h3><dl class="gloss">${GLOSS.map(g => `<dt>${g[0]}</dt><dd>${g[1]}</dd>`).join("")}</dl></section>`;
+  main.querySelectorAll(".qcard").forEach(c => { const t = () => c.classList.toggle("on"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter") t(); }); });
+}
+
+// 1. Falha em laminador: classificação desbalanceada
+function telaFalha(){
+  const st = {prev: 1, sep: 2.2, lim: 2.0}; const N = 10000, CFN = 500000, CFP = 20000;
+  main.className = ""; main.innerHTML = caseCard(CEN.falha) + `<section class="card"><h2>Simulação</h2>
+    <div class="notice">Avaliação em 10.000 semanas-equipamento. Custo de uma falha não prevista: R$ 500 mil. Custo de um alarme falso (parada para inspeção): R$ 20 mil. Valores hipotéticos.</div>
+    <div class="grid2" id="ctl"></div>
+    <h3>Matriz de confusão</h3><table class="cm" id="cm"></table>
+    <div class="kpis" id="k"></div>
+    <h3>Custo total conforme o limiar de alerta</h3><svg class="chart" id="g"></svg></section>`;
+  const ctl = document.getElementById("ctl");
+  const run = () => {
+    const P = N * st.prev / 100, Nn = N - P;
+    const TP = P * (1 - Phi(st.lim - st.sep)), FN = P - TP, FP = Nn * (1 - Phi(st.lim)), TN = Nn - FP;
+    const acc = (TP + TN) / N, prec = TP + FP > 0 ? TP / (TP + FP) : 0, rec = TP / P, custo = FN * CFN + FP * CFP;
+    document.getElementById("cm").innerHTML = `<tr><th></th><th>Modelo: vai falhar</th><th>Modelo: não vai falhar</th></tr>
+      <tr><th>Falhou de verdade</th><td class="pos">${fmt(TP)} acertos</td><td class="neg">${fmt(FN)} falhas perdidas</td></tr>
+      <tr><th>Não falhou</th><td class="neg">${fmt(FP)} alarmes falsos</td><td>${fmt(TN)} acertos</td></tr>`;
+    document.getElementById("k").innerHTML = `<div class="kpi"><span>Acurácia</span><b>${pct(acc)}</b></div>
+      <div class="kpi"><span>Acurácia de quem sempre diz "não falha"</span><b>${pct(1 - st.prev / 100)}</b></div>
+      <div class="kpi"><span>Recall: falhas detectadas</span><b>${pct(rec, 0)}</b></div>
+      <div class="kpi"><span>Precisão: alertas que eram falha</span><b>${pct(prec, 0)}</b></div>
+      <div class="kpi"><span>Custo total</span><b>${brl(custo)}</b></div>
+      <div class="kpi"><span>Custo sem modelo (todas as falhas perdidas)</span><b>${brl(P * CFN)}</b></div>`;
+    const pts = []; let best = [0, Infinity];
+    for (let t = -1; t <= 5.001; t += 0.05){ const tp = P * (1 - Phi(t - st.sep)), fp = Nn * (1 - Phi(t)), c = (P - tp) * CFN + fp * CFP; pts.push([t, c / 1e6]); if (c < best[1]) best = [t, c]; }
+    lineChart(document.getElementById("g"), [{pts, color: "var(--accent)"}], {xticks: [-1, 0, 1, 2, 3, 4, 5], fx: x => x, fy: y => "R$ " + fmt(y, 0) + " mi", xlab: "limiar de alerta (mais à direita = mais exigente, menos alertas)",
+      marks: [[st.lim, custo / 1e6, "var(--ink)", "você"], [best[0], best[1] / 1e6, "var(--pos)", "mínimo", 20]]});
+  };
+  slider(ctl, "prev", "Frequência de falhas no histórico", 0.5, 20, 0.5, st.prev, v => fmt(v, 1) + "%", v => { st.prev = v; run(); });
+  slider(ctl, "sep", "Qualidade do modelo (separação entre casos)", 0.5, 4, 0.1, st.sep, v => fmt(v, 1), v => { st.sep = v; run(); });
+  slider(ctl, "lim", "Limiar de alerta", -1, 5, 0.05, st.lim, v => fmt(v, 2), v => { st.lim = v; run(); });
+  run();
+}
+
+// 2. Segmentação: k-means
+const CLIENTES = (() => { const r = rngFrom(7); const centros = [[1.2, 45, 70], [4.5, 60, 90], [2.0, 220, 60], [7.5, 140, 40], [0.6, 120, 40]]; const out = [];
+  centros.forEach(([f, t, n]) => { for (let i = 0; i < n; i++) out.push({x: Math.max(0.2, f + gauss(r) * f * 0.28), y: Math.max(10, t + gauss(r) * t * 0.22)}); }); return out; })();
+function kmeans(pts, k, seed){
+  const r = rngFrom(seed), sx = 8, sy = 250; const z = pts.map(p => [p.x / sx, p.y / sy]);
+  const C = [z[Math.floor(r() * z.length)]];
+  while (C.length < k){ const d = z.map(p => Math.min(...C.map(c => (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2))); const s = d.reduce((a, b) => a + b); let u = r() * s, i = 0; while ((u -= d[i]) > 0 && i < d.length - 1) i++; C.push(z[i]); }
+  let lab = new Array(z.length).fill(0);
+  for (let it = 0; it < 30; it++){
+    lab = z.map(p => { let b = 0, bd = Infinity; C.forEach((c, j) => { const d = (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2; if (d < bd){ bd = d; b = j; } }); return b; });
+    for (let j = 0; j < k; j++){ const m = z.filter((_, i) => lab[i] === j); if (m.length) C[j] = [m.reduce((a, p) => a + p[0], 0) / m.length, m.reduce((a, p) => a + p[1], 0) / m.length]; }
+  }
+  const inertia = z.reduce((a, p, i) => a + (p[0] - C[lab[i]][0]) ** 2 + (p[1] - C[lab[i]][1]) ** 2, 0);
+  return {lab, inertia};
+}
+function telaSegmento(){
+  main.className = ""; main.innerHTML = caseCard(CEN.segmento) + `<section class="card"><h2>Simulação</h2>
+    <div class="notice">300 clientes fictícios. O algoritmo k-means forma k grupos de clientes parecidos, sem saber nada além das duas variáveis.</div>
+    <div id="ctl"></div><svg class="chart" id="sc"></svg><table id="tb"></table>
+    <h3>Gráfico do cotovelo: quanto cada grupo a mais reduz a dispersão</h3><svg class="chart" id="el"></svg></section>`;
+  const elbow = []; for (let k = 1; k <= 8; k++) elbow.push([k, kmeans(CLIENTES, k, 11).inertia]);
+  const run = k => {
+    const {lab} = kmeans(CLIENTES, k, 11);
+    scatter(document.getElementById("sc"), CLIENTES.map((p, i) => ({x: p.x, y: p.y, c: COLORS[lab[i]]})), {xlab: "compras por mês", ylab: "valor médio por compra (R$)", dx: 1});
+    let rows = "<tr><th>Grupo</th><th>Clientes</th><th>Compras/mês</th><th>Valor médio (R$)</th><th>Gasto mensal (R$)</th></tr>";
+    for (let j = 0; j < k; j++){ const m = CLIENTES.filter((_, i) => lab[i] === j); if (!m.length) continue; const f = m.reduce((a, p) => a + p.x, 0) / m.length, t = m.reduce((a, p) => a + p.y, 0) / m.length;
+      rows += `<tr><td><span style="color:${COLORS[j]}">●</span> Grupo ${j + 1}</td><td>${m.length}</td><td>${fmt(f, 1)}</td><td>${fmt(t)}</td><td>${fmt(f * t)}</td></tr>`; }
+    document.getElementById("tb").innerHTML = rows;
+    lineChart(document.getElementById("el"), [{pts: elbow, color: "var(--accent)"}], {H: 200, xticks: [1, 2, 3, 4, 5, 6, 7, 8], fy: y => fmt(y, 0), xlab: "número de grupos (k)", marks: [[k, elbow[k - 1][1], "var(--ink)", "você"]]});
+  };
+  slider(document.getElementById("ctl"), "k", "Número de grupos (k)", 2, 8, 1, 3, v => v, run);
+  run(3);
+}
+
+// 3. Previsão de carga
+const SERIE = (() => { const r = rngFrom(21), d = [];
+  for (let t = 0; t < 730; t++){ const temp = 22 + 6 * Math.sin(2 * Math.PI * (t - 15) / 365) + gauss(r) * 2; const dow = t % 7; const fds = dow >= 5 ? -120 : 0; const fer = (t % 91 === 40) ? -150 : 0;
+    d.push({temp, dow, carga: 1000 + 60 * Math.sin(2 * Math.PI * (t - 30) / 365) + 25 * (temp - 22) + fds + fer + gauss(r) * 25}); } return d; })();
+function telaCarga(){
+  main.className = ""; main.innerHTML = caseCard(CEN.carga) + `<section class="card"><h2>Simulação</h2>
+    <div class="notice">Dois anos de carga diária fictícia (MW médios). Avaliação nos últimos 90 dias. O erro da previsão de temperatura cresce com o horizonte. Custo hipotético: cada ponto percentual de erro médio custa R$ 2 milhões por ano em compras de ajuste.</div>
+    <div class="radios" id="mods"></div><div id="ctl"></div><div class="kpis" id="k"></div>
+    <h3>Carga real × prevista (últimos 60 dias)</h3><svg class="chart" id="g"></svg>
+    <h3>Erro médio conforme o horizonte</h3><svg class="chart" id="h"></svg></section>`;
+  const st = {m: "B", h: 7};
+  const prever = (t, h, m, r) => {
+    const o = t - h, hist = [];
+    for (let k = 1; k <= 28; k++) hist.push(o - k + 1);
+    if (m === "A") return hist.reduce((a, i) => a + SERIE[i].carga, 0) / 28;
+    const mesmo = []; for (let i = t - 7; mesmo.length < 4; i -= 7) if (i <= o) mesmo.push(i);
+    const base = mesmo.reduce((a, i) => a + SERIE[i].carga, 0) / 4;
+    if (m === "B") return base;
+    const tf = SERIE[t].temp + gauss(r) * Math.min(0.4 + 0.25 * h, 2.6);   // o erro da previsão do tempo cresce até o nível da variação climática
+    const th = mesmo.reduce((a, i) => a + SERIE[i].temp, 0) / 4;
+    return base + 25 * (tf - th);
+  };
+  const avaliar = (m, h) => { const r = rngFrom(1000 + h), out = []; for (let t = 640; t < 730; t++) out.push([t, SERIE[t].carga, prever(t, h, m, r)]); const mape = out.reduce((a, x) => a + Math.abs(x[1] - x[2]) / x[1], 0) / out.length; return {out, mape}; };
+  const run = () => {
+    const {out, mape} = avaliar(st.m, st.h);
+    document.getElementById("k").innerHTML = `<div class="kpi"><span>Erro médio (MAPE)</span><b>${pct(mape, 1)}</b></div><div class="kpi"><span>Custo anual estimado do erro</span><b>${brl(mape * 100 * 2e6)}</b></div>`;
+    const ult = out.slice(-60);
+    lineChart(document.getElementById("g"), [{pts: ult.map(x => [x[0], x[1]]), color: "var(--ink)", w: 2}, {pts: ult.map(x => [x[0], x[2]]), color: "var(--c2)", dash: true}],
+      {legend: [["real", "var(--ink)"], ["previsto", "var(--c2)"]], xticks: [], fy: y => fmt(y, 0), xlab: "dias"});
+    const hs = [], series = [];
+    [["A", "var(--c8)", "A: média recente"], ["B", "var(--c1)", "B: + dia da semana"], ["C", "var(--c3)", "C: + temperatura prevista"]].forEach(([m, c]) => { const pts = []; for (let h = 1; h <= 30; h += 1) pts.push([h, avaliar(m, h).mape * 100]); series.push({pts, color: c, w: m === st.m ? 3 : 1.5}); });
+    lineChart(document.getElementById("h"), series, {xticks: [1, 7, 14, 21, 30], fy: y => fmt(y, 1) + "%", xlab: "horizonte da previsão (dias à frente)", legend: [["A", "var(--c8)"], ["B", "var(--c1)"], ["C", "var(--c3)"]], marks: [[st.h, mape * 100, "var(--ink)", "você"]]});
+  };
+  const mods = document.getElementById("mods");
+  [["A", "A: média dos últimos 28 dias"], ["B", "B: mesmo dia da semana"], ["C", "C: dia da semana + temperatura prevista"]].forEach(([m, n]) => { const l = document.createElement("label"); l.innerHTML = `<input type="radio" name="mod" ${m === st.m ? "checked" : ""}> ${n}`; l.querySelector("input").addEventListener("change", () => { st.m = m; run(); }); mods.appendChild(l); });
+  slider(document.getElementById("ctl"), "h", "Horizonte da previsão (dias à frente)", 1, 30, 1, st.h, v => v + (v === 1 ? " dia" : " dias"), v => { st.h = v; run(); });
+  run();
+}
+
+// 4. Texto: limiar de confiança
+function telaTexto(){
+  main.className = ""; main.innerHTML = caseCard(CEN.texto) + `<section class="card"><h2>Simulação</h2>
+    <div class="notice">Curvas fictícias de um classificador de texto. Petições com confiança acima do limiar são encaminhadas automaticamente; as demais vão para um servidor.</div>
+    <h3>Como o texto vira dado (exemplos fictícios)</h3><div class="samples" id="sp"></div>
+    <div class="grid2" id="ctl"></div><div class="kpis" id="k"></div>
+    <h3>Automação × erros conforme o limiar</h3><svg class="chart" id="g"></svg></section>`;
+  const ex = [["…requer a revisão do benefício previdenciário, considerando o tempo de contribuição…", "Previdenciário", 0.97], ["…a cobrança de tarifa bancária não contratada configura prática abusiva…", "Consumidor", 0.91], ["…o servidor faz jus ao adicional de insalubridade e à progressão funcional…", "Servidor público", 0.64], ["…pede a anulação do auto de infração e a restituição do valor pago…", "Tributário", 0.52]];
+  document.getElementById("sp").innerHTML = ex.map(([t, a, c]) => `<div>${t}<br><b>Sugestão:</b> ${a} · <b>confiança:</b> ${pct(c, 0)}</div>`).join("");
+  const st = {lim: 0.8, min: 6, err: 200}; const N = 100000, HORA = 90;
+  const cobertura = l => 1 / (1 + Math.exp((l - 0.78) / 0.07));
+  const acerto = l => 0.80 + 0.19 * (1 - Math.exp(-(l - 0.3) * 4.5));
+  const run = () => {
+    const cov = cobertura(st.lim), acc = Math.min(0.995, acerto(st.lim)), auto = N * cov, erros = auto * (1 - acc), horas = auto * st.min / 60, liq = horas * HORA - erros * st.err;
+    document.getElementById("k").innerHTML = `<div class="kpi"><span>Petições automatizadas</span><b>${pct(cov, 0)}</b></div><div class="kpi"><span>Acerto nas automatizadas</span><b>${pct(acc, 1)}</b></div>
+      <div class="kpi"><span>Erros automáticos por ano</span><b>${fmt(erros)}</b></div><div class="kpi"><span>Horas de servidor poupadas</span><b>${fmt(horas)}</b></div>
+      <div class="kpi"><span>Ganho líquido anual</span><b class="${liq >= 0 ? "pos" : "neg"}">${brl(liq)}</b></div>`;
+    const a = [], e = []; for (let l = 0.3; l <= 0.991; l += 0.01){ const c = cobertura(l); a.push([l * 100, c * 100]); e.push([l * 100, N * c * (1 - Math.min(0.995, acerto(l))) / 1000]); }
+    lineChart(document.getElementById("g"), [{pts: a, color: "var(--accent)"}, {pts: e, color: "var(--neg)", dash: true}], {ymin: 0, ymax: 115, xticks: [30, 50, 70, 90], fx: x => x + "%", fy: y => fmt(y, 0), xlab: "limiar de confiança",
+      legend: [["% automatizado", "var(--accent)"], ["erros (mil por ano)", "var(--neg)"]], marks: [[st.lim * 100, cov * 100, "var(--ink)", "você"]]});
+  };
+  const ctl = document.getElementById("ctl");
+  slider(ctl, "lim", "Limiar de confiança para automatizar", 0.3, 0.99, 0.01, st.lim, v => pct(v, 0), v => { st.lim = v; run(); });
+  slider(ctl, "min", "Minutos de servidor por petição", 1, 20, 1, st.min, v => v + " min", v => { st.min = v; run(); });
+  slider(ctl, "err", "Custo de um encaminhamento errado", 0, 2000, 50, st.err, brl, v => { st.err = v; run(); });
+  run();
+}
+
+// 5. Redução de dimensionalidade: PCA
+const IND = ["Renda média", "Escolaridade", "Saneamento", "Acesso à internet", "Matrículas em creche", "Valor do m²", "Mortalidade infantil", "Densidade populacional", "Ocorrências policiais", "Tempo de deslocamento", "Reclamações de ruído", "Áreas verdes"];
+const PESOS_F = [[0.9, 0.1], [0.85, 0], [0.8, -0.1], [0.85, 0.15], [0.7, 0], [0.8, 0.3], [-0.75, 0.1], [0.1, 0.85], [-0.2, 0.7], [-0.1, 0.75], [0.1, 0.8], [0.3, -0.7]];
+const BAIRROS = (() => { const r = rngFrom(33), X = []; for (let b = 0; b < 60; b++){ const f1 = gauss(r), f2 = gauss(r); X.push(PESOS_F.map(([a, c]) => a * f1 + c * f2 + gauss(r) * 0.45)); } return X; })();
+function jacobi(A){ const n = A.length, V = A.map((_, i) => A.map((_, j) => i === j ? 1 : 0)), M = A.map(r => r.slice());
+  for (let sweep = 0; sweep < 60; sweep++){ let off = 0; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) off += M[i][j] ** 2; if (off < 1e-12) break;
+    for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++){ if (Math.abs(M[p][q]) < 1e-14) continue; const th = (M[q][q] - M[p][p]) / (2 * M[p][q]); const t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)); const c = 1 / Math.sqrt(t * t + 1), s = t * c;
+      for (let k = 0; k < n; k++){ const mkp = M[k][p], mkq = M[k][q]; M[k][p] = c * mkp - s * mkq; M[k][q] = s * mkp + c * mkq; }
+      for (let k = 0; k < n; k++){ const mpk = M[p][k], mqk = M[q][k]; M[p][k] = c * mpk - s * mqk; M[q][k] = s * mpk + c * mqk; }
+      for (let k = 0; k < n; k++){ const vkp = V[k][p], vkq = V[k][q]; V[k][p] = c * vkp - s * vkq; V[k][q] = s * vkp + c * vkq; } } }
+  const idx = [...Array(n).keys()].sort((a, b) => M[b][b] - M[a][a]); return {vals: idx.map(i => M[i][i]), vecs: idx.map(i => V.map(r => r[i]))}; }
+const PCA = (() => { const n = BAIRROS.length, p = 12; const mu = [...Array(p).keys()].map(j => BAIRROS.reduce((a, r) => a + r[j], 0) / n); const sd = mu.map((m, j) => Math.sqrt(BAIRROS.reduce((a, r) => a + (r[j] - m) ** 2, 0) / (n - 1)));
+  const Z = BAIRROS.map(r => r.map((v, j) => (v - mu[j]) / sd[j])); const C = [...Array(p).keys()].map(i => [...Array(p).keys()].map(j => Z.reduce((a, r) => a + r[i] * r[j], 0) / (n - 1)));
+  const {vals, vecs} = jacobi(C); vecs.forEach(v => { const s = v.reduce((a, b) => a + b, 0) < 0 ? -1 : 1; v.forEach((_, i) => v[i] *= s); });
+  const tot = vals.reduce((a, b) => a + b, 0); return {exp: vals.map(v => v / tot), vecs, scores: Z.map(r => [0, 1].map(k => r.reduce((a, v, j) => a + v * vecs[k][j], 0)))}; })();
+function telaDimensao(){
+  main.className = ""; main.innerHTML = caseCard(CEN.dimensao) + `<section class="card"><h2>Simulação</h2>
+    <div class="notice">60 bairros e 12 indicadores fictícios, padronizados. A análise de componentes principais (PCA) cria novos índices que combinam os indicadores originais.</div>
+    <div id="ctl"></div><div class="kpis" id="k"></div>
+    <h3>Variação explicada por componente</h3><svg class="chart" id="b"></svg>
+    <h3>Pesos dos indicadores nos componentes 1 e 2</h3><table id="tb"></table>
+    <h3>Os 60 bairros no mapa dos dois primeiros índices</h3><svg class="chart" id="sc"></svg></section>`;
+  const run = k => {
+    const acum = PCA.exp.slice(0, k).reduce((a, b) => a + b, 0);
+    document.getElementById("k").innerHTML = `<div class="kpi"><span>Componentes usados</span><b>${k} de 12</b></div><div class="kpi"><span>Variação explicada</span><b>${pct(acum, 0)}</b></div><div class="kpi"><span>Informação deixada de fora</span><b>${pct(1 - acum, 0)}</b></div>`;
+    const W = 640, H = 200, L = 40, bw = (W - L - 10) / 12; let s = "";
+    PCA.exp.forEach((e, i) => { const h = e / PCA.exp[0] * (H - 40); s += `<rect x="${L + i * bw + 3}" y="${H - 24 - h}" width="${bw - 6}" height="${h}" rx="3" fill="${i < k ? "var(--accent)" : "var(--line)"}"></rect><text x="${L + i * bw + bw / 2}" y="${H - 8}" text-anchor="middle" class="muted">${i + 1}</text><text x="${L + i * bw + bw / 2}" y="${H - 28 - h}" text-anchor="middle">${pct(e, 0)}</text>`; });
+    const b = document.getElementById("b"); b.setAttribute("viewBox", `0 0 ${W} ${H}`); b.innerHTML = s;
+  };
+  document.getElementById("tb").innerHTML = "<tr><th>Indicador</th><th>Peso no componente 1</th><th>Peso no componente 2</th></tr>" + IND.map((n, j) => { const a = PCA.vecs[0][j], c = PCA.vecs[1][j]; const st = v => Math.abs(v) >= 0.3 ? "font-weight:700" : "color:var(--muted)"; return `<tr><td>${n}</td><td style="${st(a)}">${fmt(a, 2)}</td><td style="${st(c)}">${fmt(c, 2)}</td></tr>`; }).join("");
+  scatter(document.getElementById("sc"), PCA.scores.map(s => ({x: s[0], y: s[1], c: "var(--accent)"})), {xlab: "componente 1", ylab: "componente 2", dx: 1, dy: 1});
+  slider(document.getElementById("ctl"), "k", "Número de componentes usados", 1, 12, 1, 2, v => v, run);
+  run(2);
+}
+
+// 6. Anomalias
+const TRANS = (() => { const r = rngFrom(55), out = [];
+  for (let i = 0; i < 5000; i++){ const u = r(); const tipo = u < 0.01 ? "fraude" : u < 0.09 ? "viagem" : u < 0.13 ? "plantao" : "normal";
+    let valor, hora, dist;
+    if (tipo === "fraude"){ valor = Math.exp(6.0 + gauss(r) * 0.6); hora = r() < 0.75 ? (r() * 6 + 22) % 24 : 9 + r() * 10; dist = Math.exp(2.8 + gauss(r) * 1.0); }
+    else if (tipo === "viagem"){ valor = Math.exp(5.8 + gauss(r) * 0.6); hora = 7 + r() * 14; dist = Math.exp(5.2 + gauss(r) * 0.8); }
+    else if (tipo === "plantao"){ valor = Math.exp(4.5 + gauss(r) * 0.6); hora = (r() * 7 + 22) % 24; dist = Math.exp(1.8 + gauss(r) * 0.9); }
+    else { valor = Math.exp(5.0 + gauss(r) * 0.7); hora = 8 + Math.abs(gauss(r)) * 3 + r() * 8; dist = Math.exp(1.8 + gauss(r) * 0.9); }
+    out.push({valor, hora, dist, fraude: tipo === "fraude"}); } return out; })();
+(() => { const lv = TRANS.map(t => Math.log(t.valor)), ld = TRANS.map(t => Math.log(t.dist)), med = a => a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)], mad = a => { const m = med(a); return med(a.map(x => Math.abs(x - m))) * 1.4826; };
+  const mv = med(lv), sv = mad(lv), md = med(ld), sd = mad(ld); const rr = rngFrom(99);
+  TRANS.forEach((t, i) => { const zh = Math.min(Math.abs(t.hora - 13), 24 - Math.abs(t.hora - 13)) / 3; const noite = (t.hora >= 22 || t.hora < 5) ? 1 : 0;
+    // sem rótulos: tudo que foge do padrão, em qualquer direção, é suspeito
+    t.sem = ((lv[i] - mv) / sv) ** 2 + ((ld[i] - md) / sd) ** 2 + zh ** 2;
+    // com rótulos: o modelo aprende o padrão específico da fraude (valor alto à noite, distância moderada)
+    t.com = 1.3 * (lv[i] - mv) / sv + 2.2 * noite * ((lv[i] - mv) / sv > 0 ? 1 : 0.3) + 0.4 * (ld[i] - md) / sd - 0.6 * Math.max(0, (ld[i] - md) / sd - 2) + gauss(rr) * 0.5; }); })();
+function telaAnomalia(){
+  main.className = ""; main.innerHTML = caseCard(CEN.anomalia) + `<section class="card"><h2>Simulação</h2>
+    <div class="notice">5.000 transações fictícias de um mês. Sabemos quais eram fraude porque os dados foram simulados; na vida real, só se descobre depois da auditoria.</div>
+    <div class="checks"><label><input type="checkbox" id="rot"> Temos 200 fraudes rotuladas por auditorias anteriores (modelo supervisionado)</label></div>
+    <div class="grid2" id="ctl"></div><div class="kpis" id="k"></div>
+    <h3>Transações: valor × distância do local habitual</h3><svg class="chart" id="sc"></svg></section>`;
+  const st = {n: 100, rot: false}; const fraudesTot = TRANS.filter(t => t.fraude).length;
+  const run = () => {
+    const key = st.rot ? "com" : "sem"; const ord = TRANS.map((t, i) => [t[key], i]).sort((a, b) => b[0] - a[0]); const sel = new Set(ord.slice(0, st.n).map(x => x[1]));
+    const achadas = TRANS.filter((t, i) => t.fraude && sel.has(i)).length;
+    document.getElementById("k").innerHTML = `<div class="kpi"><span>Transações auditadas</span><b>${st.n}</b></div><div class="kpi"><span>Fraudes encontradas</span><b>${achadas} de ${fraudesTot}</b></div>
+      <div class="kpi"><span>Acerto da auditoria</span><b>${pct(achadas / st.n, 0)}</b></div><div class="kpi"><span>Auditoria por sorteio (sem modelo)</span><b>${fmt(st.n * fraudesTot / TRANS.length, 1)} fraudes</b></div>
+      ${st.rot ? `<div class="kpi"><span>Custo de criar 200 rótulos (R$ 300 cada)</span><b>${brl(60000)}</b></div>` : ""}`;
+    const pts = TRANS.filter((t, i) => i % 4 === 0 || t.fraude || sel.has(i)).map(t => { const i = TRANS.indexOf(t); return {x: Math.log10(t.valor), y: Math.log10(t.dist), c: t.fraude ? "var(--neg)" : "var(--c8)", o: t.fraude ? 0.9 : 0.35, r: sel.has(i) ? 4.5 : 2.6, stroke: sel.has(i) ? "var(--ink)" : null}; });
+    scatter(document.getElementById("sc"), pts, {xlab: "valor (log10 R$): 2 = R$ 100, 3 = R$ 1.000", ylab: "distância (log10 km)", dx: 1, dy: 1});
+  };
+  slider(document.getElementById("ctl"), "n", "Transações que a auditoria verifica no mês", 25, 500, 25, st.n, v => v, v => { st.n = v; run(); });
+  document.getElementById("rot").addEventListener("change", e => { st.rot = e.target.checked; run(); });
+  run();
+}
+
+// ---------- navegação ----------
+const TELAS = {jogo: ["Jogo do mapeamento", telaJogo], falha: ["Grupo 1 · Falha em laminador", telaFalha], segmento: ["Grupo 2 · Segmentar clientes", telaSegmento], carga: ["Grupo 3 · Prever a carga", telaCarga], texto: ["Grupo 4 · Classificar petições", telaTexto], dimensao: ["Grupo 5 · Resumir indicadores", telaDimensao], anomalia: ["Grupo 6 · Gastos suspeitos", telaAnomalia]};
+const tabs = document.getElementById("tabs");
+function abrir(k){ document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.k === k)); history.replaceState(null, "", "#" + k); TELAS[k][1](); }
+Object.entries(TELAS).forEach(([k, [n]]) => { const b = document.createElement("button"); b.className = "tab"; b.role = "tab"; b.dataset.k = k; b.textContent = n; b.addEventListener("click", () => abrir(k)); tabs.appendChild(b); });
+let tm = null;
+document.querySelectorAll(".timer button[data-min]").forEach(b => b.addEventListener("click", () => { clearInterval(tm); let r = +b.dataset.min * 60; const o = document.getElementById("clock"); const tick = () => { o.textContent = String(Math.floor(r / 60)).padStart(2, "0") + ":" + String(r % 60).padStart(2, "0"); if (r-- <= 0){ clearInterval(tm); o.textContent = "Tempo!"; } }; tick(); tm = setInterval(tick, 1000); }));
+document.getElementById("stop").addEventListener("click", () => { clearInterval(tm); document.getElementById("clock").textContent = "--:--"; });
+const h = location.hash.slice(1); abrir(TELAS[h] ? h : "jogo");
+</script>
+</body>
+</html>
