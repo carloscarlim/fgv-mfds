@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Valor e Risco</title>
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2433; --muted:#5d6577; --line:#e2e0d8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --pos:#2f7d4f; --neg:#b4443a; --warn:#a86b00;
+  --risk:#7a4fa0; --chip:#efede6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+    --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640;
+    --risk:#b892dd; --chip:#262b36;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+  --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640;
+  --risk:#b892dd; --chip:#262b36;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:1240px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;max-width:1240px;margin:12px auto 0;padding:0 16px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:1240px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{font-size:18px;margin:0 0 6px}
+.card h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:16px 0 8px}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin-right:6px}
+.facts li,.qs li{margin-bottom:6px}
+.src{font-size:12px;color:var(--muted)}
+.src a{color:var(--accent)}
+.notice{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
+.scen{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.scen button{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.scen button.on{outline:2px solid var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.ctl{padding:4px 0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.ctl label b{font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.toggles label{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:4px 0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+@media (max-width:560px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--chip);border-radius:8px;padding:8px 10px}
+.kpi span{display:block;font-size:12px;color:var(--muted)}
+.kpi b{font-size:18px;font-variant-numeric:tabular-nums}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+svg text{fill:var(--ink);font-size:12px;font-family:inherit}
+svg .muted{fill:var(--muted)}
+@media (max-width:560px){svg text{font-size:17px}}
+.chart{width:100%;height:auto;display:block;margin-top:8px}
+.timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:1240px;margin:0 auto;padding:0 16px 24px}
+.timer button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.timer output{font-size:22px;font-variant-numeric:tabular-nums;min-width:80px}
+.pitch ol{padding-left:20px;margin:0}
+footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Calculadora de Valor e Risco</h1>
+  <p class="sub">Aula 1 · Métodos e Ferramentas de Data Science · FGV MBA. Escolha o caso do seu grupo, explore os cenários e prepare 5 minutos de conclusões.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<main>
+  <section class="card" id="caseCard"></section>
+  <section class="card">
+    <h2>Simulação</h2>
+    <div class="notice"><b>Todos os números desta simulação são hipotéticos.</b> Eles não são dados das empresas. Servem para o grupo testar o que move o valor e o risco.</div>
+    <div class="scen" id="scen"></div>
+    <h3>Desempenho e adoção</h3>
+    <div class="grid2" id="g1"></div>
+    <h3>Economia de cada decisão</h3>
+    <div class="grid2" id="g2"></div>
+    <h3>Custos</h3>
+    <div class="grid2" id="g3"></div>
+    <h3>Risco regulatório e reputacional</h3>
+    <div class="grid2" id="g4"></div>
+    <div class="toggles" id="tg"></div>
+    <h3>Resultado anual</h3>
+    <div class="kpis" id="kpis"></div>
+    <svg class="chart" id="bars" viewBox="0 0 640 230" role="img" aria-label="Composição do valor anual"></svg>
+    <h3>Valor líquido conforme a taxa de acerto</h3>
+    <svg class="chart" id="line" viewBox="0 0 640 240" role="img" aria-label="Valor líquido anual em função da taxa de acerto"></svg>
+  </section>
+</main>
+<div class="timer">
+  <span>Cronômetro:</span>
+  <button data-min="25">Trabalho em grupo · 25 min</button>
+  <button data-min="5">Apresentação · 5 min</button>
+  <button id="stop">Parar</button>
+  <output id="clock">--:--</output>
+</div>
+<footer>Modelo simplificado para discussão em sala. Valor líquido = decisões apoiadas × (acertos × ganho − erros × perda − custo por decisão) − custo fixo − risco esperado (probabilidade × impacto). Os fatos dos casos vêm das fontes públicas indicadas em cada caso.</footer>
+
+<script>
+const CASOS = {
+  alice: {
+    nome: "Robô Alice (CGU/TCU)", setor: "Setor público", objetivo: "Otimização e automação de processos",
+    unidade: "edital analisado",
+    fatos: [
+      "Ferramenta desenvolvida pela Controladoria-Geral da União (CGU) em parceria com o TCU, em funcionamento desde fevereiro de 2017.",
+      "Usa mineração de textos e inteligência artificial para selecionar editais e alertar gestores sobre riscos na contratação.",
+      "Analisa dados do Compras.gov.br, dos portais de compras do Banco do Brasil e da Caixa e de dispensas publicadas no Diário Oficial da União.",
+      "O alerta permite suspender pregões com indícios de problema ou ajustar valores e quantidades antes da contratação.",
+      "Foi adotada por outros órgãos, como o TRT-11 e o Tribunal de Justiça do Ceará, e premiada no Concurso de Inovação no Setor Público da ENAP em 2023."
+    ],
+    fontes: [["TRT-11", "https://portal.trt11.jus.br/index.php/comunicacao/9823-trt-11-usa-ferramenta-alice-para-prevenir-potenciais-riscos-em-licitacoes-e-contratos"], ["TJCE", "https://www.tjce.jus.br/?p=593586"]],
+    pergunta: "O tribunal de contas do seu estado quer adotar uma ferramenta parecida. Vale a pena? Em que condições?",
+    questoes: [
+      "Este uso é estratégico ou tático? Que objetivo de CD ele atende?",
+      "O que acontece com o valor se os auditores ignorarem metade dos alertas (adoção)?",
+      "Qual a taxa de acerto mínima para o projeto empatar? Isso é realista para análise de texto?",
+      "Quais requisitos de dados e de pessoas o projeto exige para funcionar?",
+      "Que limitação o modelo tem (o que ele não enxerga) e como mitigar?"
+    ],
+    base: {N: 60000, adocao: 70, acerto: 85, ganho: 300, perda: 600, cdec: 2, fixo: 1500000, inv: 3000000, prob: 5, impacto: 2000000},
+    gov: {legal: true, transp: true, minim: true, ripd: false}
+  },
+  weg: {
+    nome: "WEG Motor Scan", setor: "Indústria (manufatura)", objetivo: "Melhoria e inovação de produtos e serviços",
+    unidade: "diagnóstico de motor",
+    fatos: [
+      "Sensor que monitora motores elétricos e envia os dados para a plataforma de IoT da WEG, onde ficam as ferramentas de gestão da planta.",
+      "O sensor aprende os padrões de operação e os desvios do motor, com indicadores de desbalanceamento, desalinhamento, carga e consumo.",
+      "A WEG o usou em fábricas próprias em Jaraguá do Sul (SC), em exaustores, esteiras, compressores e bombas.",
+      "Num caso divulgado pela empresa, um alerta de anomalia permitiu programar a intervenção, e a equipe encontrou uma falha na fixação da máquina.",
+      "O produto transforma o motor, um equipamento, em fonte de um serviço de dados para manutenção preditiva."
+    ],
+    fontes: [["WEG", "https://www.weg.net/institutional/AR/en/wegmotorscan/monitoring"], ["Baguete", "https://www.baguete.com.br/noticias/weg-da-primeiro-passo-no-iot"]],
+    pergunta: "Uma siderúrgica quer instalar sensores em 5 mil motores críticos. Qual o caso de negócio?",
+    questoes: [
+      "Que objetivo de CD este produto atende para a WEG? E para o cliente que o compra?",
+      "Falhas graves são raras. O que isso significa para a taxa de acerto e para o volume de alarmes falsos?",
+      "Qual o peso do custo fixo (equipe de manutenção que analisa alertas) no resultado?",
+      "Que problemas de qualidade de dado um sensor em ambiente industrial pode ter?",
+      "O que muda se a equipe de manutenção não confiar nos alertas?"
+    ],
+    base: {N: 50000, adocao: 75, acerto: 85, ganho: 200, perda: 250, cdec: 1.5, fixo: 2000000, inv: 5000000, prob: 2, impacto: 1000000},
+    gov: {legal: true, transp: true, minim: true, ripd: false}
+  },
+  ifood: {
+    nome: "iFood: previsão de entrega", setor: "Varejo e serviços", objetivo: "Aperfeiçoamento da jornada do cliente",
+    unidade: "pedido com previsão",
+    fatos: [
+      "O iFood usou machine learning para prever o tempo de entrega dos pedidos com mais precisão (apresentado no AWS Summit 2020).",
+      "Também estimou o tempo de preparo de cada prato e o tempo de chegada do entregador ao restaurante, reduzindo a espera do entregador.",
+      "Segundo reportagem de 2026, modelos de IA apoiam previsão de demanda, rotas de entrega, recomendações, detecção de fraude e análise de parceiros.",
+      "A empresa antecipa picos de demanda (como jogos de futebol) e ativa incentivos para aumentar a disponibilidade de entregadores."
+    ],
+    fontes: [["Baguete", "https://www.baguete.com.br/noticias/ifood-agiliza-entregas-com-aws"], ["Mercado&Consumo", "https://mercadoeconsumo.com.br/20/03/2026/inovacao/como-o-ifood-usa-ia-para-reinventar-o-delivery-e-virar-referencia-global/"]],
+    pergunta: "Uma rede de farmácias quer prever o prazo de entrega no app. Vale a pena? Como medir o sucesso?",
+    questoes: [
+      "Qual momento da jornada do cliente a previsão melhora? Como isso vira dinheiro?",
+      "Por que errar uma previsão (atrasar) pode custar mais do que acertar rende?",
+      "Com milhões de pedidos, quanto pesa o custo por decisão (rodar o modelo)?",
+      "Que dados são necessários e quem os detém (restaurante, entregador, app)?",
+      "Que efeito colateral a previsão pode gerar sobre entregadores?"
+    ],
+    base: {N: 10000000, adocao: 100, acerto: 80, ganho: 1.2, perda: 2.0, cdec: 0.01, fixo: 3000000, inv: 4000000, prob: 3, impacto: 3000000},
+    gov: {legal: true, transp: true, minim: false, ripd: false}
+  },
+  nubank: {
+    nome: "Nubank: análise de crédito", setor: "Serviços financeiros", objetivo: "Melhoria no processo decisório",
+    unidade: "decisão de limite de crédito",
+    fatos: [
+      "O CFO do Nubank afirmou que recursos de IA ajudaram a aumentar o limite de cartão de parte dos clientes no Brasil.",
+      "Segundo ele, a melhoria na análise de crédito permite acelerar o crescimento com o mesmo nível de risco.",
+      "O novo modelo de risco foi acelerado pela aquisição da Hyperplane, empresa de dados comprada em junho de 2024.",
+      "O CTO relatou o uso de IA para identificar clusters de clientes, apoiando recomendação de produtos e combate a fraude."
+    ],
+    fontes: [["Bloomberg Línea", "https://www.bloomberglinea.com.br/negocios/nubank-diz-que-uso-de-ia-ja-ajuda-a-ampliar-limites-de-credito-para-clientes-no-brasil/"], ["Mobile Time", "https://www.mobiletime.com.br/?p=788353"]],
+    pergunta: "Uma cooperativa de crédito quer usar IA para definir limites. Quais as condições para dar certo?",
+    questoes: [
+      "Em crédito, o que é um erro caro: aprovar quem não paga ou recusar quem pagaria?",
+      "Qual a taxa de acerto mínima para empatar? Quão sensível o valor é a 1 ponto de acerto?",
+      "Que vieses podem aparecer num modelo de crédito? Quem é prejudicado?",
+      "Que exigências de explicação e governança um regulador pode fazer?",
+      "Uma cooperativa pequena tem dados suficientes? Como contornar?"
+    ],
+    base: {N: 2000000, adocao: 100, acerto: 85, ganho: 40, perda: 120, cdec: 0.05, fixo: 20000000, inv: 30000000, prob: 5, impacto: 30000000},
+    gov: {legal: true, transp: true, minim: false, ripd: true}
+  },
+  viaquatro: {
+    nome: "ViaQuatro: portas interativas", setor: "Transporte (concessão pública)", objetivo: "Produto novo: mídia com medição de audiência",
+    unidade: "exposição ao painel",
+    fatos: [
+      "Em abril de 2018, a concessionária da Linha 4-Amarela do Metrô de SP instalou portas de plataforma interativas nas estações Luz, Paulista e Pinheiros.",
+      "Um sensor detectava a presença de pessoas e quantas olhavam para a tela; o objetivo era medir a reação à publicidade.",
+      "O Idec moveu ação civil pública em 2018. A Justiça determinou o desligamento do sistema por liminar.",
+      "Em 2021, o TJ-SP condenou a empresa a pagar R$ 100 mil pela captação de imagens sem consentimento dos passageiros.",
+      "A empresa alegou que detectava rostos e expressões sem identificar pessoas, apenas para estatísticas."
+    ],
+    fontes: [["Idec", "https://idec.org.br/node/29379"], ["Itatiaia", "https://www.itatiaia.com.br/ciencia-e-tecnologia/metro-de-sp-e-condenado-apos-captar-expressoes-faciais/"]],
+    pergunta: "Uma concessionária de rodovias quer medir a audiência de painéis nos pedágios com câmeras. Você aprovaria?",
+    questoes: [
+      "Qual era o valor de negócio pretendido? Ele é grande comparado ao risco?",
+      "Ligue e desligue as medidas de governança. Qual delas mais reduz o risco?",
+      "A minimização (contar pessoas sem processar rostos) reduz o ganho. Vale a troca?",
+      "Por que um serviço público essencial tem exigência maior de transparência?",
+      "O que a LGPD exige para tratar dado biométrico?"
+    ],
+    base: {N: 30000000, adocao: 100, acerto: 85, ganho: 0.04, perda: 0.01, cdec: 0.001, fixo: 300000, inv: 1000000, prob: 60, impacto: 5000000},
+    gov: {legal: false, transp: false, minim: false, ripd: false}
+  },
+  hering: {
+    nome: "Hering: reconhecimento facial na loja", setor: "Varejo físico", objetivo: "Aperfeiçoamento da experiência do cliente",
+    unidade: "visita analisada",
+    fatos: [
+      "A Secretaria Nacional do Consumidor (Senacon) condenou a Hering pelo uso de reconhecimento facial numa loja do Shopping Morumbi, em São Paulo.",
+      "Segundo o Idec, a tecnologia captava reações dos consumidores e traçava perfis dos visitantes, sem informação clara e sem consentimento.",
+      "Os fatos ocorreram no início de 2019. A multa foi de R$ 58.767, destinada ao Fundo de Defesa de Direitos Difusos.",
+      "Foi apontada como a primeira condenação no Brasil por violações ligadas a reconhecimento facial."
+    ],
+    fontes: [["Idec", "https://idec.org.br/release/apos-denuncia-do-idec-hering-e-condenada-por-uso-de-reconhecimento-facial"]],
+    pergunta: "Uma rede de supermercados quer analisar o comportamento dos clientes nas lojas com câmeras. Como fazer sem repetir o erro?",
+    questoes: [
+      "Que decisão de negócio os dados da loja deveriam apoiar (layout, estoque, atendimento)?",
+      "A multa foi pequena. Por que o risco real é maior que a multa?",
+      "Que alternativas menos invasivas entregam parte do mesmo valor?",
+      "Quais medidas de governança tornam o projeto defensável?",
+      "Quem na empresa deveria aprovar um projeto como este?"
+    ],
+    base: {N: 500000, adocao: 100, acerto: 85, ganho: 1.2, perda: 0.3, cdec: 0.01, fixo: 200000, inv: 500000, prob: 50, impacto: 2000000},
+    gov: {legal: false, transp: false, minim: false, ripd: false}
+  }
+};
+const ORDEM = ["alice", "weg", "ifood", "nubank", "viaquatro", "hering"];
+const GOV = [
+  ["legal", "Base legal adequada (consentimento ou outra hipótese válida da LGPD)", 0.4],
+  ["transp", "Transparência: aviso claro e visível ao titular", 0.6],
+  ["minim", "Minimização: coletar só o necessário (reduz 20% do ganho)", 0.5],
+  ["ripd", "Relatório de impacto (RIPD) e revisão humana das decisões", 0.7]
+];
+const CUSTO_GOV = 0.05; // cada medida de governança custa 5% do custo fixo do caso
+
+const brl = v => {
+  const a = Math.abs(v), s = v < 0 ? "−" : "";
+  if (a >= 1e9) return s + "R$ " + (a / 1e9).toLocaleString("pt-BR", {maximumFractionDigits: 1}) + " bi";
+  if (a >= 1e6) return s + "R$ " + (a / 1e6).toLocaleString("pt-BR", {maximumFractionDigits: 1}) + " mi";
+  if (a >= 1e3) return s + "R$ " + (a / 1e3).toLocaleString("pt-BR", {maximumFractionDigits: 0}) + " mil";
+  return s + "R$ " + a.toLocaleString("pt-BR", {maximumFractionDigits: 2});
+};
+const num = v => v.toLocaleString("pt-BR", {maximumFractionDigits: 0});
+
+let atual = "alice", st = {}, gv = {}, cen = "realista";
+
+function cenario(b, tipo) {
+  const c = {...b};
+  if (tipo === "pessimista") { c.acerto = Math.max(50, b.acerto - 8); c.adocao = Math.max(10, b.adocao - 20); c.ganho = b.ganho * 0.7; c.fixo = b.fixo * 1.3; }
+  if (tipo === "otimista") { c.acerto = Math.min(98, b.acerto + 6); c.adocao = Math.min(100, b.adocao + 15); c.ganho = b.ganho * 1.3; c.fixo = b.fixo * 0.9; }
+  return c;
+}
+
+function calc(s, g, acerto) {
+  const a = (acerto ?? s.acerto) / 100;
+  const fatorMin = g.minim ? 0.8 : 1;
+  const dec = s.N * s.adocao / 100;
+  const ganhos = dec * a * s.ganho * fatorMin;
+  const perdas = dec * (1 - a) * s.perda;
+  let p = s.prob / 100;
+  GOV.forEach(([k, , f]) => { if (g[k]) p *= f; });
+  const nGov = GOV.filter(([k]) => g[k]).length;
+  const operar = dec * s.cdec + s.fixo + nGov * CUSTO_GOV * CASOS[atual].base.fixo;
+  const risco = p * s.impacto;
+  const liquido = ganhos - perdas - operar - risco;
+  return {dec, ganhos, perdas, operar, risco, liquido, p};
+}
+
+function equilibrio(s, g) {
+  for (let x = 0; x <= 1000; x++) { if (calc(s, g, x / 10).liquido >= 0) return x / 10; }
+  return null;
+}
+
+function slider(host, key, rotulo, min, max, step, fmt) {
+  const d = document.createElement("div"); d.className = "ctl";
+  d.innerHTML = `<label for="s_${key}">${rotulo}<b id="v_${key}"></b></label><input type="range" id="s_${key}" min="${min}" max="${max}" step="${step}">`;
+  host.appendChild(d);
+  const inp = d.querySelector("input");
+  inp.value = st[key];
+  document.getElementById("v_" + key).textContent = fmt(st[key]);
+  inp.addEventListener("input", () => { st[key] = +inp.value; document.getElementById("v_" + key).textContent = fmt(st[key]); marcarCenario(null); render(); });
+}
+
+function montarCaso() {
+  const c = CASOS[atual];
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.k === atual));
+  document.getElementById("caseCard").innerHTML = `
+    <span class="tag">${c.setor}</span><span class="tag">${c.objetivo}</span>
+    <h2 style="margin-top:8px">${c.nome}</h2>
+    <h3>O que se sabe publicamente</h3>
+    <ul class="facts">${c.fatos.map(f => `<li>${f}</li>`).join("")}</ul>
+    <p class="src">Fontes: ${c.fontes.map(([n, u]) => `<a href="${u}" target="_blank" rel="noopener">${n}</a>`).join(" · ")}</p>
+    <h3>A pergunta da diretoria</h3>
+    <p><b>${c.pergunta}</b></p>
+    <h3>Perguntas para o grupo</h3>
+    <ol class="qs">${c.questoes.map(q => `<li>${q}</li>`).join("")}</ol>
+    <h3>Roteiro da apresentação (5 min)</h3>
+    <div class="pitch"><ol>
+      <li>Objetivo de CD do caso e se o uso é estratégico ou tático.</li>
+      <li>O que mais move o valor (mostre na simulação).</li>
+      <li>A principal restrição ou risco.</li>
+      <li>Como mitigar.</li>
+      <li>Recomendação para a diretoria: seguir, ajustar ou não seguir, e em que condição.</li>
+    </ol></div>`;
+  aplicarCenario("realista");
+}
+
+function marcarCenario(t) {
+  cen = t;
+  document.querySelectorAll("#scen button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+}
+
+function aplicarCenario(t) {
+  const c = CASOS[atual];
+  st = cenario(c.base, t); gv = {...c.gov};
+  marcarCenario(t);
+  montarControles();
+  render();
+}
+
+function montarControles() {
+  const b = CASOS[atual].base, u = CASOS[atual].unidade;
+  ["g1", "g2", "g3", "g4", "tg"].forEach(id => document.getElementById(id).innerHTML = "");
+  const g1 = document.getElementById("g1"), g2 = document.getElementById("g2"), g3 = document.getElementById("g3"), g4 = document.getElementById("g4");
+  slider(g1, "N", `Volume por ano (${u})`, Math.round(b.N * 0.1), Math.round(b.N * 3), Math.max(1, Math.round(b.N / 100)), num);
+  slider(g1, "adocao", "Adoção: % das decisões que usam o modelo", 0, 100, 1, v => v + "%");
+  slider(g1, "acerto", "Taxa de acerto do modelo", 50, 99, 0.5, v => v.toLocaleString("pt-BR") + "%");
+  slider(g2, "ganho", "Ganho por decisão certa", 0, +(b.ganho * 3).toFixed(4), +(b.ganho / 100).toFixed(4), brl);
+  slider(g2, "perda", "Perda por decisão errada", 0, +(b.perda * 3).toFixed(4), +(b.perda / 100).toFixed(4), brl);
+  slider(g3, "cdec", "Custo de rodar o modelo, por decisão", 0, +(b.cdec * 5).toFixed(4), +(b.cdec / 100).toFixed(5), brl);
+  slider(g3, "fixo", "Custo fixo anual (equipe, nuvem, manutenção)", 0, b.fixo * 3, b.fixo / 100, brl);
+  slider(g3, "inv", "Investimento inicial", 0, b.inv * 3, b.inv / 100, brl);
+  slider(g4, "prob", "Probabilidade anual de um incidente", 0, 100, 1, v => v + "%");
+  slider(g4, "impacto", "Impacto de um incidente (multas, ações, reputação)", 0, b.impacto * 3, b.impacto / 100, brl);
+  const tg = document.getElementById("tg");
+  GOV.forEach(([k, rot]) => {
+    const l = document.createElement("label");
+    l.innerHTML = `<input type="checkbox" ${gv[k] ? "checked" : ""}> <span>${rot}</span>`;
+    l.querySelector("input").addEventListener("change", e => { gv[k] = e.target.checked; marcarCenario(null); render(); });
+    tg.appendChild(l);
+  });
+}
+
+function render() {
+  const r = calc(st, gv);
+  const eq = equilibrio(st, gv);
+  const anual = r.liquido;
+  const payback = anual > 0 ? st.inv / (anual / 12) : null;
+  const roi3 = st.inv > 0 ? (3 * anual - st.inv) / st.inv : null;
+  document.getElementById("kpis").innerHTML = `
+    <div class="kpi"><span>Valor líquido anual</span><b class="${anual >= 0 ? "pos" : "neg"}">${brl(anual)}</b></div>
+    <div class="kpi"><span>Retorno em 3 anos</span><b class="${roi3 >= 0 ? "pos" : "neg"}">${roi3 === null ? "—" : (roi3 * 100).toLocaleString("pt-BR", {maximumFractionDigits: 0}) + "%"}</b></div>
+    <div class="kpi"><span>Payback</span><b>${payback === null ? "não se paga" : payback > 120 ? "> 10 anos" : num(Math.ceil(payback)) + " meses"}</b></div>
+    <div class="kpi"><span>Acerto mínimo para empatar</span><b>${eq === null ? "> 100%" : eq.toLocaleString("pt-BR") + "%"}</b></div>`;
+  barras(r);
+  linha(eq);
+}
+
+function barras(r) {
+  const itens = [["Ganho com acertos", r.ganhos, "var(--pos)"], ["Perda com erros", -r.perdas, "var(--neg)"], ["Custo de operar", -r.operar, "var(--warn)"], ["Risco esperado", -r.risco, "var(--risk)"], ["Valor líquido", r.liquido, r.liquido >= 0 ? "var(--accent)" : "var(--neg)"]];
+  const negMax = Math.max(...itens.map(i => i[1] < 0 ? -i[1] : 0));
+  const posMax = Math.max(...itens.map(i => i[1] > 0 ? i[1] : 0));
+  const tot = Math.max(negMax + posMax, 1);
+  const A0 = 230, A = 330;            // área útil das barras, com margem para os rótulos
+  const x0 = A0 + A * negMax / tot;   // posição do zero
+  const h = 30, gap = 14;
+  let s = "";
+  itens.forEach(([n, v, c], i) => {
+    const y = 10 + i * (h + gap);
+    const len = Math.abs(v) / tot * A;
+    const x = v >= 0 ? x0 : x0 - len;
+    s += `<text x="4" y="${y + 20}">${n}</text>`;
+    s += `<rect x="${x}" y="${y}" width="${Math.max(len, 1)}" height="${h}" rx="4" fill="${c}"></rect>`;
+    s += `<text x="${v >= 0 ? x + len + 6 : x - 6}" y="${y + 20}" text-anchor="${v >= 0 ? "start" : "end"}">${brl(v)}</text>`;
+  });
+  s += `<line x1="${x0}" y1="4" x2="${x0}" y2="226" stroke="var(--line)" stroke-width="2"></line>`;
+  document.getElementById("bars").innerHTML = s;
+}
+
+function linha(eq) {
+  const W = 640, H = 240, L = 70, R = 20, T = 14, B = 34;
+  const pts = []; for (let a = 50; a <= 100; a += 1) pts.push([a, calc(st, gv, a).liquido]);
+  const ys = pts.map(p => p[1]);
+  let ymin = Math.min(...ys, 0), ymax = Math.max(...ys, 0);
+  if (ymax === ymin) ymax = ymin + 1;
+  const sx = a => L + (a - 50) / 50 * (W - L - R);
+  const sy = v => T + (ymax - v) / (ymax - ymin) * (H - T - B);
+  let s = `<line x1="${L}" x2="${W - R}" y1="${sy(0)}" y2="${sy(0)}" stroke="var(--muted)" stroke-dasharray="4 4"></line>`;
+  [50, 60, 70, 80, 90, 100].forEach(a => { s += `<text class="muted" x="${sx(a)}" y="${H - 12}" text-anchor="middle">${a}%</text>`; });
+  [ymin, 0, ymax].forEach(v => { s += `<text class="muted" x="${L - 6}" y="${sy(v) + 4}" text-anchor="end">${brl(v)}</text>`; });
+  s += `<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${pts.map(p => sx(p[0]) + "," + sy(p[1])).join(" ")}"></polyline>`;
+  if (eq !== null && eq >= 50 && eq <= 100) s += `<circle cx="${sx(eq)}" cy="${sy(0)}" r="5" fill="var(--warn)"></circle><text x="${sx(eq)}" y="${sy(0) + 22}" text-anchor="middle">empate: ${eq.toLocaleString("pt-BR")}%</text>`;
+  const cur = Math.min(100, Math.max(50, st.acerto));
+  s += `<circle cx="${sx(cur)}" cy="${sy(calc(st, gv, cur).liquido)}" r="6" fill="var(--ink)"></circle><text x="${sx(cur)}" y="${sy(calc(st, gv, cur).liquido) - 12}" text-anchor="middle">você está aqui</text>`;
+  s += `<text class="muted" x="${(L + W - R) / 2}" y="${H}" text-anchor="middle">taxa de acerto do modelo</text>`;
+  document.getElementById("line").innerHTML = s;
+}
+
+// abas
+const tabs = document.getElementById("tabs");
+ORDEM.forEach((k, i) => {
+  const b = document.createElement("button");
+  b.className = "tab"; b.role = "tab"; b.dataset.k = k;
+  b.textContent = `Grupo ${i + 1} · ${CASOS[k].nome.split(":")[0]}`;
+  b.addEventListener("click", () => { atual = k; history.replaceState(null, "", "#" + k); montarCaso(); });
+  tabs.appendChild(b);
+});
+const sc = document.getElementById("scen");
+[["pessimista", "Cenário pessimista"], ["realista", "Cenário realista"], ["otimista", "Cenário otimista"]].forEach(([t, n]) => {
+  const b = document.createElement("button"); b.dataset.t = t; b.textContent = n;
+  b.addEventListener("click", () => aplicarCenario(t)); sc.appendChild(b);
+});
+
+// cronômetro
+let tm = null;
+document.querySelectorAll(".timer button[data-min]").forEach(b => b.addEventListener("click", () => {
+  clearInterval(tm); let r = +b.dataset.min * 60; const o = document.getElementById("clock");
+  const tick = () => { o.textContent = String(Math.floor(r / 60)).padStart(2, "0") + ":" + String(r % 60).padStart(2, "0"); if (r-- <= 0) { clearInterval(tm); o.textContent = "Tempo!"; } };
+  tick(); tm = setInterval(tick, 1000);
+}));
+document.getElementById("stop").addEventListener("click", () => { clearInterval(tm); document.getElementById("clock").textContent = "--:--"; });
+
+const h = location.hash.slice(1);
+if (CASOS[h]) atual = h;
+montarCaso();
+</script>
+</body>
+</html>
