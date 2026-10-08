@@ -26,6 +26,9 @@ Siga o [checklist de preparação](docs/setup.md) e rode o notebook de teste:
 | 4 | Média sozinha engana · [NB04 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB04_distribuicoes_outliers.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula04_erro_fraude_excecao.html) · [Tarefa 4](tarefas/T4_enunciado.md) |
 | 5 | Da amostra à decisão · [NB05 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB05_amostra_decisao.ipynb) · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula05_amostra_decisao.html) |
 
+## Trabalho final
+[Enunciado](tarefas/TF_enunciado.md) · [Notebook do trabalho final](tarefas/TF_trabalho_final.ipynb) · [Abrir no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/tarefas/TF_trabalho_final.ipynb)
+
 ## Fontes dos dados
 Cada arquivo em `dados/` traz, no `dados/README.md`, a fonte original, o link e a data de extração.
 O arquivo `teste_ambiente.csv` é **fictício** e serve apenas para testar o ambiente.
