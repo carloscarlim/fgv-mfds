@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quanto Custa um Dado Ruim</title>
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2433; --muted:#5d6577; --line:#e2e0d8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --pos:#2f7d4f; --neg:#b4443a; --warn:#a86b00; --chip:#efede6; --bad-soft:#f8e3e0; --ok-soft:#e1f1e7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+    --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --chip:#262b36; --bad-soft:#3a2321; --ok-soft:#1e3527;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+  --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --chip:#262b36; --bad-soft:#3a2321; --ok-soft:#1e3527;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:1240px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;max-width:1240px;margin:12px auto 0;padding:0 16px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:1240px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{font-size:18px;margin:0 0 6px}
+.card h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:16px 0 8px}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin:0 6px 4px 0}
+.notice{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0}
+.qs li{margin-bottom:6px}
+.ctl{padding:4px 0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.ctl label b{font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.checks label{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:3px 0}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+td.bad{background:var(--bad-soft)}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+@media (max-width:560px){.cols{grid-template-columns:1fr}}
+.col{border-radius:10px;padding:10px 12px;background:var(--chip)}
+.col span{display:block;font-size:12px;color:var(--muted)}
+.col .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.col .d{font-size:14px;margin-top:4px}
+.col.bad{background:var(--bad-soft)} .col.ok{background:var(--ok-soft)}
+.pitch ol{padding-left:20px;margin:0}
+.timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:1240px;margin:0 auto;padding:0 16px 24px}
+.timer button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.timer output{font-size:22px;font-variant-numeric:tabular-nums;min-width:80px}
+footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Quanto Custa um Dado Ruim</h1>
+  <p class="sub">Aula 3 · Métodos e Ferramentas de Data Science · FGV MBA. A Entrega Já (empresa fictícia de e-commerce) vai tomar seis decisões com a mesma base de pedidos. Cada grupo cuida de uma. Ajuste os defeitos, aplique a limpeza e veja quando a decisão muda.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<main>
+  <section class="card" id="caso"></section>
+  <section class="card">
+    <h2>Simulação</h2>
+    <div class="notice">5.000 pedidos fictícios, uma amostra de 1% de um ano de operação. Como os dados foram simulados, conhecemos a <b>verdade</b>. Na vida real, você só vê a coluna <b>"como está"</b>.</div>
+    <h3>Defeitos na base</h3>
+    <div class="grid2" id="defeitos"></div>
+    <h3>Limpeza</h3>
+    <div class="checks" id="limpeza"></div>
+    <h3>A decisão do seu grupo</h3>
+    <div id="decisao"></div>
+    <h3>Amostra da base como está</h3>
+    <table id="amostra"></table>
+  </section>
+</main>
+<div class="timer">
+  <span>Cronômetro:</span>
+  <button data-min="25">Trabalho em grupo · 25 min</button>
+  <button data-min="5">Apresentação · 5 min</button>
+  <button id="stop">Parar</button>
+  <output id="clock">--:--</output>
+</div>
+<footer>Empresa, dados e regras fictícios, gerados por simulação para fins didáticos.</footer>
+
+<script>
+function rngFrom(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r){ let u = 0, v = 0; while(!u) u = r(); while(!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+const fmt = (v, d = 0) => v.toLocaleString("pt-BR", {maximumFractionDigits: d, minimumFractionDigits: d});
+const brl = v => "R$ " + (Math.abs(v) >= 1e6 ? fmt(v / 1e6, 1) + " mi" : Math.abs(v) >= 1e3 ? fmt(v / 1e3, 0) + " mil" : fmt(v, 0));
+const pick = (r, pares) => { let u = r(), acc = 0; for (const [v, p] of pares){ acc += p; if (u < acc) return v; } return pares[pares.length - 1][0]; };
+function shuffle(a, r){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const media = a => a.reduce((x, y) => x + y, 0) / a.length;
+const desvio = a => { const m = media(a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); };
+const mediana = a => { const s = a.slice().sort((x, y) => x - y), n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
+
+// ---------- base verdadeira ----------
+const PROM = {SE: 7, S: 9, CO: 10, NE: 12, N: 15};
+const PATRASO = {A: 0.08, B: 0.14, C: 0.24};
+const CATS = [["Casa", 0.24, 160], ["Eletrônicos", 0.20, 180], ["Beleza", 0.22, 80], ["Esporte", 0.18, 110], ["Brinquedos", 0.16, 90]];
+const BASE = (() => { const r = rngFrom(3), out = [];
+  for (let i = 0; i < 5000; i++){
+    const transp = pick(r, [["A", 0.40], ["B", 0.35], ["C", 0.25]]);
+    const reg = pick(r, [["SE", 0.45], ["S", 0.15], ["NE", 0.20], ["CO", 0.10], ["N", 0.10]]);
+    const prom = PROM[reg], atrasou = r() < PATRASO[transp];
+    const prazo = atrasou ? prom + 1 + Math.floor(Math.exp(1.2 + 0.6 * gauss(r))) : Math.max(1, prom - Math.floor(r() * prom * 0.5));
+    const nota = atrasou ? pick(r, [[1, 0.35], [2, 0.3], [3, 0.25], [4, 0.1]]) : pick(r, [[3, 0.10], [4, 0.30], [5, 0.60]]);
+    const cat = pick(r, CATS.map(([n, p]) => [n, p]));
+    const valor = CATS.find(x => x[0] === cat)[2] * Math.exp(0.5 * gauss(r) - 0.125);
+    out.push({id: "P" + String(i + 1).padStart(5, "0"), cliente: "C" + String(i + 1).padStart(5, "0"), transp, reg, prom, prazo, atrasou, nota, cat, valor, inativo: r() < 0.35});
+  }
+  return out; })();
+
+// ---------- defeitos ----------
+function sujar(d){
+  const r = rngFrom(17), rows = BASE.map(x => ({...x})), N = rows.length;
+  // faltantes: a transportadora C não envia confirmação quando atrasa (perda não aleatória)
+  const k = Math.round(N * d.falt / 100);
+  const cAtrasados = shuffle(rows.filter(x => x.transp === "C" && x.atrasou), r);
+  const atrasados = shuffle(rows.filter(x => x.atrasou && x.transp !== "C"), r);
+  const outros = shuffle(rows.filter(x => !x.atrasou), r);
+  const alvo = [...cAtrasados.slice(0, Math.round(k * 0.45)), ...atrasados.slice(0, Math.round(k * 0.2))];
+  alvo.push(...outros.slice(0, Math.max(0, k - alvo.length)));
+  alvo.forEach(x => { x.prazo = null; x.nota = null; x.falt = true; });
+  // datas impossíveis: ano digitado errado ou data invertida
+  const m = Math.round(N * d.datas / 100);
+  shuffle(rows.filter(x => x.prazo !== null), r).slice(0, m).forEach(x => { x.prazo = r() < 0.7 ? x.prazo + 3650 : -x.prazo * 30; x.dataRuim = true; });
+  // cadastro inconsistente: integração de um marketplace grava "Casa" de vários jeitos
+  rows.filter(x => x.cat === "Casa").forEach(x => { if (r() < d.cad / 100){ x.cat = ["casa", "CASA", "Casa e Decoração"][Math.floor(r() * 3)]; x.catRuim = true; } });
+  // duplicatas: falha de integração duplica pedidos do Sudeste
+  const nd = Math.round(N * d.dup / 100);
+  const dups = shuffle(rows.filter(x => x.reg === "SE"), r).slice(0, nd).map(x => ({...x, dup: true}));
+  return rows.concat(dups);
+}
+
+function limpar(rows, L){
+  let out = rows.map(x => ({...x}));
+  if (L.dup) out = out.filter(x => !x.dup);
+  if (L.cad) out.forEach(x => { if (["casa", "CASA", "Casa e Decoração"].includes(x.cat)) x.cat = "Casa"; });
+  if (L.datas) out = out.filter(x => x.prazo === null || (x.prazo >= 0 && x.prazo <= 120));
+  return out;
+}
+
+// ---------- decisões ----------
+const atrasouObs = x => x.prazo === null ? null : x.prazo > x.prom;
+const DEC = {
+  transp: {
+    nome: "Escolher a transportadora", foco: "faltantes",
+    contexto: "O diretor de operações vai concentrar o contrato de 2027 na transportadora com menor taxa de atraso. Ele pediu a taxa de atraso de cada uma, calculada na base de pedidos.",
+    questoes: ["Comece sem limpeza. Qual transportadora vence? Ela vence também na verdade?", "Aumente os faltantes. Em qual transportadora eles se concentram? Por quê?", "Ligue \"tratar faltantes como atraso provável\". A decisão volta ao correto?", "Que pergunta você faria à transportadora antes de assinar?", "Faltante é só um buraco na tabela ou também é informação?"],
+    calc(rows, L){ const t = {}; ["A", "B", "C"].forEach(k => { const g = rows.filter(x => x.transp === k); let at = 0, n = 0;
+        g.forEach(x => { const a = atrasouObs(x); if (a === null){ if (L.falt){ at++; n++; } } else { n++; if (a) at++; } }); t[k] = at / n; });
+      const melhor = Object.entries(t).sort((a, b) => a[1] - b[1])[0][0];
+      return {valor: "A " + fmt(t.A * 100, 1) + "% · B " + fmt(t.B * 100, 1) + "% · C " + fmt(t.C * 100, 1) + "%", decisao: "Contratar " + melhor, chave: melhor}; }
+  },
+  entregadores: {
+    nome: "Contratar entregadores no Sudeste", foco: "duplicatas",
+    contexto: "O RH vai contratar entregadores próprios para o Sudeste: um para cada 40 pedidos por dia. Cada entregador custa R$ 4 mil por mês. O volume vem da contagem de pedidos na base.",
+    questoes: ["Sem limpeza, quantos entregadores o RH contrataria? E na verdade?", "Quanto custa por ano o erro causado pelas duplicatas?", "Como você detectaria duplicatas numa base real (que coluna olhar)?", "Por que a duplicata aparece só no Sudeste neste caso?", "Que controle de qualidade evitaria o problema na origem?"],
+    calc(rows){ const se = rows.filter(x => x.reg === "SE").length * 100 / 365; const n = Math.ceil(se / 40);
+      return {valor: fmt(se, 0) + " pedidos/dia", decisao: n + " entregadores · " + brl(n * 4000 * 12) + "/ano", chave: n}; }
+  },
+  bonus: {
+    nome: "Pagar o bônus da logística", foco: "datas",
+    contexto: "O time de logística recebe um bônus de R$ 300 mil se o prazo médio de entrega ficar em até 10 dias. O financeiro calcula a média do prazo de todos os pedidos com data de entrega.",
+    questoes: ["Sem limpeza, o time recebe o bônus? E na verdade?", "Coloque 1% de datas erradas. Quanto a média muda?", "Ligue \"usar mediana\". Por que ela resiste às datas erradas?", "Qual é o jeito justo de definir a meta: média, mediana ou outra medida?", "Quem deveria ser responsável por corrigir a data na origem?"],
+    calc(rows, L){ const v = rows.filter(x => x.prazo !== null).map(x => x.prazo); const m = L.med ? mediana(v) : media(v); const ok = m <= 10;
+      return {valor: (L.med ? "mediana " : "média ") + fmt(m, 1) + " dias", decisao: ok ? "Paga o bônus" : "Não paga o bônus", chave: ok}; }
+  },
+  categoria: {
+    nome: "Definir a categoria do estoque", foco: "cadastro",
+    contexto: "O comercial vai ampliar o estoque da categoria que mais faturou. O faturamento por categoria vem da soma do valor dos pedidos, agrupada pelo nome da categoria.",
+    questoes: ["Sem limpeza, qual categoria vence? E na verdade?", "Olhe a amostra: como \"Casa\" aparece escrita?", "Ligue \"padronizar categorias\". O que muda?", "Quanto vale, para a empresa, um cadastro padronizado?", "Onde o erro de cadastro nasce e como evitá-lo?"],
+    calc(rows){ const f = {}; rows.forEach(x => f[x.cat] = (f[x.cat] || 0) + x.valor * 100); const ord = Object.entries(f).sort((a, b) => b[1] - a[1]);
+      return {valor: ord.slice(0, 3).map(([c, v]) => `${c} ${brl(v)}`).join(" · "), decisao: "Ampliar " + ord[0][0], chave: ord[0][0]}; }
+  },
+  nota: {
+    nome: "Reportar a satisfação ao conselho", foco: "faltantes",
+    contexto: "O conselho cobra uma nota média de satisfação de pelo menos 4,2. A nota vem da pesquisa enviada depois da entrega. A diretoria vai reportar a média das notas recebidas.",
+    questoes: ["Sem limpeza, a meta foi batida? E na verdade?", "Quem deixa de responder a pesquisa: o cliente satisfeito ou o insatisfeito?", "Ligue \"tratar faltantes\". A estimativa melhora?", "As duplicatas do Sudeste também mexem na nota. Por quê?", "Como reportar a nota ao conselho com honestidade sobre a limitação?"],
+    calc(rows, L){ const resp = rows.filter(x => x.nota !== null); let soma = resp.reduce((a, x) => a + x.nota, 0), n = resp.length;
+      if (L.falt){ const mAt = media(resp.filter(x => x.prazo > x.prom).map(x => x.nota)); rows.filter(x => x.nota === null).forEach(() => { soma += mAt; n++; }); }
+      const m = soma / n; return {valor: "nota " + fmt(m, 2), decisao: m >= 4.2 ? "Meta batida" : "Meta não batida", chave: m >= 4.2}; }
+  },
+  prazoNorte: {
+    nome: "Prometer o prazo no Norte", foco: "datas e faltantes",
+    contexto: "O marketing vai prometer, para a região Norte, um prazo igual à média do prazo real mais um desvio padrão, arredondado para cima. É a regra usada pela empresa há anos.",
+    questoes: ["Sem limpeza, que prazo seria prometido? E na verdade?", "O que acontece com o prazo prometido quando há datas impossíveis?", "Ligue \"excluir datas impossíveis\". Resolve? E se ligar também \"usar mediana\"?", "Que risco comercial existe em prometer prazo longo demais? E curto demais?", "A regra \"média + 1 desvio\" é boa? Que alternativa você sugeriria?"],
+    calc(rows, L){ const v = rows.filter(x => x.reg === "N" && x.prazo !== null).map(x => x.prazo); const c = L.med ? mediana(v) + 1.4826 * mediana(v.map(y => Math.abs(y - mediana(v)))) : media(v) + desvio(v); const p = Math.max(1, Math.ceil(c));
+      return {valor: (L.med ? "mediana + desvio robusto " : "média + desvio ") + fmt(c, 1), decisao: "Prometer " + (p > 365 ? fmt(p) + " dias (!)" : p + " dias"), chave: p}; }
+  }
+};
+const ORDEM = ["transp", "entregadores", "bonus", "categoria", "nota", "prazoNorte"];
+const LIMP = [["dup", "Remover duplicatas (mesmo número de pedido)"], ["cad", "Padronizar nomes de categoria"], ["datas", "Excluir datas impossíveis (prazo negativo ou acima de 120 dias)"], ["falt", "Tratar faltantes: contar como atraso provável e estimar a nota de quem não respondeu"], ["med", "Usar mediana no lugar da média (medidas robustas)"]];
+
+let atual = "transp", D = {falt: 15, dup: 8, datas: 2, cad: 25}, L = {dup: false, cad: false, datas: false, falt: false, med: false};
+
+function montarCaso(){
+  const c = DEC[atual];
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.k === atual));
+  document.getElementById("caso").innerHTML = `<span class="tag">Entrega Já (fictícia)</span><span class="tag">foco: ${c.foco}</span>
+    <h2 style="margin-top:6px">${c.nome}</h2><p>${c.contexto}</p>
+    <h3>Perguntas para o grupo</h3><ol class="qs">${c.questoes.map(q => `<li>${q}</li>`).join("")}</ol>
+    <h3>Roteiro da apresentação (5 min)</h3><div class="pitch"><ol>
+      <li>A decisão e o indicador usado.</li><li>Que defeito de dado mais distorce essa decisão, e quanto.</li>
+      <li>Que limpeza resolve, e o que ela não resolve.</li><li>Quanto custa decidir com o dado ruim.</li><li>Que regra de qualidade de dados você recomenda.</li></ol></div>`;
+  render();
+}
+
+function render(){
+  const sujo = sujar(D), tratado = limpar(sujo, L);
+  const c = DEC[atual];
+  const v = c.calc(BASE, {med: L.med}), s = c.calc(sujo, {med: L.med}), t = c.calc(tratado, L);
+  const col = (tit, r, ref) => `<div class="col ${r.chave === ref ? "ok" : "bad"}"><span>${tit}</span><div class="v">${r.decisao}</div><div class="d">${r.valor}</div><span>${r.chave === ref ? "mesma decisão da verdade" : "decisão diferente da verdade"}</span></div>`;
+  document.getElementById("decisao").innerHTML = `<div class="cols">${col("Verdade (dado perfeito, mesma regra)", v, v.chave)}${col("Como está (sem limpeza)", s, v.chave)}${col("Depois da sua limpeza", t, v.chave)}</div>`;
+  const umDeCada = ["falt", "dataRuim", "catRuim", "dup"].map(k => sujo.find(x => x[k])).filter(Boolean);
+  const amostra = umDeCada.concat(sujo.filter(x => !(x.falt || x.dataRuim || x.catRuim || x.dup)).slice(0, 8 - umDeCada.length));
+  amostra.sort((a, b) => a.id.localeCompare(b.id));
+  document.getElementById("amostra").innerHTML = "<tr><th>Pedido</th><th>Transp.</th><th>Região</th><th>Categoria</th><th>Prazo real (dias)</th><th>Prometido</th><th>Nota</th></tr>" +
+    amostra.map(x => `<tr><td class="${x.dup ? "bad" : ""}">${x.id}${x.dup ? " (duplicado)" : ""}</td><td>${x.transp}</td><td>${x.reg}</td><td class="${x.catRuim ? "bad" : ""}">${x.cat}</td><td class="${x.prazo === null || x.dataRuim ? "bad" : ""}">${x.prazo === null ? "—" : fmt(x.prazo)}</td><td>${x.prom}</td><td class="${x.nota === null ? "bad" : ""}">${x.nota === null ? "—" : x.nota}</td></tr>`).join("");
+}
+
+function slider(host, key, rot, max, step){
+  const d = document.createElement("div"); d.className = "ctl";
+  d.innerHTML = `<label for="s_${key}">${rot}<b id="v_${key}">${fmt(D[key], 1)}%</b></label><input type="range" id="s_${key}" min="0" max="${max}" step="${step}" value="${D[key]}">`;
+  host.appendChild(d);
+  d.querySelector("input").addEventListener("input", e => { D[key] = +e.target.value; document.getElementById("v_" + key).textContent = fmt(D[key], 1) + "%"; render(); });
+}
+const def = document.getElementById("defeitos");
+slider(def, "falt", "Pedidos sem data de entrega e sem nota", 30, 1);
+slider(def, "dup", "Pedidos duplicados", 20, 1);
+slider(def, "datas", "Datas impossíveis", 5, 0.5);
+slider(def, "cad", "Cadastros de categoria inconsistentes (em \"Casa\")", 60, 5);
+const lp = document.getElementById("limpeza");
+LIMP.forEach(([k, n]) => { const l = document.createElement("label"); l.innerHTML = `<input type="checkbox"> <span>${n}</span>`; l.querySelector("input").addEventListener("change", e => { L[k] = e.target.checked; render(); }); lp.appendChild(l); });
+
+const tabs = document.getElementById("tabs");
+ORDEM.forEach((k, i) => { const b = document.createElement("button"); b.className = "tab"; b.role = "tab"; b.dataset.k = k; b.textContent = `Grupo ${i + 1} · ${DEC[k].nome}`;
+  b.addEventListener("click", () => { atual = k; history.replaceState(null, "", "#" + k); montarCaso(); }); tabs.appendChild(b); });
+let tm = null;
+document.querySelectorAll(".timer button[data-min]").forEach(b => b.addEventListener("click", () => { clearInterval(tm); let r = +b.dataset.min * 60; const o = document.getElementById("clock"); const tick = () => { o.textContent = String(Math.floor(r / 60)).padStart(2, "0") + ":" + String(r % 60).padStart(2, "0"); if (r-- <= 0){ clearInterval(tm); o.textContent = "Tempo!"; } }; tick(); tm = setInterval(tick, 1000); }));
+document.getElementById("stop").addEventListener("click", () => { clearInterval(tm); document.getElementById("clock").textContent = "--:--"; });
+const h = location.hash.slice(1); if (DEC[h]) atual = h;
+montarCaso();
+</script>
+</body>
+</html>
