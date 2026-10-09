@@ -32,7 +32,7 @@ Os marcos são **obrigatórios e não valem nota**. Eles geram uma devolutiva au
 | Perguntas do vídeo | Você recebe por e-mail as suas perguntas personalizadas | Até 24 h depois do prazo da entrega final |
 | **Vídeo** | Até 8 minutos | **72 h depois de receber as perguntas** |
 
-**Como enviar:** o notebook (`.ipynb`) no ECLASS, com o nome `TF_<sua matrícula>.ipynb`; o vídeo (`.mp4`) no ECLASS com o nome `<sua matrícula>.mp4` [VERIFICAR o limite de tamanho do ECLASS; se não couber, use um link do Google Drive compartilhado só com ext.carlos.pinto@prof.fgv.br].
+**Como enviar:** o notebook (`.ipynb`) no ECLASS, com o nome `TF_<sua matrícula>.ipynb`; o vídeo (`.mp4`) no ECLASS com o nome `<sua matrícula>.mp4`. Se o arquivo passar do limite de tamanho do ECLASS, envie um link do Google Drive compartilhado só com ext.carlos.pinto@prof.fgv.br.
 
 ## c) Estrutura do entregável
 
@@ -153,10 +153,10 @@ Para quem quiser repetir o método em outros dados depois da disciplina:
 | Série histórica de preços de combustíveis | [ANP](https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/serie-historica-de-precos-de-combustiveis) | Energia; preços por região; séries temporais |
 | Cartão de Pagamento do Governo Federal | [Portal da Transparência](https://portal.transparencia.gov.br/download-de-dados/cpgf) | Auditoria; outliers; setor público |
 | Brazilian E-Commerce Public Dataset (base completa) | [Kaggle – Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | Varejo; logística; textos de avaliações |
-| Carga de energia e geração | [ONS – Dados Abertos](https://dados.ons.org.br) [VERIFICAR] | Previsão de carga; indústria de energia |
-| Dados meteorológicos históricos | [INMET](https://portal.inmet.gov.br/dadoshistoricos) [VERIFICAR] | Clima; cruzamento com carga e vendas |
+| Carga de energia e geração | [ONS – Dados Abertos](https://dados.ons.org.br) | Previsão de carga; indústria de energia |
+| Dados meteorológicos históricos | [INMET](https://portal.inmet.gov.br/dadoshistoricos) | Clima; cruzamento com carga e vendas |
 | Tabelas do IBGE | [SIDRA](https://sidra.ibge.gov.br) | Indicadores socioeconômicos; redução de dimensionalidade |
 | Fundos e companhias abertas | [CVM – Dados Abertos](https://dados.cvm.gov.br) | Finanças; séries mensais |
-| Voos e atrasos | [ANAC – dados abertos](https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas) [VERIFICAR] | Atrasos; operações; outliers |
+| Voos e atrasos | [ANAC – dados abertos](https://www.gov.br/anac/pt-br/assuntos/dados-e-estatisticas) | Atrasos; operações; outliers |
 | Portal Brasileiro de Dados Abertos | [dados.gov.br](https://dados.gov.br) | Catálogo geral do governo federal |
-| Dados eleitorais | [TSE – Dados Abertos](https://dadosabertos.tse.jus.br) [VERIFICAR] | Setor público; agregações por município |
+| Dados eleitorais | [TSE – Dados Abertos](https://dadosabertos.tse.jus.br) | Setor público; agregações por município |

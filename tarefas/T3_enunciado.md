@@ -23,7 +23,7 @@ A tarefa prepara a Aula 4, em que vamos olhar distribuições, outliers e correl
 - Use apenas a sua amostra (variável `pedidos`), exceto onde a pergunta disser o contrário.
 - Você pode usar assistentes de IA para tirar dúvidas, mas o texto Q10 deve ser seu e citar números **da sua amostra**. Textos iguais entre alunos vão para revisão do professor. Máximo de 80 palavras.
 
-**Leitura preparatória para a Aula 4:** ESCOVEDO, KALINOWSKI & MARQUES, *Introdução à estatística para ciência de dados* (Casa do Código, 2024), tema: estatística descritiva, medidas de posição e dispersão [VERIFICAR CAPÍTULO].
+**Leitura preparatória para a Aula 4:** ESCOVEDO, KALINOWSKI & MARQUES, *Introdução à estatística para ciência de dados* (Casa do Código, 2024), tema: estatística descritiva, medidas de posição e dispersão.
 
 **Rubrica (10 pontos)**
 

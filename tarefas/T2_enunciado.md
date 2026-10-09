@@ -17,7 +17,7 @@ A tarefa prepara a Aula 3, em que vamos usar o pandas para analisar a base de e-
 - As perguntas da Parte B são sorteadas pela sua matrícula.
 - Você pode usar assistentes de IA para tirar dúvidas, mas o texto da Parte C deve ser seu. Textos iguais entre alunos vão para revisão do professor. Textos com mais de 100 palavras são cortados na 100ª palavra.
 
-**Leitura preparatória para a Aula 3:** CARVALHO, MENEZES & BONIDIA, *Ciência de dados: fundamentos e aplicações* (LTC, 2024), tema: preparação e manipulação de dados [VERIFICAR CAPÍTULO].
+**Leitura preparatória para a Aula 3:** CARVALHO, MENEZES & BONIDIA, *Ciência de dados: fundamentos e aplicações* (LTC, 2024), tema: preparação e manipulação de dados.
 
 **Rubrica (10 pontos)**
 
