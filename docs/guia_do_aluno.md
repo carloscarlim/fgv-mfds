@@ -7,7 +7,7 @@ Ao final, você será capaz de **formular** uma pergunta de negócio que dados c
 ## Como as aulas funcionam
 - **5 aulas de 3 horas, ao vivo por vídeo**, e cerca de 9 horas de atividades fora de sala.
 - Cada aula tem três momentos:
-  - **caso em grupo:** salas com 5 colegas e um simulador no navegador; cada grupo apresenta suas conclusões em 5 minutos;
+  - **caso em grupo:** salas de 5 ou 6 colegas e um simulador no navegador; cada grupo apresenta suas conclusões em 5 minutos;
   - **código individual:** cada um no seu Colab, sem envio; o gabarito é publicado depois da aula;
   - **exposição:** no máximo 40% do tempo.
 - Deixe a videoaula e o Colab abertos lado a lado. Câmera ligada nas salas de grupo.
@@ -41,7 +41,7 @@ Todas as entregas vencem às **23h59** e são enviadas pelo ECLASS. As datas exa
 - Correção automática a partir das rubricas publicadas em cada enunciado. Os textos e os vídeos são avaliados com apoio de uma ferramenta de IA (Claude), com revisão do professor por amostragem e em todos os casos sinalizados. Os trabalhos são identificados só pela matrícula.
 - Pedidos de revisão: até 7 dias depois da divulgação da nota.
 - Os marcos do trabalho final são obrigatórios, não valem nota e geram devolutiva para você melhorar.
-- **Seus dados são individuais:** as tarefas e o trabalho final usam amostras e parâmetros sorteados pela sua matrícula. Digite a matrícula corretamente (só números) e execute o **verificador de formato** antes de baixar cada arquivo.
+- **Seus dados são individuais:** as tarefas e o trabalho final usam amostras e parâmetros sorteados pela sua matrícula. **Sua matrícula, nesta disciplina, é o seu nome de usuário do ECLASS** (por exemplo, `A12345678`). Digite-a corretamente e execute o **verificador de formato** antes de baixar cada arquivo.
 
 ## Regras
 - **Uso de IA generativa:** pode usar como tutor (entender um erro, revisar um comando, explicar um conceito). Não pode pedir que ela faça a análise, escreva seus textos ou prepare as respostas do vídeo. O trabalho final traz uma declaração obrigatória de uso.
