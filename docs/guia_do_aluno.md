@@ -26,7 +26,7 @@ Ao final, você será capaz de **formular** uma pergunta de negócio que dados c
 | Aula 4 | Média sozinha engana |
 | Véspera da Aula 5 | **Tarefa 4** e **Marco 3** |
 | Aula 5 | Da amostra à decisão (com clínica do trabalho final) |
-| 7º dia depois da Aula 5 | **Trabalho final**: notebook e memorando |
+| 7º dia depois da Aula 5 | **Trabalho final**: notebook e slide executivo |
 | 72 h depois de receber as perguntas | **Vídeo** do trabalho final |
 
 Todas as entregas vencem às **23h59** e são enviadas pelo ECLASS. As datas exatas estão no calendário do ECLASS.
@@ -36,9 +36,9 @@ Todas as entregas vencem às **23h59** e são enviadas pelo ECLASS. As datas exa
 | Componente | Peso |
 |---|---|
 | Tarefas 1 a 4 (individuais, 7,5% cada) | 30% |
-| Trabalho final (individual): notebook 25, memorando 20, vídeo 25 | 70% |
+| Trabalho final (individual): notebook 25, slide executivo 20, vídeo 25 | 70% |
 
-- Correção automática a partir das rubricas publicadas em cada enunciado. Os textos e os vídeos são avaliados com apoio de uma ferramenta de IA (Claude), com revisão do professor por amostragem e em todos os casos sinalizados. Os trabalhos são identificados só pela matrícula.
+- Correção automática a partir das rubricas publicadas em cada enunciado. Os textos das tarefas e o slide executivo são avaliados com apoio de uma ferramenta de IA (Claude), com revisão do professor por amostragem e em todos os casos sinalizados. O **vídeo do trabalho final é assistido e avaliado pelo professor**, um a um, sem uso de IA. Os trabalhos são identificados só pela matrícula.
 - Pedidos de revisão: até 7 dias depois da divulgação da nota.
 - Os marcos do trabalho final são obrigatórios, não valem nota e geram devolutiva para você melhorar.
 - **Seus dados são individuais:** as tarefas e o trabalho final usam amostras e parâmetros sorteados pela sua matrícula. **Sua matrícula, nesta disciplina, é o seu nome de usuário do ECLASS** (por exemplo, `A12345678`). Digite-a corretamente e execute o **verificador de formato** antes de baixar cada arquivo.
