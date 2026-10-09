@@ -4,6 +4,9 @@
 Repositório público da disciplina: notebooks das aulas, dados e enunciados das tarefas.
 Tudo roda no **Google Colab**, sem instalar nada no seu computador.
 
+## Comece por aqui
+[Guia do aluno](docs/guia_do_aluno.md) · [Cheat sheet de Python e pandas](docs/cheat_sheet_pandas.md)
+
 ## Antes da Aula 1
 Siga o [checklist de preparação](docs/setup.md) e rode o notebook de teste:
 [`notebooks/NB00_teste_ambiente.ipynb`](notebooks/NB00_teste_ambiente.ipynb)
