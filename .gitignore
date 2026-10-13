@@ -1,0 +1,8 @@
+# Nunca publicar gabaritos, sementes, entregas ou notas neste repositório público
+gabaritos/
+entregas/
+notas/
+*.secret
+.ipynb_checkpoints/
+__pycache__/
+.DS_Store

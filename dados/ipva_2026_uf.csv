@@ -1,0 +1,28 @@
+uf,aliquota_combustao,aliquota_hibrido,aliquota_eletrico,observacao
+AC,2.0,0.0,0.0,
+AL,3.0,0.0,0.0,isenção de elétricos e híbridos só no 1º ano; alíquota de combustão depende da potência: conferir
+AM,2.0,1.5,1.5,
+AP,3.0,0.0,0.0,isenção válida até 12/2026; alíquota de combustão de fonte secundária: conferir
+BA,2.5,2.5,0.0,isenção de elétricos até R$ 300 mil
+CE,3.0,3.0,2.0,elétrico com alíquota reduzida; fontes divergem sobre híbridos: conferir
+DF,3.0,0.0,0.0,isenção para veículo comprado no DF
+ES,2.0,2.0,2.0,fontes citam redução sem informar o valor: conferir
+GO,3.75,3.75,3.75,sem benefício em vigor; projeto em discussão
+MA,2.5,2.5,0.0,"alíquota de combustão de 2,5% vale até R$ 150 mil; acima disso: conferir"
+MG,4.0,4.0,4.0,isenção só para modelos fabricados em MG (não é o caso dos três)
+MS,3.0,0.0,0.0,isenção de 0 km no 1º ano; desconto nos anos seguintes
+MT,3.0,0.0,0.0,isenção no primeiro registro
+PA,2.5,2.5,2.5,isenção de elétricos só até R$ 150 mil (o modelo comparado custa mais)
+PB,2.5,2.5,0.0,
+PE,2.4,2.4,0.0,
+PI,3.0,3.0,1.0,"alíquota de combustão entre 2,5% e 3%: conferir"
+PR,1.9,1.9,1.9,"alíquota geral reduzida para 1,9% em 2026"
+RJ,4.0,1.5,0.5,
+RN,3.0,3.0,0.0,
+RO,3.0,3.0,3.0,fontes consultadas não citam benefício: conferir
+RR,3.0,3.0,3.0,fontes consultadas não citam benefício: conferir
+RS,3.0,3.0,0.0,
+SC,2.0,2.0,2.0,sem benefício para eletrificados em 2026
+SE,2.5,2.5,2.5,elétricos e híbridos pagam a mesma alíquota dos demais; a alíquota varia de 2% a 3% conforme o veículo: conferir
+SP,4.0,0.0,4.0,"isenção de híbridos até R$ 261 mil em 2026, último ano; elétricos sem benefício"
+TO,2.0,0.0,0.0,isenção do 1º IPVA para compra em concessionária do estado até 12/2026
