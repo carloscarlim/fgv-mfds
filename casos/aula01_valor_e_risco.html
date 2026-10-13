@@ -94,7 +94,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);fon
   <section class="card" id="caseCard"></section>
   <section class="card">
     <h2>Simulação</h2>
-    <div class="notice"><b>Os números da simulação são hipotéticos</b>, não são dados da empresa. Servem para descobrir o que mais move o valor.</div>
+    <div class="notice"><b>Os números da simulação são hipotéticos</b>, não são dados da empresa. Servem para descobrir o que mais move o valor.<br><b>A conta deste simulador é um modelo para fins didáticos apenas</b>, não uma fórmula publicada. A teoria de referência é o valor esperado (Provost e Fawcett, 2013, cap. 7).</div>
     <h3>Valor por ano, comparado com o processo de hoje</h3>
     <div class="valor"><b id="liq"></b><span id="liqTxt"></span></div>
     <div class="barras" id="bars" role="img" aria-label="Composição do valor anual"></div>
@@ -105,7 +105,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);fon
     <button class="reset" id="reset">Voltar ao cenário inicial</button>
     <h3>Premissas do caso</h3>
     <ul class="premissas" id="premissas"></ul>
-    <details><summary>Como a conta é feita</summary><p id="formula" style="margin-top:6px"></p></details>
+    <details><summary>Como a conta é feita</summary><p id="formula" style="margin-top:6px"></p><p style="margin-top:6px"><b>Aviso:</b> fórmula para fins didáticos apenas.</p></details>
   </section>
 </main>
 <div class="timer">
@@ -115,7 +115,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);fon
   <button id="stop">Parar</button>
   <output id="clock">--:--</output>
 </div>
-<footer>Modelo didático de valor esperado, comparado com o processo atual: o valor de cada caso soma o que o modelo ganha a mais que hoje, desconta o custo de cada tipo de erro (com custos diferentes para erros diferentes), o custo de operar e o risco esperado (probabilidade × impacto). Adaptado da análise de valor esperado com matriz de custo-benefício de Provost e Fawcett, <i>Data Science for Business</i> (2013, cap. 7), e da definição de risco de Kaplan e Garrick, <i>Risk Analysis</i> (1981). Os fatos de cada caso vêm das fontes indicadas na aba.</footer>
+<footer><b>Aviso: a fórmula deste simulador é um modelo para fins didáticos apenas, não uma fórmula publicada.</b> Modelo didático de valor esperado, comparado com o processo atual: o valor de cada caso soma o que o modelo ganha a mais que hoje, desconta o custo de cada tipo de erro (com custos diferentes para erros diferentes), o custo de operar e o risco esperado (probabilidade × impacto). Adaptado da análise de valor esperado com matriz de custo-benefício de Provost e Fawcett, <i>Data Science for Business</i> (2013, cap. 7), e da definição de risco de Kaplan e Garrick, <i>Risk Analysis</i> (1981). Os fatos de cada caso vêm das fontes indicadas na aba.</footer>
 <script>
 const brl = v => {
   const a = Math.abs(v), s = v < 0 ? "−" : "";
