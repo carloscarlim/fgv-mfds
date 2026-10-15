@@ -18,7 +18,6 @@ Ao final, você será capaz de **formular** uma pergunta de negócio que dados c
 |---|---|
 | Até 48 h antes da Aula 1 | Checklist técnico e print do teste de ambiente (NB00) no ECLASS |
 | Aula 1 | Dado não é valor: é matéria-prima |
-| Véspera da Aula 2 | **Tarefa 1** |
 | Aula 2 | Primeiro a pergunta, depois a técnica |
 | Véspera da Aula 3 | **Tarefa 2** e **Marco 1** do trabalho final |
 | Aula 3 | pandas: a planilha que não trava |
