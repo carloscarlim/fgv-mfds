@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Da Pergunta à Técnica</title>
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2433; --muted:#5d6577; --line:#e2e0d8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --pos:#2f7d4f; --neg:#b4443a; --warn:#a86b00; --chip:#efede6;
+  --c1:#1f5f8b; --c2:#c26a1b; --c3:#2f7d4f; --c4:#7a4fa0; --c5:#b4443a; --c6:#3c8d93; --c7:#8a6d1f; --c8:#5d6577;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+    --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --chip:#262b36;
+    --c1:#6fb0de; --c2:#e89a52; --c3:#5cc08a; --c4:#b892dd; --c5:#ec7a6f; --c6:#6cc4c9; --c7:#d6b75a; --c8:#a2a9b8;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+  --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --chip:#262b36;
+  --c1:#6fb0de; --c2:#e89a52; --c3:#5cc08a; --c4:#b892dd; --c5:#ec7a6f; --c6:#6cc4c9; --c7:#d6b75a; --c8:#a2a9b8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.5}
+header{padding:20px 16px 8px;max-width:1240px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;max-width:1240px;margin:12px auto 0;padding:0 16px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit;font-size:14px}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:1240px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;align-items:start}
+main.full{grid-template-columns:1fr}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-size:18px;margin:0 0 6px}
+.card h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:18px 0 6px}
+.card p{margin:0 0 6px}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin:0 6px 4px 0}
+.notice{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0 12px}
+.src{font-size:13px;color:var(--muted)}
+.src a,footer a{color:var(--accent)}
+.roteiro li{margin-bottom:4px}
+.q{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 10px}
+.q .tipo{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:2px 8px;margin-bottom:4px}
+.q .tipo.teste{background:var(--accent-soft);color:var(--accent)}
+.q .tipo.disc{background:var(--chip);color:var(--muted)}
+.q p{margin:0 0 6px}
+.q .btns{display:flex;flex-wrap:wrap;gap:6px}
+.btn{border:1px solid var(--accent);background:var(--card);color:var(--accent);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
+.btn[aria-pressed="true"]{background:var(--accent);color:#fff}
+.q .saida{margin-top:8px;font-size:14px;background:var(--accent-soft);border-radius:8px;padding:6px 10px;display:none}
+.q .saida.on{display:block}
+.q .saida div+div{margin-top:4px}
+.q .dica{font-size:13px;color:var(--muted);margin:0}
+.ctl{margin:10px 0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.ctl label b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.ctl .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.ctl select{width:100%;font:inherit;font-size:14px;padding:6px 8px;margin-top:4px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:10px 0;font-size:14px}
+.chk input{margin-top:3px;width:18px;height:18px;accent-color:var(--accent)}
+.chk small{display:block;color:var(--muted);font-size:12px}
+.reset{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;font-size:13px;margin-top:4px}
+.premissas{font-size:13px;color:var(--muted);margin:4px 0 0;padding-left:18px}
+.premissas li{margin-bottom:2px}
+details{margin-top:10px;font-size:13px;color:var(--muted)}
+details summary{cursor:pointer;color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.kpi{background:var(--chip);border-radius:8px;padding:8px 10px}
+.kpi span{display:block;font-size:12px;color:var(--muted);line-height:1.3}
+.kpi b{font-size:18px;font-variant-numeric:tabular-nums}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+svg text{fill:var(--ink);font-size:12px;font-family:inherit}
+svg .muted{fill:var(--muted)}
+@media (max-width:560px){svg text{font-size:17px}}
+.chart{width:100%;height:auto;display:block;margin-top:8px}
+.tbl{overflow-x:auto}
+.tbl th,.tbl td{white-space:nowrap}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+.cm td,.cm th{text-align:center}
+.reveal{display:none;margin-top:8px}
+.reveal.on{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;min-height:120px}
+.qcard .n{font-size:12px;color:var(--muted)}
+.qcard .qq{font-weight:600;margin:4px 0 8px}
+.qcard .a{display:none;font-size:13px}
+.qcard.on .a{display:block}
+.qcard.on{border-color:var(--accent)}
+.mapa{display:grid;grid-template-columns:1fr;gap:10px}
+.mapa .passo{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mapa .passo p{margin:0 0 6px;font-weight:600}
+.mapa input[type=text]{width:100%;font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.resposta{background:var(--accent-soft);border-radius:8px;padding:10px 12px}
+.gloss dt{font-weight:600;margin-top:8px}
+.gloss dd{margin:2px 0 0 0;color:var(--muted)}
+.samples div{border-left:3px solid var(--line);padding:4px 8px;margin:6px 0;font-size:13px}
+.timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:1240px;margin:0 auto;padding:0 16px 24px}
+.timer button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.timer output{font-size:22px;font-variant-numeric:tabular-nums;min-width:80px}
+footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:12px}
+footer p{margin:0 0 6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Da Pergunta à Técnica</h1>
+  <p class="sub">Aula 2 · Métodos e Ferramentas de Data Science · FGV MBA. Cada grupo abre o seu cenário, descobre que tipo de problema é, responde às perguntas (os botões “Testar” fazem a simulação por vocês) e prepara 5 minutos para a diretoria. O Jogo do mapeamento é opcional, para treinar a classificação dos problemas.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<main id="main"></main>
+<div class="timer">
+  <span>Cronômetro:</span>
+  <button data-min="25">Trabalho em grupo · 25 min</button>
+  <button data-min="5">Apresentação · 5 min</button>
+  <button id="stop">Parar</button>
+  <output id="clock">--:--</output>
+</div>
+<footer>
+  <p><b>Aviso: as contas de custo e de ganho deste simulador são modelos para fins didáticos apenas, não fórmulas publicadas.</b> Empresas, dados e valores dos cenários são fictícios e gerados por simulação. Os casos reais citados como inspiração usam só informação pública, com a fonte indicada.</p>
+  <p>Teoria de referência: tarefas de Ciência de Dados e aprendizado supervisionado × não supervisionado (Provost e Fawcett, <i>Data Science for Business</i>, 2013, cap. 2); agrupamento (idem, cap. 6; James et al., <i>An Introduction to Statistical Learning</i>, 2. ed., 2021, cap. 12); matriz de confusão, acurácia com classes desbalanceadas e custos desiguais (Provost e Fawcett, 2013, cap. 7); texto como dado (idem, cap. 10); componentes principais (James et al., 2021, cap. 12; Jolliffe, 2002); método do cotovelo (Thorndike, 1953); erro percentual médio absoluto, MAPE (Hyndman e Athanasopoulos, <i>Forecasting: Principles and Practice</i>, 3. ed., 2021, seção 5.8); detecção de anomalias (Chandola, Banerjee e Kumar, 2009); regressão logística (James et al., 2021, cap. 4).</p>
+</footer>
+
+<script>
+// ---------- utilidades ----------
+function rngFrom(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r){ let u = 0, v = 0; while(!u) u = r(); while(!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function Phi(x){ const t = 1 / (1 + 0.2316419 * Math.abs(x)); const d = 0.3989423 * Math.exp(-x * x / 2); const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return x > 0 ? 1 - p : p; }
+const fmt = (v, d = 0) => v.toLocaleString("pt-BR", {maximumFractionDigits: d, minimumFractionDigits: d});
+const meses = v => fmt(v, 1) + (Math.round(v * 10) / 10 < 2 ? " mês" : " meses");
+const pct = (v, d = 1) => fmt(v * 100, d) + "%";
+const brl = v => { const a = Math.abs(v), s = v < 0 ? "−" : ""; if (a >= 1e6) return s + "R$ " + fmt(a / 1e6, 1) + " mi"; if (a >= 1e3) return s + "R$ " + fmt(a / 1e3, 0) + " mil"; return s + "R$ " + fmt(a, 0); };
+const COLORS = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)", "var(--c6)", "var(--c7)", "var(--c8)"];
+const $ = id => document.getElementById(id);
+
+function lineChart(svg, series, opt){
+  const W = 640, H = opt.H || 240, L = 64, R = 16, T = 14, B = 34;
+  const xs = series.flatMap(s => s.pts.map(p => p[0])), ys = series.flatMap(s => s.pts.map(p => p[1])).concat(opt.yExtra || []);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs); let ymin = opt.ymin ?? Math.min(...ys), ymax = opt.ymax ?? Math.max(...ys); if (ymax === ymin) ymax += 1;
+  const sx = x => L + (x - xmin) / (xmax - xmin || 1) * (W - L - R), sy = y => T + (ymax - y) / (ymax - ymin) * (H - T - B);
+  let s = "";
+  for (let k = 0; k <= 4; k++){ const y = ymin + (ymax - ymin) * k / 4; s += `<line x1="${L}" x2="${W - R}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"></line><text class="muted" x="${L - 6}" y="${sy(y) + 4}" text-anchor="end">${opt.fy ? opt.fy(y) : fmt(y)}</text>`; }
+  (opt.xticks || []).forEach(x => s += `<text class="muted" x="${sx(x)}" y="${H - 14}" text-anchor="middle">${opt.fx ? opt.fx(x) : x}</text>`);
+  series.forEach(se => s += `<polyline fill="none" stroke="${se.color}" stroke-width="${se.w || 2}" ${se.dash ? 'stroke-dasharray="5 4"' : ""} points="${se.pts.map(p => sx(p[0]) + "," + sy(p[1])).join(" ")}"></polyline>`);
+  (opt.marks || []).forEach(m => s += `<circle cx="${sx(m[0])}" cy="${sy(m[1])}" r="5" fill="${m[2] || "var(--ink)"}"></circle>` + (m[3] ? `<text x="${sx(m[0])}" y="${sy(m[1]) + (m[4] || -10)}" text-anchor="middle">${m[3]}</text>` : ""));
+  if (opt.xlab) s += `<text class="muted" x="${(L + W - R) / 2}" y="${H}" text-anchor="middle">${opt.xlab}</text>`;
+  let lx = L + 6; (opt.legend || []).forEach(([n, c]) => { s += `<rect x="${lx}" y="${T}" width="12" height="4" fill="${c}"></rect><text x="${lx + 16}" y="${T + 6}">${n}</text>`; lx += 16 + n.length * 9.5 + 18; });
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = s;
+}
+function scatter(svg, pts, opt){
+  const W = 640, H = opt.H || 300, L = 64, R = 16, T = 14, B = 38;
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  const xmin = opt.xmin ?? Math.min(...xs), xmax = opt.xmax ?? Math.max(...xs), ymin = opt.ymin ?? Math.min(...ys), ymax = opt.ymax ?? Math.max(...ys);
+  const sx = x => L + (x - xmin) / (xmax - xmin) * (W - L - R), sy = y => T + (ymax - y) / (ymax - ymin) * (H - T - B);
+  let s = "";
+  const marcas = (t, a, b) => (t || [0, 1, 2, 3, 4].map(k => a + (b - a) * k / 4)).filter(v => v >= a - 1e-9 && v <= b + 1e-9);
+  marcas(opt.yt, ymin, ymax).forEach(y => s += `<text class="muted" x="${L - 6}" y="${sy(y) + 4}" text-anchor="end">${opt.fy ? opt.fy(y) : fmt(y, opt.dy || 0)}</text>`);
+  marcas(opt.xt, xmin, xmax).forEach(x => s += `<text class="muted" x="${sx(x)}" y="${H - 18}" text-anchor="${sx(x) > W - R - 24 ? "end" : "middle"}">${opt.fx ? opt.fx(x) : fmt(x, opt.dx || 0)}</text>`);
+  if (opt.diag){ const a = Math.max(xmin, ymin), b = Math.min(xmax, ymax); s += `<line x1="${sx(a)}" y1="${sy(a)}" x2="${sx(b)}" y2="${sy(b)}" stroke="var(--muted)" stroke-dasharray="5 4"></line>`; }
+  pts.forEach(p => { const cx = sx(p.x), cy = sy(p.y), r = p.r || 3.2;
+    if (p.shape === "x") s += `<path d="M${cx - r} ${cy - r}L${cx + r} ${cy + r}M${cx - r} ${cy + r}L${cx + r} ${cy - r}" stroke="${p.c}" stroke-width="2"></path>` + (p.stroke ? `<circle cx="${cx}" cy="${cy}" r="${r + 3}" fill="none" stroke="${p.stroke}" stroke-width="1.5"></circle>` : "");
+    else s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${p.c}" fill-opacity="${p.o ?? 0.75}" ${p.stroke ? `stroke="${p.stroke}" stroke-width="2"` : ""}></circle>`;
+    if (p.lab) s += `<text x="${cx > W - 140 ? cx - 10 : cx + 10}" y="${cy - 8}" text-anchor="${cx > W - 140 ? "end" : "start"}" style="font-weight:700">${p.lab}</text>`; });
+  s += `<text class="muted" x="${(L + W - R) / 2}" y="${H - 2}" text-anchor="middle">${opt.xlab}</text><text class="muted" transform="translate(12 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">${opt.ylab}</text>`;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = s;
+}
+
+// ---------- jogo do mapeamento ----------
+const GLOSS = [
+  ["Dado estruturado", "Organizado em linhas e colunas, como uma planilha ou tabela de sistema (ERP, CRM, sensores)."],
+  ["Dado não estruturado", "Texto, imagem, áudio, vídeo. Precisa ser transformado em números antes de entrar num modelo."],
+  ["Rótulo", "A resposta certa registrada no histórico: o cliente cancelou ou não, a transação era fraude ou não, quanto foi vendido."],
+  ["Aprendizado supervisionado", "O modelo aprende com exemplos que têm rótulo."],
+  ["Aprendizado não supervisionado", "Não há rótulo. O modelo procura grupos, resumos ou pontos fora do padrão."],
+  ["Classificação", "Prever uma categoria: sim/não, fraude/não fraude, assunto A/B/C."],
+  ["Previsão (regressão)", "Prever um número: carga de energia de amanhã, prazo de entrega, vendas do trimestre."],
+  ["Agrupamento", "Formar grupos de itens parecidos sem rótulo prévio, como segmentos de clientes."],
+  ["Redução de dimensionalidade", "Resumir muitas variáveis em poucas, guardando o máximo da informação. Exemplo: 12 indicadores em 2 índices."],
+  ["Detecção de anomalias", "Encontrar casos fora do padrão, em geral sem rótulo: gasto estranho, leitura de sensor incomum."]
+];
+const JOGO = [
+  ["Telecom", "Este cliente vai cancelar o plano no próximo mês?", "Classificação · supervisionado · estruturado"],
+  ["Siderurgia", "Quantas toneladas de aço vamos vender no próximo trimestre?", "Previsão (série temporal) · supervisionado · estruturado"],
+  ["Varejo", "Que perfis de clientes nós temos?", "Agrupamento · não supervisionado · estruturado"],
+  ["Mineração", "Esta foto da correia transportadora mostra um rasgo?", "Classificação de imagem · supervisionado · não estruturado"],
+  ["Energia", "Qual será o preço do diesel na próxima semana em cada estado?", "Previsão (série temporal) · supervisionado · estruturado"],
+  ["Serviços", "Que reclamações do SAC falam do mesmo problema?", "Agrupamento de textos · não supervisionado · não estruturado"],
+  ["Bancos", "Esta transação de cartão é fraude? (temos histórico de fraudes confirmadas)", "Classificação · supervisionado · estruturado"],
+  ["Óleo e gás", "Quais leituras de sensor estão fora do padrão? (não temos histórico de falhas)", "Detecção de anomalias · não supervisionado · estruturado"],
+  ["Varejo", "Como resumir 50 indicadores de desempenho das lojas em poucos índices?", "Redução de dimensionalidade · não supervisionado · estruturado"],
+  ["Jurídico", "Este contrato tem cláusula de multa por atraso?", "Classificação de texto · supervisionado · não estruturado"],
+  ["Logística", "Quanto tempo esta entrega vai levar?", "Previsão (regressão) · supervisionado · estruturado"],
+  ["Saúde", "Este paciente vai faltar à consulta marcada?", "Classificação · supervisionado · estruturado"]
+];
+const OBJ = {
+  cat: ["Uma categoria (sim ou não, qual tipo, qual assunto)", "Classificação"],
+  num: ["Um número (quanto, quando, quanto tempo)", "Previsão (regressão)"],
+  grp: ["Que grupos de itens parecidos existem", "Agrupamento"],
+  res: ["Como resumir muitas variáveis em poucas", "Redução de dimensionalidade"],
+  ano: ["O que está fora do padrão", "Detecção de anomalias"]
+};
+function telaJogo(){
+  main.className = "full";
+  main.innerHTML = `<section class="card"><h2>Jogo do mapeamento</h2><p>Para cada pergunta de negócio: que técnica responde? É supervisionado? O dado é estruturado? Vote no chat e clique no cartão para ver a resposta.</p>
+    <div class="cards">${JOGO.map((j, i) => `<div class="qcard" tabindex="0" role="button"><div class="n">${i + 1} · ${j[0]}</div><div class="qq">${j[1]}</div><div class="a">${j[2]}</div></div>`).join("")}</div></section>
+    <section class="card"><h2>Mapeie a sua pergunta</h2><p>Use a pergunta de negócio que você trouxe da sua área. Responda aos três passos.</p>
+    <div class="mapa">
+      <div class="passo"><p>Sua pergunta</p><input type="text" id="mq" placeholder="Ex.: Quais fornecedores vão atrasar a entrega no mês que vem?"></div>
+      <div class="passo"><p>1. O que a resposta precisa dizer?</p><div class="btns" id="m1">${Object.entries(OBJ).map(([k, [t]]) => `<button class="btn" data-v="${k}" aria-pressed="false">${t}</button>`).join(" ")}</div></div>
+      <div class="passo"><p>2. O histórico tem a resposta certa (o rótulo)?</p><div class="btns" id="m2"><button class="btn" data-v="sim" aria-pressed="false">Sim, está registrada</button> <button class="btn" data-v="nao" aria-pressed="false">Não, ninguém registrou</button></div></div>
+      <div class="passo"><p>3. Que tipo de dado responde?</p><div class="btns" id="m3"><button class="btn" data-v="est" aria-pressed="false">Tabela (sistemas, planilhas, sensores)</button> <button class="btn" data-v="nest" aria-pressed="false">Texto, imagem, áudio ou vídeo</button></div></div>
+      <div class="resposta" id="mr">Responda aos três passos para ver o mapeamento.</div>
+    </div></section>
+    <section class="card"><h2>Glossário</h2><dl class="gloss">${GLOSS.map(g => `<dt>${g[0]}</dt><dd>${g[1]}</dd>`).join("")}</dl></section>`;
+  main.querySelectorAll(".qcard").forEach(c => { const t = () => c.classList.toggle("on"); c.addEventListener("click", t); c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); t(); } }); });
+  const esc = {};
+  ["m1", "m2", "m3"].forEach(id => $(id).querySelectorAll(".btn").forEach(b => b.addEventListener("click", () => {
+    $(id).querySelectorAll(".btn").forEach(x => x.setAttribute("aria-pressed", String(x === b))); esc[id] = b.dataset.v; mapear(esc); })));
+  $("mq").addEventListener("input", () => mapear(esc));
+}
+function mapear(e){
+  if (!e.m1 || !e.m2 || !e.m3){ $("mr").textContent = "Responda aos três passos para ver o mapeamento."; return; }
+  const sup = e.m1 === "cat" || e.m1 === "num";
+  let tec = OBJ[e.m1][1], tipo = sup ? "supervisionado" : "não supervisionado", obs = "";
+  if (sup && e.m2 === "nao") obs = "Atenção: sem rótulo no histórico, não há com o que treinar um modelo supervisionado. Ou a empresa passa a registrar a resposta certa (o rótulo é um ativo que custa criar), ou a pergunta muda para uma não supervisionada (agrupamento ou anomalias).";
+  else if (e.m1 === "ano" && e.m2 === "sim") { tec = "Classificação"; tipo = "supervisionado"; obs = "Com o histórico de casos confirmados (fraude, falha), a pergunta “está fora do padrão?” vira “é parecido com os casos confirmados?”: classificação."; }
+  else if (!sup && e.m2 === "sim") obs = "O rótulo existe, mas esta técnica não o usa. Ele serve depois, para conferir se os grupos ou índices fazem sentido.";
+  if (e.m3 === "nest" && e.m1 !== "res") tec += " de texto, imagem ou áudio";
+  if (e.m3 === "nest") obs += (obs ? " " : "") + "Texto, imagem e áudio precisam virar números antes de entrar no modelo, e isso tem custo.";
+  const q = $("mq").value.trim();
+  $("mr").innerHTML = `${q ? `<p><i>${q.replace(/[<>&]/g, "")}</i></p>` : ""}<p><b>${tec}</b> · ${tipo} · ${e.m3 === "est" ? "dado estruturado" : "dado não estruturado"}</p>${obs ? `<p>${obs}</p>` : ""}<p class="src">Mapeamento das perguntas de negócio às tarefas de Ciência de Dados: Provost e Fawcett (2013), cap. 2.</p>`;
+}
+
+// ---------- dados simulados ----------
+// Segmentação
+const CLIENTES = (() => { const r = rngFrom(7); const centros = [[1.2, 45, 70], [4.5, 60, 90], [2.0, 220, 60], [7.5, 140, 40], [0.6, 120, 40]]; const out = [];
+  centros.forEach(([f, t, n]) => { for (let i = 0; i < n; i++) out.push({x: Math.max(0.2, f + gauss(r) * f * 0.28), y: Math.max(10, t + gauss(r) * t * 0.22)}); }); return out; })();
+function kmeans(pts, k, seed){
+  const r = rngFrom(seed), sx = 8, sy = 250; const z = pts.map(p => [p.x / sx, p.y / sy]);
+  const C = [z[Math.floor(r() * z.length)]];
+  while (C.length < k){ const d = z.map(p => Math.min(...C.map(c => (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2))); const s = d.reduce((a, b) => a + b); let u = r() * s, i = 0; while ((u -= d[i]) > 0 && i < d.length - 1) i++; C.push(z[i]); }
+  let lab = new Array(z.length).fill(0);
+  for (let it = 0; it < 30; it++){
+    lab = z.map(p => { let b = 0, bd = Infinity; C.forEach((c, j) => { const d = (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2; if (d < bd){ bd = d; b = j; } }); return b; });
+    for (let j = 0; j < k; j++){ const m = z.filter((_, i) => lab[i] === j); if (m.length) C[j] = [m.reduce((a, p) => a + p[0], 0) / m.length, m.reduce((a, p) => a + p[1], 0) / m.length]; }
+  }
+  const inertia = z.reduce((a, p, i) => a + (p[0] - C[lab[i]][0]) ** 2 + (p[1] - C[lab[i]][1]) ** 2, 0);
+  return {lab, inertia};
+}
+const KM = {}; for (let k = 1; k <= 8; k++){ for (let seed = 11; seed < 21; seed++){ const r = kmeans(CLIENTES, k, seed); if (!KM[k] || r.inertia < KM[k].inertia) KM[k] = r; } }   // 10 inícios, fica o melhor
+function gruposKM(k){ const {lab} = KM[k], g = [];
+  for (let j = 0; j < k; j++){ const m = CLIENTES.filter((_, i) => lab[i] === j); if (!m.length) continue; const f = m.reduce((a, p) => a + p.x, 0) / m.length, t = m.reduce((a, p) => a + p.y, 0) / m.length; g.push({j, n: m.length, f, t}); }
+  return g.sort((a, b) => b.f * b.t - a.f * a.t); }
+
+// Carga
+const SERIE = (() => { const r = rngFrom(21), d = [];
+  for (let t = 0; t < 730; t++){ const temp = 22 + 6 * Math.sin(2 * Math.PI * (t - 15) / 365) + gauss(r) * 2; const dow = t % 7; const fds = dow >= 5 ? -120 : 0; const fer = (t % 91 === 40) ? -150 : 0;
+    d.push({temp, dow, carga: 1000 + 60 * Math.sin(2 * Math.PI * (t - 30) / 365) + 25 * (temp - 22) + fds + fer + gauss(r) * 25}); } return d; })();
+const TPREV = {}, NPREV = 40;   // 40 simulações da previsão do tempo para cada antecedência
+function tempPrev(h, k = 0){ const key = h + "_" + k; if (TPREV[key]) return TPREV[key]; const r = rngFrom(5000 + 100 * h + k), out = {};   // a previsão do tempo erra mais quanto maior a antecedência
+  for (let t = 640; t < 730; t++) out[t] = SERIE[t].temp + gauss(r) * Math.min(0.4 + 0.25 * h, 2.6); return TPREV[key] = out; }
+function prever(t, h, m, k = 0){
+  const o = t - h, hist = [];
+  for (let q = 1; q <= 28; q++) hist.push(o - q + 1);
+  if (m === "A") return hist.reduce((a, i) => a + SERIE[i].carga, 0) / 28;
+  const mesmo = []; for (let i = t - 7; mesmo.length < 4; i -= 7) if (i <= o) mesmo.push(i);
+  const base = mesmo.reduce((a, i) => a + SERIE[i].carga, 0) / 4;
+  if (m === "B") return base;
+  const th = mesmo.reduce((a, i) => a + SERIE[i].temp, 0) / 4;
+  return base + 25 * (tempPrev(h, k)[t] - th);
+}
+const MAPE = {};
+function avaliarCarga(m, h){ const key = m + h; if (MAPE[key]) return MAPE[key];
+  const reps = m === "C" ? NPREV : 1; let mape = 0, mae = 0, errT = 0, out = null;
+  for (let k = 0; k < reps; k++){ const o = [], tp = tempPrev(h, k);
+    for (let t = 640; t < 730; t++) o.push([t, SERIE[t].carga, prever(t, h, m, k)]);
+    mape += o.reduce((a, x) => a + Math.abs(x[1] - x[2]) / x[1], 0) / o.length / reps; mae += o.reduce((a, x) => a + Math.abs(x[1] - x[2]), 0) / o.length / reps;
+    errT += o.reduce((a, x) => a + Math.abs(tp[x[0]] - SERIE[x[0]].temp), 0) / o.length / reps; if (k === 0) out = o; }
+  if (m !== "C"){ errT = 0; for (let k = 0; k < NPREV; k++){ const tp = tempPrev(h, k); for (let t = 640; t < 730; t++) errT += Math.abs(tp[t] - SERIE[t].temp) / 90 / NPREV; } }
+  return MAPE[key] = {out, mape, mae, errT}; }
+
+// Indicadores dos bairros (PCA)
+const IND = ["Renda média", "Escolaridade", "Saneamento", "Acesso à internet", "Matrículas em creche", "Valor do m²", "Mortalidade infantil", "Densidade populacional", "Ocorrências policiais", "Tempo de deslocamento", "Reclamações de ruído", "Áreas verdes"];
+const PESOS_F = [[0.9, 0.1], [0.85, 0], [0.8, -0.1], [0.85, 0.15], [0.7, 0], [0.8, 0.3], [-0.75, 0.1], [0.1, 0.85], [-0.2, 0.7], [-0.1, 0.75], [0.1, 0.8], [0.3, -0.7]];
+const BAIRROS = (() => { const r = rngFrom(33), X = []; for (let b = 0; b < 60; b++){ const f1 = gauss(r), f2 = gauss(r); X.push(PESOS_F.map(([a, c]) => a * f1 + c * f2 + gauss(r) * 0.45)); } return X; })();
+function jacobi(A){ const n = A.length, V = A.map((_, i) => A.map((_, j) => i === j ? 1 : 0)), M = A.map(r => r.slice());
+  for (let sweep = 0; sweep < 60; sweep++){ let off = 0; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) off += M[i][j] ** 2; if (off < 1e-12) break;
+    for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++){ if (Math.abs(M[p][q]) < 1e-14) continue; const th = (M[q][q] - M[p][p]) / (2 * M[p][q]); const t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)); const c = 1 / Math.sqrt(t * t + 1), s = t * c;
+      for (let k = 0; k < n; k++){ const mkp = M[k][p], mkq = M[k][q]; M[k][p] = c * mkp - s * mkq; M[k][q] = s * mkp + c * mkq; }
+      for (let k = 0; k < n; k++){ const mpk = M[p][k], mqk = M[q][k]; M[p][k] = c * mpk - s * mqk; M[q][k] = s * mpk + c * mqk; }
+      for (let k = 0; k < n; k++){ const vkp = V[k][p], vkq = V[k][q]; V[k][p] = c * vkp - s * vkq; V[k][q] = s * vkp + c * vkq; } } }
+  const idx = [...Array(n).keys()].sort((a, b) => M[b][b] - M[a][a]); return {vals: idx.map(i => M[i][i]), vecs: idx.map(i => V.map(r => r[i]))}; }
+const PCA = (() => { const n = BAIRROS.length, p = 12; const mu = [...Array(p).keys()].map(j => BAIRROS.reduce((a, r) => a + r[j], 0) / n); const sd = mu.map((m, j) => Math.sqrt(BAIRROS.reduce((a, r) => a + (r[j] - m) ** 2, 0) / (n - 1)));
+  const Z = BAIRROS.map(r => r.map((v, j) => (v - mu[j]) / sd[j])); const C = [...Array(p).keys()].map(i => [...Array(p).keys()].map(j => Z.reduce((a, r) => a + r[i] * r[j], 0) / (n - 1)));
+  const {vals, vecs} = jacobi(C); vecs.forEach(v => { const s = v.reduce((a, b) => a + b, 0) < 0 ? -1 : 1; v.forEach((_, i) => v[i] *= s); });
+  const tot = vals.reduce((a, b) => a + b, 0); return {Z, exp: vals.map(v => v / tot), vecs, scores: Z.map(r => [0, 1].map(k => r.reduce((a, v, j) => a + v * vecs[k][j], 0)))}; })();
+
+const PCA_SC = PCA.Z.map(r => PCA.vecs.map(v => r.reduce((a, x, q) => a + x * v[q], 0)));
+const painel = (b, j, k) => { let s = 0; for (let c = 0; c < k; c++) s += PCA_SC[b][c] * PCA.vecs[c][j]; return s; };   // o que o painel com k índices "mostra" do indicador j no bairro b
+const guardado = k => IND.map((_, j) => { let s = 0; for (let c = 0; c < k; c++) s += PCA.vecs[c][j] ** 2 * PCA.exp[c] * IND.length; return s; });   // parte da variação de cada indicador que os k índices reproduzem
+const posicao = (vals, b) => vals.map((v, i) => [v, i]).sort((a, c) => a[0] - c[0]).findIndex(x => x[1] === b) + 1;   // 1 = menor valor
+
+// Transações (anomalias)
+function gerarTrans(seed, n){ const r = rngFrom(seed), out = [];
+  for (let i = 0; i < n; i++){ const u = r(); const tipo = u < 0.011 ? "fraude" : u < 0.091 ? "viagem" : u < 0.131 ? "plantao" : "normal"; let valor, hora, dist;
+    if (tipo === "fraude"){ valor = Math.exp(6.0 + gauss(r) * 0.55); hora = r() < 0.55 ? (r() * 7 + 22) % 24 : r() * 24; dist = Math.exp(2.4 + gauss(r) * 1.0); }
+    else if (tipo === "viagem"){ valor = Math.exp(5.8 + gauss(r) * 0.45); hora = 7 + r() * 14; dist = Math.exp(5.4 + gauss(r) * 0.5); }
+    else if (tipo === "plantao"){ valor = Math.exp(4.3 + gauss(r) * 0.4); hora = (r() * 7 + 22) % 24; dist = Math.exp(1.7 + gauss(r) * 0.6); }
+    else { valor = Math.exp(4.9 + gauss(r) * 0.5); hora = 8 + r() * 11; dist = Math.exp(1.7 + gauss(r) * 0.6); }
+    out.push({valor, hora, dist, tipo, fraude: tipo === "fraude"}); } return out; }
+const TRANS = gerarTrans(55, 5000), FRAUDES = TRANS.filter(t => t.fraude).length;
+const featT = t => [Math.log(t.valor), Math.log(t.dist), Math.cos(2 * Math.PI * t.hora / 24), Math.sin(2 * Math.PI * t.hora / 24)];   // valor, distância e hora (em círculo: 23h fica perto de 1h)
+const ZT = (() => { const F = TRANS.map(featT), mu = [0, 1, 2, 3].map(j => F.reduce((a, r) => a + r[j], 0) / F.length), sd = mu.map((m, j) => Math.sqrt(F.reduce((a, r) => a + (r[j] - m) ** 2, 0) / F.length));
+  const z = t => featT(t).map((v, j) => (v - mu[j]) / sd[j]); return {z, Z: TRANS.map(z)}; })();
+function kmeansN(Z, k, seed){ const r = rngFrom(seed), n = Z.length, D = Z[0].length;
+  const d2 = (a, b) => { let s = 0; for (let q = 0; q < D; q++) s += (a[q] - b[q]) ** 2; return s; };
+  const C = [Z[Math.floor(r() * n)].slice()];
+  while (C.length < k){ const d = Z.map(p => { let m = Infinity; for (const c of C){ const v = d2(p, c); if (v < m) m = v; } return m; }); let s = 0; for (const v of d) s += v; let u = r() * s, i = 0; while ((u -= d[i]) > 0 && i < n - 1) i++; C.push(Z[i].slice()); }
+  let lab = null;
+  for (let it = 0; it < 40; it++){ const nl = new Array(n);
+    for (let i = 0; i < n; i++){ let b = 0, bd = Infinity; for (let j = 0; j < k; j++){ const d = d2(Z[i], C[j]); if (d < bd){ bd = d; b = j; } } nl[i] = b; }
+    const igual = lab && nl.every((v, i) => v === lab[i]); lab = nl; if (igual) break;   // convergiu: os centros não mudam mais
+    const S = C.map(() => new Array(D).fill(0)), N = new Array(k).fill(0);
+    for (let i = 0; i < n; i++){ N[lab[i]]++; for (let q = 0; q < D; q++) S[lab[i]][q] += Z[i][q]; }
+    for (let j = 0; j < k; j++) if (N[j]) C[j] = S[j].map(v => v / N[j]); }
+  const dist = Z.map((p, i) => Math.sqrt(d2(p, C[lab[i]]))); let inertia = 0; for (const v of dist) inertia += v * v; return {lab, dist, inertia}; }
+// sem rótulos: k-means (10 inícios, fica o melhor); suspeita = distância ao centro do próprio grupo
+const KMT = {}, ORD = {};
+function grupoT(k){ if (!KMT[k]){ for (let s = 101; s <= 110; s++){ const r = kmeansN(ZT.Z, k, s); if (!KMT[k] || r.inertia < KMT[k].inertia) KMT[k] = r; } ORD[k] = ordenar(KMT[k].dist); } return KMT[k]; }
+// com rótulos: regressão logística treinada em outro período simulado (200 fraudes confirmadas + 4.000 transações legítimas)
+let LOGIT = null;
+function logit(){ if (LOGIT) return LOGIT;
+  const T = gerarTrans(77, 20000), tr = T.filter(t => t.fraude).slice(0, 200).concat(T.filter(t => !t.fraude).slice(0, 4000));
+  const X = tr.map(t => [1, ...ZT.z(t)]), y = tr.map(t => t.fraude ? 1 : 0), m = X.length; let w = [0, 0, 0, 0, 0];
+  for (let it = 0; it < 2000; it++){ const g = [0, 0, 0, 0, 0];
+    for (let i = 0; i < m; i++){ const x = X[i]; let z = 0; for (let j = 0; j < 5; j++) z += x[j] * w[j]; const e = 1 / (1 + Math.exp(-z)) - y[i]; for (let j = 0; j < 5; j++) g[j] += e * x[j]; }
+    w = w.map((v, j) => v - 0.5 * g[j] / m); }
+  ORD.com = ordenar(ZT.Z.map(z => { let a = 0; [1, ...z].forEach((v, j) => a += v * w[j]); return a; }));
+  return LOGIT = w; }
+const ordenar = sc => sc.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0]).map(x => x[1]);
+function auditoria(n, met, k){ if (met === "com") logit(); else grupoT(k); const sel = (met === "com" ? ORD.com : ORD[k]).slice(0, n); const c = {fraude: 0, viagem: 0, plantao: 0, normal: 0}; sel.forEach(i => c[TRANS[i].tipo]++); return {sel: new Set(sel), c}; }
+
+// ---------- cenários ----------
+const ROTEIRO = `<h3>Apresentação (5 min)</h3><ol class="roteiro">
+  <li>Que tipo de problema é: técnica, supervisionado ou não, dado estruturado ou não.</li>
+  <li>O teste que mais mudou a decisão (mostre na simulação) e por quê.</li>
+  <li>Que dado é necessário e quem o tem.</li>
+  <li>Recomendação para a diretoria: 1 decisão + 1 condição.</li></ol>`;
+
+const CEN = {
+  // 1. Classificação com evento raro
+  falha: {
+    aba: "Falha em laminador", setor: "Siderurgia", empresa: "Siderúrgica Aço Forte (fictícia)",
+    contexto: "A siderúrgica monitora 200 laminadores com sensores de vibração e temperatura. Uma falha inesperada para a linha e custa caro. A engenharia tem cinco anos de histórico semanal dos sensores, com as semanas que antecederam falhas marcadas. Um fornecedor oferece um modelo que “acerta 97% das semanas”.",
+    pergunta: "Vale comprar o modelo? Que número a diretoria deveria olhar no lugar da acurácia?",
+    inspiracao: ["Na Aula 1 vimos o WEG Motor Scan, que aprende o padrão normal de cada motor e alerta desvios.", "WEG, página do produto", "https://www.weg.net/institutional/AR/en/wegmotorscan/monitoring"],
+    revela: "Classificação · supervisionado (há falhas marcadas no histórico) · dado estruturado (sensores)",
+    base: {prev: 1, lim: 2.0},
+    premissas: ["10.000 semanas-equipamento do período de teste, fora do histórico usado para treinar o modelo.", "Falha não prevista (linha parada): R$ 500 mil. Alarme falso (parada para inspeção): R$ 20 mil.", "O modelo dá a cada semana uma nota de risco; acima do limiar, ele alerta.", "Sem modelo, todas as falhas acontecem sem aviso."],
+    formula: "Custo total = falhas perdidas × R$ 500 mil + alarmes falsos × R$ 20 mil. As quatro células da matriz de confusão vêm de uma distribuição simulada das notas de risco (semanas de falha têm notas mais altas). A comparação de acurácia, recall e precisão segue Provost e Fawcett (2013, cap. 7).",
+    controles: [
+      {k: "lim", tipo: "slider", rot: "Limiar de alerta (mais alto = mais exigente, menos alertas)", min: 0, max: 4, step: 0.05, f: v => fmt(v, 2)},
+      {k: "prev", tipo: "slider", rot: "Semanas com falha no histórico", min: 0.5, max: 20, step: 0.5, f: v => fmt(v, 1) + "%"}],
+    perguntas: [
+      {tipo: "disc", q: "Que tipo de problema é este? Por que é supervisionado?", dica: "Não está na simulação: releia o contexto e o glossário do Jogo do mapeamento."},
+      {tipo: "teste", q: "O fornecedor diz que o modelo acerta 97%. Compare com quem sempre diz “não vai falhar”, que nem precisa de modelo.", cen: [{rot: "Testar: o modelo como foi entregue", muda: {}}]},
+      {tipo: "teste", q: "Mexa no limiar. Qual dá o menor custo total? Ele é o de maior acurácia?", cen: [{rot: "Limiar exigente (3,0)", muda: {lim: 3}}, {rot: "Limiar sensível (1,0)", muda: {lim: 1}}, {rot: "Limiar de menor custo (1,75)", muda: {lim: 1.75}}]},
+      {tipo: "teste", q: "Se as falhas fossem comuns (10% das semanas), a acurácia ainda enganaria?", cen: [{rot: "Testar: falhas em 10% das semanas", muda: {prev: 10}}]},
+      {tipo: "disc", q: "Que números você exigiria no contrato do fornecedor?", dica: "Pense em recall, precisão e no custo de cada tipo de erro, não só na acurácia."}],
+    sim: `<h3>Matriz de confusão</h3><div class="tbl"><table class="cm" id="cm"></table></div><div class="kpis" id="k"></div>
+      <h3>Custo total conforme o limiar de alerta</h3><svg class="chart" id="g"></svg>`,
+    calc(st){ const N = 10000, P = N * st.prev / 100, Nn = N - P, sep = 2.2;
+      const TP = P * (1 - Phi(st.lim - sep)), FN = P - TP, FP = Nn * (1 - Phi(st.lim)), TN = Nn - FP;
+      return {P, Nn, TP, FN, FP, TN, acc: (TP + TN) / N, base: 1 - st.prev / 100, rec: TP / P, prec: TP + FP > 0 ? TP / (TP + FP) : 0, custo: FN * 5e5 + FP * 2e4, sem: P * 5e5, sep}; },
+    draw(st){ const r = this.calc(st);
+      $("cm").innerHTML = `<tr><th></th><th>Modelo: vai falhar</th><th>Modelo: não vai falhar</th></tr>
+        <tr><th>Falhou de verdade</th><td class="pos">${fmt(r.TP)} falhas pegas</td><td class="neg">${fmt(r.FN)} falhas perdidas</td></tr>
+        <tr><th>Não falhou</th><td class="neg">${fmt(r.FP)} alarmes falsos</td><td>${fmt(r.TN)} acertos</td></tr>`;
+      $("k").innerHTML = `<div class="kpi"><span>Acurácia do modelo</span><b>${pct(r.acc)}</b></div>
+        <div class="kpi"><span>Acurácia de quem sempre diz “não falha”</span><b>${pct(r.base)}</b></div>
+        <div class="kpi"><span>Recall: falhas que o modelo pega</span><b>${pct(r.rec, 0)}</b></div>
+        <div class="kpi"><span>Precisão: alertas que eram falha</span><b>${pct(r.prec, 0)}</b></div>
+        <div class="kpi"><span>Custo total com o modelo</span><b>${brl(r.custo)}</b></div>
+        <div class="kpi"><span>Custo sem modelo</span><b>${brl(r.sem)}</b></div>`;
+      const pts = []; let best = [0, Infinity];
+      for (let t = 0; t <= 4.001; t += 0.05){ const tp = r.P * (1 - Phi(t - r.sep)), fp = r.Nn * (1 - Phi(t)), c = (r.P - tp) * 5e5 + fp * 2e4; pts.push([t, c / 1e6]); if (c < best[1]) best = [t, c]; }
+      lineChart($("g"), [{pts, color: "var(--accent)"}], {xticks: [0, 1, 2, 3, 4], fy: y => "R$ " + fmt(y, 0) + " mi", xlab: "limiar de alerta (mais à direita = menos alertas)",
+        marks: [[st.lim, r.custo / 1e6, "var(--ink)", "você"], [best[0], best[1] / 1e6, "var(--pos)", "mínimo (" + fmt(best[0], 2) + ")", -28]]});
+      return `acurácia <b>${pct(r.acc)}</b> (sempre “não falha”: ${pct(r.base)}); pega <b>${pct(r.rec, 0)}</b> das falhas; <b>${pct(r.prec, 0)}</b> dos alertas eram falha; custo total <b>${brl(r.custo)}</b> (sem modelo: ${brl(r.sem)}).`; }
+  },
+
+  // 2. Agrupamento
+  segmento: {
+    aba: "Segmentar clientes", setor: "Varejo farmacêutico", empresa: "Rede Farma Mais (fictícia)",
+    contexto: "A rede tem um programa de fidelidade e quer criar ações diferentes para tipos diferentes de clientes. Ninguém definiu quais são esses tipos. Para cada cliente, há quantas compras faz por mês e o valor médio de cada compra.",
+    pergunta: "Quantos segmentos faz sentido criar, e que ação de marketing cada um recebe?",
+    inspiracao: ["Na Operação Serenata de Amor, o robô Rosie agrupa as empresas onde os deputados pediram reembolso de refeição pelo preço das refeições, com o mesmo algoritmo (k-means), antes de procurar valores fora do padrão.", "código aberto do Rosie (classificador de refeições)", "https://github.com/okfn-brasil/serenata-de-amor/blob/main/rosie/rosie/chamber_of_deputies/classifiers/meal_price_outlier_classifier.py"],
+    revela: "Agrupamento · não supervisionado (não existe rótulo de segmento) · dado estruturado",
+    base: {k: 3},
+    premissas: ["300 clientes fictícios, com duas variáveis: compras por mês e valor médio por compra.", "O algoritmo k-means forma k grupos de clientes parecidos sem saber nada além dessas duas variáveis.", "Dispersão: soma dos quadrados das distâncias de cada cliente ao centro do seu grupo, com as duas variáveis na mesma escala. Quanto menor, mais parecidos os clientes de cada grupo."],
+    formula: null,
+    controles: [{k: "k", tipo: "slider", rot: "Número de grupos (k)", min: 2, max: 8, step: 1, f: v => v}],
+    perguntas: [
+      {tipo: "disc", q: "Por que este problema é não supervisionado?", dica: "Não está na simulação: existe uma coluna “segmento certo” no histórico?"},
+      {tipo: "teste", q: "Compare 3, 4 e 5 grupos. Em qual deles cada grupo pede uma ação de marketing diferente?", cen: [{rot: "3 grupos", muda: {k: 3}}, {rot: "4 grupos", muda: {k: 4}}, {rot: "5 grupos", muda: {k: 5}}]},
+      {tipo: "teste", q: "O gráfico do cotovelo aponta um número claro de grupos? Veja quanto cada grupo a mais reduz a dispersão.", cen: [{rot: "6 grupos", muda: {k: 6}}, {rot: "8 grupos", muda: {k: 8}}]},
+      {tipo: "disc", q: "Dê um nome de negócio a cada grupo (use a tabela). E se o marketing só consegue tocar 3 campanhas?", dica: "O número útil de grupos é o que o negócio consegue tratar de forma diferente."},
+      {tipo: "disc", q: "Que variável que não está aqui mudaria os grupos?", dica: "Pense em categoria de produto, receita médica, canal, região."}],
+    sim: `<svg class="chart" id="sc"></svg><div class="tbl"><table id="tb"></table></div>
+      <h3>Gráfico do cotovelo: quanto cada grupo a mais reduz a dispersão</h3><svg class="chart" id="el"></svg>`,
+    draw(st){ const k = st.k, {lab} = KM[k];
+      scatter($("sc"), CLIENTES.map((p, i) => ({x: p.x, y: p.y, c: COLORS[lab[i]]})), {xlab: "compras por mês", ylab: "valor médio por compra (R$)", dx: 1});
+      const g = gruposKM(k);
+      $("tb").innerHTML = "<tr><th>Grupo</th><th>Clientes</th><th>Compras/mês</th><th>Valor médio (R$)</th><th>Gasto mensal (R$)</th></tr>" +
+        g.map(x => `<tr><td><span style="color:${COLORS[x.j]}">●</span> Grupo ${x.j + 1}</td><td>${x.n}</td><td>${fmt(x.f, 1)}</td><td>${fmt(x.t)}</td><td>${fmt(x.f * x.t)}</td></tr>`).join("");
+      const elbow = []; for (let j = 1; j <= 8; j++) elbow.push([j, KM[j].inertia]);
+      lineChart($("el"), [{pts: elbow, color: "var(--accent)"}], {H: 200, xticks: [1, 2, 3, 4, 5, 6, 7, 8], fy: y => fmt(y, 1), xlab: "número de grupos (k)", marks: [[k, KM[k].inertia, "var(--ink)", "você"]]});
+      const queda = 1 - KM[k].inertia / KM[k - 1].inertia;
+      return `${k} grupos de ${g.map(x => x.n).join(", ")} clientes; passar de ${k - 1} para ${k} grupos reduz a dispersão em <b>${pct(queda, 0)}</b>.`; }
+  },
+
+  // 3. Previsão
+  carga: {
+    aba: "Prever a carga", setor: "Energia elétrica", empresa: "Distribuidora Planalto Energia (fictícia)",
+    contexto: "A distribuidora compra energia com antecedência. Se compra de menos, paga caro no mercado de curto prazo; se compra de mais, sobra energia paga. Ela tem o histórico diário de consumo (carga) e de temperatura dos últimos dois anos.",
+    pergunta: "Que informação mais melhora a previsão, e até quantos dias à frente dá para confiar nela?",
+    inspiracao: ["O ONS usa um programa do CEPEL que prevê a carga até 8 dias à frente, com temperatura prevista, feriados e dias especiais entre as entradas.", "CEPEL, manual do PrevCargaDESSEM", "https://www.cepel.br/wp-content/uploads/2022/02/Rel-6061_19_Manual-PrevCargaDESSEM.pdf"],
+    revela: "Previsão de série temporal (regressão) · supervisionado (o histórico tem a carga real) · dado estruturado",
+    base: {m: "B", h: 7},
+    premissas: ["Dois anos de carga diária fictícia, em MW médios. A previsão é avaliada nos últimos 90 dias, sempre só com o que se sabia no dia da compra.", "Nesta cidade, os fins de semana consomem menos, e cada grau acima do normal soma cerca de 25 MW (ar-condicionado).", "Três formas de prever, da mais simples à mais completa: (1) média das últimas 4 semanas; (2) média do mesmo dia da semana nas últimas 4 semanas; (3) a anterior, ajustada pela temperatura prevista para o dia.", "A previsão do tempo erra mais quanto maior a antecedência. Como ela varia, o erro da previsão com temperatura é a média de 40 simulações da previsão do tempo; os gráficos de linha mostram uma delas.", "Cada ponto percentual de erro médio custa R$ 2 milhões por ano em compras de ajuste (valor hipotético)."],
+    formula: "Erro médio = média de |real − previsto| ÷ real (MAPE; Hyndman e Athanasopoulos, 2021, seção 5.8). Custo anual = MAPE em pontos percentuais × R$ 2 milhões.",
+    controles: [
+      {k: "m", tipo: "opcoes", rot: "O que a previsão usa", ops: [["A", "Média das últimas 4 semanas"], ["B", "+ dia da semana"], ["C", "+ dia da semana e temperatura"]]},
+      {k: "h", tipo: "slider", rot: "Antecedência da compra", min: 1, max: 14, step: 1, f: v => v + (v === 1 ? " dia" : " dias")}],
+    perguntas: [
+      {tipo: "disc", q: "Que número estamos prevendo? Por que isto é previsão, e não classificação?", dica: "Não está na simulação: veja o glossário do Jogo do mapeamento."},
+      {tipo: "teste", q: "Comece pela previsão mais simples e acrescente informação. Comprando com 7 dias de antecedência, quanto o dia da semana reduz o erro? E a temperatura?", cen: [{rot: "Média das 4 semanas", muda: {m: "A", h: 7}}, {rot: "+ dia da semana", muda: {m: "B", h: 7}}, {rot: "+ dia da semana e temperatura", muda: {m: "C", h: 7}}]},
+      {tipo: "teste", q: "Agora compare comprar com 1 e com 14 dias de antecedência. Olhe o gráfico da temperatura: por que a vantagem de usar a temperatura some?", cen: [{rot: "Com temperatura, 1 dia", muda: {m: "C", h: 1}}, {rot: "Com temperatura, 14 dias", muda: {m: "C", h: 14}}, {rot: "Sem temperatura, 14 dias", muda: {m: "B", h: 14}}]},
+      {tipo: "disc", q: "Que eventos o histórico não ensina ao modelo?", dica: "Feriado novo, crise, grande evento, mudança de tarifa."},
+      {tipo: "disc", q: "Errar para mais e errar para menos custam o mesmo para a distribuidora? E para o erro médio (MAPE)?", dica: "Releia o contexto: comprar de menos obriga a pagar caro no curto prazo; comprar de mais deixa energia paga sobrando. O MAPE trata os dois erros do mesmo jeito."}],
+    nome: {A: "média das 4 semanas", B: "+ dia da semana", C: "+ dia da semana e temperatura"},
+    sim: `<p class="src">Como ler: nos gráficos de linha, a linha cheia é o que aconteceu e a tracejada é o que se previa no dia da compra. As quedas da carga são os fins de semana; os picos acompanham os dias quentes.</p>
+      <div class="kpis" id="k"></div>
+      <h3>Carga real × prevista nas últimas 8 semanas (MW)</h3><svg class="chart" id="g"></svg>
+      <h3 id="tt">Temperatura real × prevista no dia da compra (°C)</h3><svg class="chart" id="t"></svg>
+      <h3>Erro médio conforme a antecedência da compra</h3><svg class="chart" id="h"></svg>`,
+    draw(st){ const {out, mape, mae, errT} = avaliarCarga(st.m, st.h), dias = st.h + (st.h === 1 ? " dia" : " dias"), tp = tempPrev(st.h);
+      $("k").innerHTML = `<div class="kpi"><span>Erro médio (MAPE)</span><b>${pct(mape, 1)}</b></div><div class="kpi"><span>Erro médio por dia</span><b>${fmt(mae)} MW</b></div>
+        <div class="kpi"><span>Custo anual estimado do erro</span><b>${brl(mape * 100 * 2e6)}</b></div><div class="kpi"><span>Erro da previsão do tempo com ${dias}</span><b>${fmt(errT, 1)} °C</b></div>`;
+      const ult = out.slice(-56);
+      lineChart($("g"), [{pts: ult.map(x => [x[0], x[1]]), color: "var(--ink)", w: 2}, {pts: ult.map(x => [x[0], x[2]]), color: "var(--c2)", dash: true}],
+        {legend: [["real", "var(--ink)"], ["prevista", "var(--c2)"]], yExtra: [Math.max(...ult.map(x => Math.max(x[1], x[2]))) + 70], xticks: [], fy: y => fmt(y, 0), xlab: "dias"});
+      $("tt").textContent = "Temperatura real × prevista no dia da compra (°C)" + (st.m === "C" ? "" : ". Atenção: a previsão de carga escolhida não usa a temperatura");
+      lineChart($("t"), [{pts: ult.map(x => [x[0], SERIE[x[0]].temp]), color: "var(--ink)", w: 2}, {pts: ult.map(x => [x[0], tp[x[0]]]), color: "var(--c3)", dash: true}],
+        {H: 200, legend: [["real", "var(--ink)"], ["prevista com " + dias, "var(--c3)"]], yExtra: [Math.max(...ult.map(x => Math.max(SERIE[x[0]].temp, tp[x[0]]))) + 4], xticks: [], fy: y => fmt(y, 0), xlab: "dias"});
+      const series = [];
+      [["A", "var(--c8)"], ["B", "var(--c1)"], ["C", "var(--c3)"]].forEach(([m, c]) => { const pts = []; for (let h = 1; h <= 14; h++) pts.push([h, avaliarCarga(m, h).mape * 100]); series.push({pts, color: c, w: m === st.m ? 3 : 1.5}); });
+      lineChart($("h"), series, {ymin: 0, ymax: 12, xticks: [1, 4, 7, 10, 14], fy: y => fmt(y, 1) + "%", xlab: "antecedência da compra (dias)", legend: [["4 semanas", "var(--c8)"], ["+ dia da semana", "var(--c1)"], ["+ temperatura", "var(--c3)"]], marks: [[st.h, mape * 100, "var(--ink)", "você"]]});
+      return `${this.nome[st.m]} (${dias}): erro médio <b>${pct(mape, 1)}</b> (${fmt(mae)} MW por dia), custo anual de <b>${brl(mape * 100 * 2e6)}</b>; a previsão do tempo erra em média ${fmt(errT, 1)} °C.`; }
+  },
+
+  // 4. Classificação de texto
+  texto: {
+    aba: "Classificar petições", setor: "Justiça", empresa: "Tribunal de Justiça do Estado Litorâneo (fictício)",
+    contexto: "O tribunal recebe 100 mil petições por ano. Servidores leem cada uma para identificar o assunto e encaminhar ao setor certo. Há um acervo de petições antigas já classificadas por assunto. Um modelo de texto pode sugerir o assunto e dizer o quão confiante está.",
+    pergunta: "Quanto automatizar? Onde o servidor continua necessário?",
+    inspiracao: ["O STF, com a UnB, desenvolveu o Victor, que lê os recursos extraordinários e identifica os ligados a temas de repercussão geral. A máquina não decide: organiza os processos para o servidor analisar.", "STF, 30/05/2018 (Portal do RI)", "https://portaldori.com.br/2018/06/05/stf-inteligencia-artificial-vai-agilizar-a-tramitacao-de-processos-no-stf/"],
+    revela: "Classificação de texto · supervisionado (acervo já classificado) · dado não estruturado (texto)",
+    base: {lim: 0.8, err: 200},
+    premissas: ["100 mil petições por ano. Ler e encaminhar uma petição toma 6 minutos de um servidor; a hora do servidor custa R$ 90.", "Petições com confiança acima do limiar são encaminhadas automaticamente; as demais vão para um servidor, como hoje.", "As curvas de automação e de acerto conforme o limiar são fictícias.", "O custo de desenvolver e manter o modelo não entra na conta."],
+    formula: "Ganho líquido = horas poupadas nas petições automatizadas × R$ 90 − encaminhamentos errados × custo de um erro.",
+    controles: [
+      {k: "lim", tipo: "slider", rot: "Confiança mínima para automatizar", min: 0.3, max: 0.99, step: 0.01, f: v => pct(v, 0)},
+      {k: "err", tipo: "slider", rot: "Custo de um encaminhamento errado", min: 0, max: 2000, step: 50, f: brl}],
+    perguntas: [
+      {tipo: "disc", q: "O dado é estruturado? Como um texto vira algo que o modelo entende?", dica: "Não está na simulação: o texto precisa virar números (por exemplo, contar as palavras de cada petição)."},
+      {tipo: "teste", q: "Suba a confiança mínima. O que acontece com a automação, com os erros e com o ganho?", cen: [{rot: "50%", muda: {lim: 0.5}}, {rot: "80%", muda: {lim: 0.8}}, {rot: "95%", muda: {lim: 0.95}}]},
+      {tipo: "teste", q: "E se um encaminhamento errado custar R$ 1.000 (prazo perdido, retrabalho)?", cen: [{rot: "Erro a R$ 1 mil, confiança 80%", muda: {err: 1000}}, {rot: "Erro a R$ 1 mil, confiança 95%", muda: {err: 1000, lim: 0.95}}]},
+      {tipo: "disc", q: "Quem responde pelo erro de encaminhamento? Por que manter o servidor nos casos de baixa confiança?", dica: "Pense em quem o cidadão procura quando o processo atrasa."},
+      {tipo: "disc", q: "Que risco existe se o acervo antigo tiver classificações erradas?", dica: "O modelo aprende o passado. Inclusive os erros."}],
+    sim: `<h3>Como o texto vira dado (exemplos fictícios)</h3><div class="samples" id="sp"></div><div class="kpis" id="k"></div>
+      <h3>Automação × erros conforme a confiança mínima</h3><svg class="chart" id="g"></svg>`,
+    cob: l => 1 / (1 + Math.exp((l - 0.78) / 0.07)),
+    acerto: l => Math.min(0.995, 0.80 + 0.19 * (1 - Math.exp(-(l - 0.3) * 4.5))),
+    calc(st){ const N = 100000, cov = this.cob(st.lim), acc = this.acerto(st.lim), auto = N * cov, erros = auto * (1 - acc), horas = auto * 6 / 60; return {cov, acc, erros, horas, liq: horas * 90 - erros * st.err}; },
+    draw(st){ const r = this.calc(st);
+      const ex = [["…requer a revisão do benefício previdenciário, considerando o tempo de contribuição…", "Previdenciário", 0.97], ["…a cobrança de tarifa bancária não contratada configura prática abusiva…", "Consumidor", 0.91], ["…o servidor faz jus ao adicional de insalubridade e à progressão funcional…", "Servidor público", 0.64], ["…pede a anulação do auto de infração e a restituição do valor pago…", "Tributário", 0.52]];
+      $("sp").innerHTML = ex.map(([t, a, c]) => `<div>${t}<br><b>Sugestão:</b> ${a} · <b>confiança:</b> ${pct(c, 0)} · ${c >= st.lim ? "<span class=\"pos\">automática</span>" : "vai para o servidor"}</div>`).join("");
+      $("k").innerHTML = `<div class="kpi"><span>Petições automatizadas</span><b>${pct(r.cov, 0)}</b></div><div class="kpi"><span>Acerto nas automatizadas</span><b>${pct(r.acc, 1)}</b></div>
+        <div class="kpi"><span>Encaminhamentos errados por ano</span><b>${fmt(r.erros)}</b></div><div class="kpi"><span>Horas de servidor poupadas</span><b>${fmt(r.horas)}</b></div>
+        <div class="kpi"><span>Ganho líquido anual</span><b class="${r.liq >= 0 ? "pos" : "neg"}">${brl(r.liq)}</b></div>`;
+      const a = [], e = []; for (let l = 0.3; l <= 0.991; l += 0.01){ const c = this.cob(l); a.push([l * 100, c * 100]); e.push([l * 100, 100000 * c * (1 - this.acerto(l)) / 1000]); }
+      lineChart($("g"), [{pts: a, color: "var(--accent)"}, {pts: e, color: "var(--neg)", dash: true}], {ymin: 0, ymax: 115, xticks: [30, 50, 70, 90], fx: x => x + "%", fy: y => fmt(y, 0), xlab: "confiança mínima para automatizar",
+        legend: [["% automatizado", "var(--accent)"], ["erros (mil por ano)", "var(--neg)"]], marks: [[st.lim * 100, r.cov * 100, "var(--ink)", "você"]]});
+      return `confiança mínima ${pct(st.lim, 0)}, erro a ${brl(st.err)}: automatiza <b>${pct(r.cov, 0)}</b>, <b>${fmt(r.erros)}</b> erros por ano, ganho líquido <b class="${r.liq >= 0 ? "pos" : "neg"}">${brl(r.liq)}</b>.`; }
+  },
+
+  // 5. Redução de dimensionalidade
+  dimensao: {
+    aba: "Resumir indicadores", setor: "Setor público", empresa: "Prefeitura de Nova Esperança (fictícia)",
+    contexto: "A prefeitura acompanha 12 indicadores para cada um dos seus 60 bairros e quer um painel simples para o prefeito priorizar investimentos. Ninguém consegue olhar 12 gráficos ao mesmo tempo.",
+    pergunta: "Dá para resumir os 12 indicadores em poucos índices sem perder o essencial?",
+    inspiracao: ["Índices sintéticos resumem várias dimensões num número. O IDH, do PNUD, combina saúde, educação e renda (com outro método, não o deste cenário).", "PNUD, Desenvolvimento humano e IDH", "https://www.undp.org/pt/node/329116"],
+    revela: "Redução de dimensionalidade (análise de componentes principais, PCA) · não supervisionado · dado estruturado",
+    base: {k: 2, ind: 2},
+    premissas: ["60 bairros e 12 indicadores fictícios, padronizados: cada valor está em desvios-padrão acima (+) ou abaixo (−) da média dos bairros.", "A análise de componentes principais cria índices novos, cada um uma combinação dos 12 indicadores, que guardam o máximo da variação entre os bairros.", "O painel do prefeito mostra só os índices usados. A partir deles, dá para reconstruir um valor aproximado de cada indicador em cada bairro: é o que o painel “mostra”.", "Quanto o painel guarda de um indicador: a parte da variação desse indicador entre os bairros que os índices usados conseguem reproduzir."],
+    formula: null,
+    controles: [
+      {k: "k", tipo: "slider", rot: "Número de índices (componentes) no painel", min: 1, max: 12, step: 1, f: v => v},
+      {k: "ind", tipo: "select", rot: "Indicador no gráfico dos bairros", ops: IND.map((n, j) => [j, n])}],
+    perguntas: [
+      {tipo: "disc", q: "Por que este problema é não supervisionado?", dica: "Não está na simulação: existe um “índice certo” no histórico para o modelo aprender?"},
+      {tipo: "teste", q: "Quantos índices são necessários para guardar cerca de 80% da variação entre os bairros?", cen: [{rot: "1 índice", muda: {k: 1}}, {rot: "2 índices", muda: {k: 2}}, {rot: "3 índices", muda: {k: 3}}]},
+      {tipo: "disc", q: "Olhe os pesos na tabela: que nome de negócio você daria ao índice 1? E ao 2?", dica: "Os pesos em negrito são os indicadores que mais pesam em cada índice."},
+      {tipo: "teste", q: "O painel mostra bem cada bairro? Veja o saneamento: que bairro parece muito melhor no painel do que é na realidade? Mais índices resolvem?", cen: [{rot: "Saneamento, 2 índices", muda: {k: 2, ind: 2, foco: "bairro"}}, {rot: "Saneamento, 4 índices", muda: {k: 4, ind: 2, foco: "bairro"}}, {rot: "Saneamento, 6 índices", muda: {k: 6, ind: 2, foco: "bairro"}}]},
+      {tipo: "teste", q: "E se o prefeito quiser um índice só, como o IDH? Que indicadores praticamente somem do painel? E com 2 índices?", cen: [{rot: "Painel com 1 índice", muda: {k: 1, foco: "ind"}}, {rot: "Painel com 2 índices", muda: {k: 2, foco: "ind"}}]}],
+    sim: `<div class="kpis" id="k"></div>
+      <h3>Variação entre os bairros guardada por cada índice</h3><svg class="chart" id="b"></svg>
+      <h3>Pesos dos indicadores nos índices do painel e quanto o painel guarda de cada um</h3><div class="tbl"><table id="tb"></table></div>
+      <h3 id="sct">Bairro a bairro: valor real × o que o painel mostra</h3>
+      <p class="src">Cada ponto é um bairro. Sobre a linha tracejada, o painel mostra exatamente o valor real; quanto mais longe da linha, mais o painel engana. Em vermelho, o bairro mais mal representado.</p><svg class="chart" id="sc"></svg>`,
+    alvo(j, k){ let best = [0, -Infinity]; PCA.Z.forEach((z, b) => { const d = painel(b, j, k) - z[j]; if (d > best[1]) best = [b, d]; }); return best[0]; },   // bairro que o painel mostra mais acima da realidade
+    draw(st){ const k = st.k, j = st.ind, acum = PCA.exp.slice(0, k).reduce((a, b) => a + b, 0), g = guardado(k);
+      const ordem = g.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]), sinal = v => (v >= 0 ? "+" : "−") + fmt(Math.abs(v), 1);
+      $("k").innerHTML = `<div class="kpi"><span>Índices no painel</span><b>${k} de 12</b></div><div class="kpi"><span>Variação guardada</span><b>${pct(acum, 0)}</b></div>
+        <div class="kpi"><span>Variação deixada de fora</span><b>${pct(1 - acum, 0)}</b></div><div class="kpi"><span>Indicador menos guardado</span><b style="font-size:15px">${IND[ordem[0][1]]}: ${pct(ordem[0][0], 0)}</b></div>`;
+      const W = 640, H = 200, L = 40, bw = (W - L - 10) / 12; let s = "";
+      PCA.exp.forEach((e, i) => { const h = e / PCA.exp[0] * (H - 40); s += `<rect x="${L + i * bw + 3}" y="${H - 24 - h}" width="${bw - 6}" height="${h}" rx="3" fill="${i < k ? "var(--accent)" : "var(--line)"}"></rect><text x="${L + i * bw + bw / 2}" y="${H - 8}" text-anchor="middle" class="muted">${i + 1}</text><text x="${L + i * bw + bw / 2}" y="${H - 28 - h}" text-anchor="middle">${pct(e, 0)}</text>`; });
+      $("b").setAttribute("viewBox", `0 0 ${W} ${H}`); $("b").innerHTML = s;
+      const sty = v => Math.abs(v) >= 0.3 ? "font-weight:700" : "color:var(--muted)";
+      $("tb").innerHTML = `<tr><th>Indicador</th>${[...Array(k).keys()].map(c => `<th>Índice ${c + 1}</th>`).join("")}<th>Quanto o painel guarda</th></tr>` +
+        IND.map((n, jj) => `<tr${jj === j ? ' style="background:var(--accent-soft)"' : ""}><td>${n}</td>${[...Array(k).keys()].map(c => `<td style="${sty(PCA.vecs[c][jj])}">${fmt(PCA.vecs[c][jj], 2)}</td>`).join("")}<td class="${g[jj] < 0.5 ? "neg" : ""}" style="font-weight:700">${pct(g[jj], 0)}</td></tr>`).join("");
+      const real = PCA.Z.map(z => z[j]), mostra = PCA.Z.map((_, b) => painel(b, j, k)), lim = Math.ceil(Math.max(...real.map(Math.abs), ...mostra.map(Math.abs)));
+      let pior = 0; real.forEach((v, b) => { if (Math.abs(mostra[b] - v) > Math.abs(mostra[pior] - real[pior])) pior = b; });
+      const dest = st.foco === "bairro" ? this.alvo(j, 2) : pior;
+      $("sct").textContent = `Bairro a bairro: ${IND[j].toLowerCase()} real × o que o painel com ${k} ${k === 1 ? "índice" : "índices"} mostra`;
+      scatter($("sc"), real.map((v, b) => ({x: v, y: mostra[b], c: b === dest ? "var(--neg)" : "var(--accent)", r: b === dest ? 7 : 3.5, stroke: b === dest ? "var(--ink)" : null, lab: b === dest ? `bairro ${b + 1}` : null})).sort((a, c) => (a.lab ? 1 : 0) - (c.lab ? 1 : 0)),
+        {xmin: -lim, xmax: lim, ymin: -lim, ymax: lim, diag: true, xt: [-lim, -lim / 2, 0, lim / 2, lim], yt: [-lim, -lim / 2, 0, lim / 2, lim], xlab: `${IND[j].toLowerCase()}: valor real (desvios-padrão)`, ylab: "o que o painel mostra", dx: 1, dy: 1});
+      if (st.foco === "bairro") return `o bairro ${dest + 1} tem ${IND[j].toLowerCase()} <b>${sinal(real[dest])}</b> desvio-padrão (o ${posicao(real, dest)}º menor dos 60 bairros), mas o painel com ${k} ${k === 1 ? "índice" : "índices"} mostra <b>${sinal(mostra[dest])}</b> (o ${posicao(mostra, dest)}º menor).`;
+      if (st.foco === "ind") return `com ${k} ${k === 1 ? "índice" : "índices"}, os indicadores menos guardados no painel são ${ordem.slice(0, 3).map(([v, i]) => `<b>${IND[i].toLowerCase()} (${pct(v, 0)})</b>`).join(", ").replace(/, ([^,]*)$/, " e $1")}; ${(n => n === 0 ? "nenhum indicador fica abaixo de 50%" : n + " dos 12 indicadores ficam abaixo de 50%")(ordem.filter(x => x[0] < 0.5).length)}.`;
+      return `${k} ${k === 1 ? "índice guarda" : "índices guardam"} <b>${pct(acum, 0)}</b> da variação; ficam de fora <b>${pct(1 - acum, 0)}</b>. O indicador menos guardado é ${IND[ordem[0][1]].toLowerCase()} (${pct(ordem[0][0], 0)}).`; }
+  },
+
+  // 6. Anomalias
+  anomalia: {
+    aba: "Gastos suspeitos", setor: "Serviços financeiros", empresa: "Corporativa Cartões (fictícia)",
+    contexto: "A empresa administra cartões corporativos de 300 clientes. Quer encontrar gastos suspeitos, mas nunca registrou de forma organizada quais gastos eram fraude. Há muitos gastos incomuns e legítimos: viagens a trabalho e equipes de plantão noturno. A auditoria consegue verificar 100 transações por mês.",
+    pergunta: "Dá para começar sem histórico de fraudes? Vale a pena investir para criar esse histórico?",
+    inspiracao: ["Na Operação Serenata de Amor, o robô Rosie aponta reembolsos de deputados fora do padrão. Em 2017, segundo a Câmara, parte dos alertas vinha de erro de registro no sistema: suspeita não é irregularidade.", "Gazeta do Povo, 25/01/2017", "https://www.gazetadopovo.com.br/vida-publica/cacador-de-corruptos-robo-rosie-faz-deputados-devolverem-dinheiro-publico-11kqdeqg25csn9uwmrojgog0c"],
+    revela: "Detecção de anomalias (agrupamento e distância ao grupo) · não supervisionado (sem rótulos); vira classificação supervisionada quando houver rótulos · dado estruturado",
+    base: {met: "sem", k: 4, n: 100},
+    premissas: ["5.000 transações fictícias num mês; cerca de 1% são fraude. Sabemos quais porque os dados são simulados; na vida real, só se descobre depois da auditoria.", "Sem rótulos (não supervisionado): o algoritmo k-means agrupa as transações parecidas em valor, horário e distância do local habitual, sem saber o que é fraude. A auditoria verifica as que ficam mais longe do centro do seu grupo.", "Com rótulos (supervisionado): uma regressão logística aprende o padrão das fraudes com 200 fraudes confirmadas em auditorias anteriores e 4.000 transações legítimas.", "Sorteio: referência de quantas fraudes a auditoria acharia escolhendo ao acaso, sem modelo.", "Criar os 200 rótulos com auditorias anteriores custa R$ 300 cada (R$ 60 mil). Cada fraude encontrada evita, em média, R$ 3 mil de perda (valores hipotéticos)."],
+    formula: "Perda evitada no mês = fraudes encontradas × R$ 3 mil. Retorno dos rótulos = R$ 60 mil ÷ (fraudes a mais por mês, em relação ao modelo sem rótulos com o mesmo número de grupos, × R$ 3 mil).",
+    controles: [
+      {k: "met", tipo: "opcoes", rot: "Como o modelo escolhe as transações a verificar", ops: [["sem", "Sem rótulos: agrupa e aponta o que foge dos grupos"], ["com", "Com 200 fraudes rotuladas: classificação"]]},
+      {k: "k", tipo: "slider", rot: "Número de grupos (modelo sem rótulos)", min: 1, max: 6, step: 1, f: v => v},
+      {k: "n", tipo: "slider", rot: "Transações que a auditoria verifica no mês", min: 25, max: 500, step: 25, f: v => v}],
+    perguntas: [
+      {tipo: "disc", q: "Sem saber quais gastos eram fraude, o problema é supervisionado ou não?", dica: "Não está na simulação: o que falta no histórico?"},
+      {tipo: "teste", q: "Sem rótulos, o modelo forma grupos de transações parecidas e manda verificar as que mais fogem do seu grupo. Compare 1, 3 e 4 grupos: que grupos ele formou (veja a tabela) e o que a auditoria encontra?", cen: [{rot: "1 grupo", muda: {k: 1}}, {rot: "3 grupos", muda: {k: 3}}, {rot: "4 grupos", muda: {k: 4}}]},
+      {tipo: "teste", q: "Com 200 fraudes rotuladas, o problema vira classificação. Quanto melhora? Em quantos meses os R$ 60 mil se pagam?", cen: [{rot: "Testar: com rótulos", muda: {met: "com"}}]},
+      {tipo: "teste", q: "E se, em vez de rotular, a auditoria verificasse 3 vezes mais transações, sem rótulos?", cen: [{rot: "Testar: 300 verificações, sem rótulos", muda: {n: 300}}]},
+      {tipo: "disc", q: "Toda anomalia é fraude? Como a auditoria de hoje gera os rótulos de amanhã?", dica: "Registrar o resultado de cada verificação transforma o trabalho de hoje em rótulo."}],
+    sim: `<div class="kpis" id="k"></div>
+      <p class="src" id="leg"></p>
+      <h3>Hora do dia × valor da compra</h3><svg class="chart" id="sc1"></svg>
+      <h3>Valor da compra × distância do local habitual</h3><svg class="chart" id="sc2"></svg>
+      <h3 id="gt"></h3><div class="tbl" id="gtb"></div>`,
+    CL: ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c6)", "var(--c7)"],
+    grupos(k){ const lab = grupoT(k).lab, med = a => a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)], g = [];
+      for (let j = 0; j < k; j++){ const ix = TRANS.map((_, i) => i).filter(i => lab[i] === j); if (!ix.length) continue;
+        const ang = Math.atan2(ix.reduce((a, i) => a + Math.sin(2 * Math.PI * TRANS[i].hora / 24), 0), ix.reduce((a, i) => a + Math.cos(2 * Math.PI * TRANS[i].hora / 24), 0));
+        g.push({j, ix, n: ix.length, valor: med(ix.map(i => TRANS[i].valor)), hora: ((ang / (2 * Math.PI) * 24) + 24) % 24, dist: med(ix.map(i => TRANS[i].dist))}); }
+      g.sort((a, b) => b.n - a.n); const cor = {}; g.forEach((x, q) => { x.cor = this.CL[q]; x.nome = "Grupo " + "ABCDEF"[q]; cor[x.j] = x.cor; }); return {g, cor}; },
+    calc(st){ const a = auditoria(st.n, st.met, st.k), sem = auditoria(st.n, "sem", st.k); return {a, ach: a.c.fraude, sorteio: st.n * FRAUDES / TRANS.length, valor: a.c.fraude * 3000, extra: a.c.fraude - sem.c.fraude}; },
+    draw(st){ const r = this.calc(st), c = r.a.c, payback = r.extra > 0 ? 60000 / (r.extra * 3000) : Infinity, com = st.met === "com", {g, cor} = this.grupos(st.k);
+      $("k").innerHTML = `<div class="kpi"><span>Transações verificadas</span><b>${st.n}</b></div><div class="kpi"><span>Fraudes encontradas</span><b>${r.ach} de ${FRAUDES}</b></div>
+        <div class="kpi"><span>Verificações que eram fraude</span><b>${pct(r.ach / st.n, 0)}</b></div><div class="kpi"><span>Legítimas verificadas à toa</span><b>${c.viagem + c.plantao + c.normal}</b></div>
+        <div class="kpi"><span>Referência: fraudes achadas por sorteio</span><b>${fmt(r.sorteio, 1)}</b></div><div class="kpi"><span>Perda evitada no mês</span><b>${brl(r.valor)}</b></div>
+        ${com ? `<div class="kpi"><span>Rótulos se pagam em</span><b>${isFinite(payback) ? meses(payback) : "nunca"}</b></div>` : ""}`;
+      $("leg").innerHTML = (com ? "Pontos cinza: transações (o modelo com rótulos não forma grupos)." : "Cores: os grupos que o modelo formou sem saber o que é fraude (veja a tabela abaixo).") +
+        ` <b style="color:var(--neg)">×</b> vermelho: fraude (só sabemos porque os dados são simulados). Com borda escura: verificada pela auditoria. Para não pesar, os gráficos mostram 1 em cada 4 transações comuns, todas as fraudes e todas as verificadas.`;
+      const lab = grupoT(st.k).lab, base = [], fr = [];
+      TRANS.forEach((t, i) => { const v = r.a.sel.has(i); if (!(i % 4 === 0 || t.fraude || v)) return;
+        const p = {t, shape: t.fraude ? "x" : null, c: t.fraude ? "var(--neg)" : (com ? "var(--c8)" : cor[lab[i]]), o: 0.45, r: t.fraude ? 4 : (v ? 4.5 : 2.6), stroke: v ? "var(--ink)" : null}; (t.fraude ? fr : base).push(p); });
+      const pts = base.concat(fr);
+      scatter($("sc1"), pts.map(p => ({...p, x: (p.t.hora + 12) % 24, y: Math.log10(p.t.valor)})), {xmin: 0, xmax: 24, fx: v => fmt((v + 12) % 24, 0) + "h", yt: [30, 100, 300, 1000, 3000].map(Math.log10), fy: v => fmt(10 ** v, 0), xlab: "hora do dia (madrugada no centro)", ylab: "valor (R$)"});
+      scatter($("sc2"), pts.map(p => ({...p, x: Math.log10(p.t.valor), y: Math.log10(p.t.dist)})), {xt: [30, 100, 300, 1000, 3000].map(Math.log10), yt: [1, 10, 100, 1000].map(Math.log10), fx: v => fmt(10 ** v, 0), fy: v => fmt(10 ** v, 0), xlab: "valor da compra (R$)", ylab: "distância (km)"});
+      if (com){ const w = logit();
+        $("gt").textContent = "O que o modelo com rótulos aprendeu";
+        $("gtb").innerHTML = `<p style="margin-top:6px">Com as fraudes confirmadas, o modelo aprendeu que <b>valor alto ${w[1] > 0 ? "aumenta" : "diminui"}</b> o risco, que <b>compras de madrugada ${w[3] > 0 ? "aumentam" : "diminuem"}</b> o risco e que <b>distância grande do local habitual ${w[2] > 0 ? "aumenta" : "diminui"}</b> o risco (as viagens a trabalho, legítimas, são longe).</p>`; }
+      else {
+        $("gt").textContent = `Os ${st.k} ${st.k === 1 ? "grupo" : "grupos"} que o modelo formou (sem saber o que é fraude)`;
+        $("gtb").innerHTML = `<table><tr><th>Grupo</th><th>Transações</th><th>Valor típico</th><th>Hora típica</th><th>Distância típica</th><th>Verificadas</th></tr>` +
+          g.map(x => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${x.cor};margin-right:6px"></span>${x.nome}</td><td>${fmt(x.n)}</td><td>${brl(x.valor)}</td><td>${fmt(Math.round(x.hora) % 24, 0)}h</td><td>${fmt(x.dist, 0)} km</td><td>${x.ix.filter(i => r.a.sel.has(i)).length}</td></tr>`).join("") + "</table>"; }
+      return `${st.n} verificações ${com ? "com rótulos" : `sem rótulos, ${st.k} ${st.k === 1 ? "grupo" : "grupos"}`}: <b>${r.ach}</b> fraudes de ${FRAUDES} (por sorteio: ${fmt(r.sorteio, 1)}); verificadas à toa: ${c.viagem} ${c.viagem === 1 ? "viagem" : "viagens"}, ${c.plantao} ${c.plantao === 1 ? "plantão" : "plantões"} e ${c.normal} ${c.normal === 1 ? "compra comum" : "compras comuns"}; perda evitada de ${brl(r.valor)} no mês` +
+        (com ? `; ${r.extra} fraudes a mais que sem rótulos (${st.k} grupos), e os R$ 60 mil se pagam em <b>${isFinite(payback) ? meses(payback) : "nunca"}</b>.` : "."); }
+  }
+};
+const ORDEM = ["falha", "segmento", "carga", "texto", "dimensao", "anomalia"];
+
+// ---------- motor das telas ----------
+const main = $("main");
+let atual = "jogo", st = {};
+
+function telaCenario(key){
+  const c = CEN[key];
+  main.className = "";
+  main.innerHTML = `<section class="card">
+      <span class="tag">${c.setor}</span><span class="tag">empresa fictícia</span>
+      <h2 style="margin-top:8px">${c.empresa}</h2>
+      <p>${c.contexto}</p>
+      <h3>A pergunta da diretoria</h3><p><b>${c.pergunta}</b></p>
+      <div class="notice">Inspiração real: ${c.inspiracao[0]}<br><span class="src">Fonte: <a href="${c.inspiracao[2]}" target="_blank" rel="noopener">${c.inspiracao[1]}</a></span></div>
+      ${ROTEIRO}
+      <button class="btn" onclick="this.nextElementSibling.classList.toggle('on')">Revelar a classificação do professor</button>
+      <div class="reveal"><span class="tag" style="font-size:13px">${c.revela}</span></div>
+    </section>
+    <section class="card"><h2>Simulação</h2>
+      <div class="notice"><b>Dados e valores fictícios</b>, gerados por simulação para mostrar o que muda a decisão.${c.formula ? "<br><b>As contas de custo e de ganho deste cenário são para fins didáticos apenas</b>, não fórmulas publicadas." : ""}</div>
+      ${c.sim}
+      <h3>Perguntas para o grupo</h3><div id="perguntas">${c.perguntas.map((p, i) => `<div class="q">
+        <span class="tipo ${p.tipo === "teste" ? "teste" : "disc"}">${p.tipo === "teste" ? "Teste no simulador" : "Discussão"}</span>
+        <p><b>${i + 1}.</b> ${p.q}</p>
+        ${p.cen ? `<div class="btns">${p.cen.map((cz, j) => `<button class="btn" data-q="${i}" data-c="${j}" aria-pressed="false">${cz.rot}</button>`).join("")}</div><div class="saida" id="saida${i}"></div>` : ""}
+        ${p.dica ? `<p class="dica">${p.dica}</p>` : ""}</div>`).join("")}</div>
+      <h3>Explore à vontade</h3><div id="ctls"></div>
+      <button class="reset" id="reset">Voltar ao cenário inicial</button>
+      <h3>Premissas do cenário</h3><ul class="premissas">${c.premissas.map(t => `<li>${t}</li>`).join("")}</ul>
+      ${c.formula ? `<details><summary>Como a conta é feita</summary><p style="margin-top:6px">${c.formula}</p><p style="margin-top:6px"><b>Aviso:</b> fórmula para fins didáticos apenas.</p></details>` : ""}
+    </section>`;
+  main.querySelectorAll("#perguntas .btn").forEach(b => b.addEventListener("click", () => testar(+b.dataset.q, +b.dataset.c, b)));
+  $("reset").addEventListener("click", () => { st = {...c.base}; limparTestes(); sincronizar(); c.draw(st); });
+  st = {...c.base};
+  montarControles(); c.draw(st);
+}
+
+function montarControles(){
+  const c = CEN[atual], host = $("ctls");
+  c.controles.forEach(ct => {
+    const d = document.createElement("div");
+    if (ct.tipo === "slider"){
+      d.className = "ctl";
+      d.innerHTML = `<label for="s_${ct.k}">${ct.rot}<b id="v_${ct.k}">${ct.f(st[ct.k])}</b></label><input type="range" id="s_${ct.k}" min="${ct.min}" max="${ct.max}" step="${ct.step}" value="${st[ct.k]}">`;
+      d.querySelector("input").addEventListener("input", e => { st[ct.k] = +e.target.value; manual(); });
+    } else if (ct.tipo === "select"){
+      d.className = "ctl";
+      d.innerHTML = `<label for="s_${ct.k}">${ct.rot}</label><select id="s_${ct.k}">${ct.ops.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>`;
+      d.querySelector("select").value = String(st[ct.k]);
+      d.querySelector("select").addEventListener("change", e => { st[ct.k] = ct.ops.find(o => String(o[0]) === e.target.value)[0]; manual(); });
+    } else if (ct.tipo === "opcoes"){
+      d.className = "ctl";
+      d.innerHTML = `<label>${ct.rot}</label><div class="opts">${ct.ops.map(([v, t]) => `<button class="btn" data-k="${ct.k}" data-v="${v}" aria-pressed="${String(st[ct.k]) === String(v)}">${t}</button>`).join("")}</div>`;
+      d.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { st[ct.k] = ct.ops.find(o => String(o[0]) === b.dataset.v)[0]; manual(); }));
+    } else {
+      d.className = "chk";
+      d.innerHTML = `<input type="checkbox" id="c_${ct.k}" ${st[ct.k] ? "checked" : ""}><label for="c_${ct.k}"><b>${ct.rot}</b><small>${ct.ajuda}</small></label>`;
+      d.querySelector("input").addEventListener("change", e => { st[ct.k] = e.target.checked; manual(); });
+    }
+    host.appendChild(d);
+  });
+}
+function sincronizar(){
+  CEN[atual].controles.forEach(ct => {
+    if (ct.tipo === "slider"){ $("s_" + ct.k).value = st[ct.k]; $("v_" + ct.k).textContent = ct.f(st[ct.k]); }
+    else if (ct.tipo === "check") $("c_" + ct.k).checked = !!st[ct.k];
+    else if (ct.tipo === "select") $("s_" + ct.k).value = String(st[ct.k]);
+    else document.querySelectorAll(`#ctls button[data-k="${ct.k}"]`).forEach(b => b.setAttribute("aria-pressed", String(String(st[ct.k]) === b.dataset.v)));
+  });
+}
+function limparTestes(){
+  document.querySelectorAll("#perguntas .btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+  document.querySelectorAll("#perguntas .saida").forEach(s => { s.classList.remove("on"); s.innerHTML = ""; delete s.dataset.linhas; });
+}
+function manual(){
+  delete st.foco;
+  document.querySelectorAll("#perguntas .btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+  sincronizar(); CEN[atual].draw(st);
+}
+function testar(qi, ci, botao){
+  const c = CEN[atual], cz = c.perguntas[qi].cen[ci];
+  st = {...c.base, ...cz.muda};
+  document.querySelectorAll("#perguntas .btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+  botao.setAttribute("aria-pressed", "true");
+  sincronizar();
+  const txt = c.draw(st);
+  const saida = $("saida" + qi), nome = cz.rot.replace(/^Testar: /, "");
+  const ant = saida.dataset.linhas ? JSON.parse(saida.dataset.linhas) : {};
+  ant[ci] = `<div>${nome.charAt(0).toUpperCase() + nome.slice(1)}: ${txt}</div>`;
+  saida.dataset.linhas = JSON.stringify(ant);
+  saida.innerHTML = Object.keys(ant).sort().map(k => ant[k]).join("");
+  saida.classList.add("on");
+}
+
+// ---------- navegação ----------
+const TELAS = {jogo: "Jogo do mapeamento"}; ORDEM.forEach((k, i) => TELAS[k] = `Grupo ${i + 1} · ${CEN[k].aba}`);
+const tabs = $("tabs");
+function abrir(k){
+  atual = k;
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.k === k)));
+  history.replaceState(null, "", "#" + k);
+  if (k === "jogo") telaJogo(); else telaCenario(k);
+}
+Object.entries(TELAS).forEach(([k, n]) => { const b = document.createElement("button"); b.className = "tab"; b.setAttribute("role", "tab"); b.dataset.k = k; b.textContent = n; b.addEventListener("click", () => abrir(k)); tabs.appendChild(b); });
+let tm = null;
+document.querySelectorAll(".timer button[data-min]").forEach(b => b.addEventListener("click", () => { clearInterval(tm); let r = +b.dataset.min * 60; const o = $("clock"); const tick = () => { o.textContent = String(Math.floor(r / 60)).padStart(2, "0") + ":" + String(r % 60).padStart(2, "0"); if (r-- <= 0){ clearInterval(tm); o.textContent = "Tempo!"; } }; tick(); tm = setInterval(tick, 1000); }));
+$("stop").addEventListener("click", () => { clearInterval(tm); $("clock").textContent = "--:--"; });
+window.addEventListener("hashchange", () => { const k = location.hash.slice(1); if (TELAS[k] && k !== atual) abrir(k); });
+const h0 = location.hash.slice(1); abrir(TELAS[h0] ? h0 : "jogo");
+</script>
+</body>
+</html>

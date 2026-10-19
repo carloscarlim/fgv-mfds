@@ -5,3 +5,4 @@ Simuladores em HTML usados nas discussões em grupo. Abra o caso no navegador, a
 | Aula | Simulador |
 |---|---|
 | 1 | [Calculadora de Valor e Risco](https://carloscarlim.github.io/fgv-mfds/casos/aula01_valor_e_risco.html) |
+| 2 | [Da Pergunta à Técnica](https://carloscarlim.github.io/fgv-mfds/casos/aula02_pergunta_tecnica.html) |
