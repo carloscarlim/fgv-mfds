@@ -6,58 +6,47 @@ Ao final, você será capaz de **formular** uma pergunta de negócio que dados c
 
 ## Como as aulas funcionam
 - **5 aulas de 3 horas, ao vivo por vídeo**, e cerca de 9 horas de atividades fora de sala.
-- Cada aula tem três momentos:
-  - **caso em grupo:** salas de 5 ou 6 colegas e um simulador no navegador; cada grupo apresenta suas conclusões em 5 minutos;
-  - **código individual:** cada um no seu Colab, sem envio; o gabarito é publicado depois da aula;
-  - **exposição:** no máximo 40% do tempo.
+- As aulas combinam três momentos:
+  - **caso em grupo** (Aulas 1, 2, 4 e 5): salas de 5 ou 6 colegas e um simulador no navegador; cada grupo apresenta suas conclusões em 5 minutos;
+  - **código individual** (a partir da Aula 3): cada um no seu Colab, sem envio; o gabarito é publicado depois da aula;
+  - **exposição** dos conceitos.
 - Deixe a videoaula e o Colab abertos lado a lado. Câmera ligada nas salas de grupo.
 
 ## Calendário
 
 | Quando | Aula ou entrega |
 |---|---|
-| Até 48 h antes da Aula 1 | Checklist técnico e print do teste de ambiente (NB00) no ECLASS |
 | Aula 1 | Dado não é valor: é matéria-prima |
 | Aula 2 | Primeiro a pergunta, depois a técnica |
-| Véspera da Aula 3 | **Tarefa 2** e **Marco 1** do trabalho final |
-| Aula 3 | pandas: a planilha que não trava |
-| Véspera da Aula 4 | **Tarefa 3** e **Marco 2** |
-| Aula 4 | Média sozinha engana |
-| Véspera da Aula 5 | **Tarefa 4** e **Marco 3** |
-| Aula 5 | Da amostra à decisão (com clínica do trabalho final) |
-| 7º dia depois da Aula 5 | **Trabalho final**: notebook e slide executivo |
-| 72 h depois de receber as perguntas | **Vídeo** do trabalho final |
+| Antes da Aula 3 | Rode o teste de ambiente (NB00) no Colab; se algo falhar, avise no fórum do ECLASS |
+| Aula 3 | Python para Ciência de Dados (a aula inteira no Colab) |
+| Antes da Aula 4 | **Trabalho sobre o conteúdo até a Aula 3** |
+| Aula 4 | Análise exploratória: o que a média esconde |
+| Aula 5 | Análise exploratória: andam juntos. E daí? · **apresentação do trabalho final** |
 
-Todas as entregas vencem às **23h59** e são enviadas pelo ECLASS. As datas exatas estão no calendário do ECLASS.
+As entregas são enviadas pelo ECLASS. As datas exatas estão no calendário do ECLASS.
 
 ## Avaliação
-
-| Componente | Peso |
-|---|---|
-| Tarefas 1 a 4 (individuais, 7,5% cada) | 30% |
-| Trabalho final (individual): notebook 25, slide executivo 20, vídeo 25 | 70% |
-
-- Correção automática a partir das rubricas publicadas em cada enunciado. O professor revisa uma amostra das correções e todos os casos sinalizados. O **vídeo do trabalho final é assistido e avaliado pelo professor**, um a um. Os trabalhos são identificados só pela matrícula.
+- **Trabalho sobre o conteúdo até a Aula 3**, entregue antes da Aula 4.
+- **Trabalho final**, apresentado na Aula 5.
+- Os pesos, as rubricas e o formato de cada entrega serão divulgados nos enunciados e no ECLASS.
 - Pedidos de revisão: até 7 dias depois da divulgação da nota.
-- Os marcos do trabalho final são obrigatórios, não valem nota e geram devolutiva para você melhorar.
-- **Seus dados são individuais:** as tarefas e o trabalho final usam amostras e parâmetros sorteados pela sua matrícula. **Sua matrícula, nesta disciplina, é o seu nome de usuário do ECLASS** (por exemplo, `A12345678`). Digite-a corretamente e execute o **verificador de formato** antes de baixar cada arquivo.
 
 ## Regras
-- **Uso de IA generativa:** pode usar como tutor (entender um erro, revisar um comando, explicar um conceito). Não pode pedir que ela faça a análise, escreva seus textos ou prepare as respostas do vídeo. O trabalho final traz uma declaração obrigatória de uso.
-- **Trabalho individual:** não compartilhe código, respostas ou textos. Textos muito parecidos são sinalizados e tratados conforme o regulamento da FGV.
+- **Uso de IA generativa:** pode usar como tutor (entender um erro, revisar um comando, explicar um conceito). Não pode pedir que ela faça a análise ou escreva seus textos. Os enunciados dizem como declarar o uso.
+- **Integridade:** não compartilhe código, respostas ou textos das entregas individuais. Textos muito parecidos são sinalizados e tratados conforme o regulamento da FGV.
 - **Fontes:** cite qualquer fonte externa que usar.
 - **Atrasos:** entregas fora do prazo seguem o regulamento acadêmico da FGV.
-- **Privacidade:** os vídeos do trabalho final são usados só para avaliação e apagados ao fim do prazo de revisão de notas.
 
 ## Preparação técnica
 - Conta Google **pessoal** (contas corporativas costumam bloquear o Colab); Chrome ou Edge atualizado.
 - Notebook da empresa: teste antes, porque firewalls podem bloquear o Colab e o GitHub.
-- Rode o `NB00_teste_ambiente.ipynb` e envie o print da mensagem "✅ Tudo certo!" (passo a passo em `docs/setup.md`).
+- Antes da Aula 3, rode o `NB00_teste_ambiente.ipynb` e confira a mensagem "✅ Tudo certo!" (passo a passo em `docs/setup.md`).
 - Nada precisa ser instalado. Todos os notebooks carregam os dados direto do repositório da disciplina e trazem um Plano B caso a rede falhe.
 
 ## Onde encontrar o material
 - **ECLASS:** avisos, entregas, notas e gravações.
-- **Repositório da disciplina:** `github.com/carloscarlim/fgv-mfds`, com notebooks, simuladores, enunciados e dados.
+- **Repositório da disciplina:** `github.com/carloscarlim/fgv-mfds`, com notebooks, simuladores e dados; o material de cada aula é liberado ao longo da disciplina.
 - **Cheat sheet de Python/pandas:** `docs/cheat_sheet_pandas.md`.
 - **Dúvidas:** fórum do ECLASS (preferencial, porque a resposta ajuda a turma) ou e-mail.
 
