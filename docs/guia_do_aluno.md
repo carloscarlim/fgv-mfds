@@ -20,21 +20,27 @@ Ao final, você será capaz de **formular** uma pergunta de negócio que dados c
 | Aula 2 | Primeiro a pergunta, depois a técnica |
 | Antes da Aula 3 | Rode o teste de ambiente (NB00) no Colab; se algo falhar, avise no fórum do ECLASS |
 | Aula 3 | Python para Ciência de Dados (a aula inteira no Colab) |
-| Antes da Aula 4 | **Trabalho sobre o conteúdo até a Aula 3** |
+| Antes da Aula 4 | **Trabalho em grupo** (até 3 alunos, conteúdo até a Aula 3; entrega individual no ECLASS) |
 | Aula 4 | Análise exploratória: o que a média esconde |
 | Aula 5 | Análise exploratória: andam juntos. E daí? · **apresentação do trabalho final** |
 
 As entregas são enviadas pelo ECLASS. As datas exatas estão no calendário do ECLASS.
 
 ## Avaliação
-- **Trabalho sobre o conteúdo até a Aula 3**, entregue antes da Aula 4.
-- **Trabalho final**, apresentado na Aula 5.
-- Os pesos, as rubricas e o formato de cada entrega serão divulgados nos enunciados e no ECLASS.
+
+| Componente | Peso |
+|---|---|
+| **Trabalho em grupo** (até 3 alunos; conteúdo até a Aula 3; entrega individual no ECLASS antes da Aula 4) | 30% |
+| **Trabalho final individual** (nota de 0 a 10; apresentado na Aula 5) | 70% |
+
+- Não há outras tarefas.
+- O enunciado do trabalho em grupo está em `tarefas/TG_enunciado.md`; a entrega é o notebook, no ECLASS.
+- O formato e a rubrica do trabalho final serão divulgados no enunciado e no ECLASS.
 - Pedidos de revisão: até 7 dias depois da divulgação da nota.
 
 ## Regras
 - **Uso de IA generativa:** pode usar como tutor (entender um erro, revisar um comando, explicar um conceito). Não pode pedir que ela faça a análise ou escreva seus textos. Os enunciados dizem como declarar o uso.
-- **Integridade:** não compartilhe código, respostas ou textos das entregas individuais. Textos muito parecidos são sinalizados e tratados conforme o regulamento da FGV.
+- **Integridade:** no trabalho em grupo, o código e as respostas são do grupo; não compartilhe com outros grupos. No trabalho final, individual, não compartilhe código, respostas ou textos. Textos muito parecidos são sinalizados e tratados conforme o regulamento da FGV.
 - **Fontes:** cite qualquer fonte externa que usar.
 - **Atrasos:** entregas fora do prazo seguem o regulamento acadêmico da FGV.
 

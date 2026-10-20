@@ -25,6 +25,11 @@ Siga o [checklist de preparação](docs/setup.md) e rode o notebook de teste:
 |---|---|
 | 1 | Dado não é valor: é matéria-prima · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula01_valor_e_risco.html) |
 | 2 | Principais técnicas de Ciência de Dados · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula02_pergunta_tecnica.html) |
+| 3 | Python para Ciência de Dados · [NB00 (teste do Colab)](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB00_teste_ambiente.ipynb) · [Introdução ao Python no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB01a_introducao_python.ipynb) · [NB01 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB01_primeiro_voo.ipynb) |
+
+## Trabalho em grupo
+Até 3 alunos, conteúdo até a Aula 3, entrega individual no ECLASS antes da Aula 4 · 30% da nota.
+[Enunciado](tarefas/TG_enunciado.md) · [Abrir o notebook no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/tarefas/TG_trabalho_grupo.ipynb)
 
 ## Fontes dos dados
 Cada arquivo em `dados/` traz, no `dados/README.md`, a fonte original, o link e a data de extração.
