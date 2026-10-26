@@ -26,7 +26,7 @@ Siga o [checklist de preparação](docs/setup.md) e rode o notebook de teste:
 | 1 | Dado não é valor: é matéria-prima · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula01_valor_e_risco.html) |
 | 2 | Principais técnicas de Ciência de Dados · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula02_pergunta_tecnica.html) |
 | 3 | Python para Ciência de Dados · [NB00 (teste do Colab)](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB00_teste_ambiente.ipynb) · [Introdução ao Python no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB01a_introducao_python.ipynb) · [NB01 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB01_primeiro_voo.ipynb) |
-| 4 | Análise exploratória: o que a média esconde · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula04_dado_ruim.html) · [NB04b no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB04b_quanto_custa_um_dado_ruim.ipynb) · Para consulta: [NB04 no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB04_tratamento_e_distribuicoes.ipynb) |
+| 4 | Análise exploratória: o que a média esconde · [Simulador](https://carloscarlim.github.io/fgv-mfds/casos/aula04_dado_ruim.html) · [NB04b no Colab](https://colab.research.google.com/github/carloscarlim/fgv-mfds/blob/main/notebooks/NB04b_quanto_custa_um_dado_ruim.ipynb) |
 
 ## Trabalho em grupo
 Até 3 alunos, conteúdo até a Aula 3, entrega individual no ECLASS antes da Aula 4 · 30% da nota.

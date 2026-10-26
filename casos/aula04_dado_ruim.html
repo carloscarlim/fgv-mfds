@@ -315,7 +315,7 @@ const DEC = {
       {tipo: "teste", q: "Com a base como está, quantos entregadores o RH contrataria? E na verdade? Quanto custa a diferença por ano?", cen: [{rot: "Testar: base como está", muda: {}}]},
       {tipo: "teste", q: "Na tabela, quantas linhas do Sudeste há, e quantos números de pedido diferentes? Compare 4%, 8% e 16% de linhas gravadas em dobro: como o erro cresce?", cen: [{rot: "4%", muda: {dup: 4}}, {rot: "8%", muda: {dup: 8}}, {rot: "16%", muda: {dup: 16}}]},
       {tipo: "teste", q: "Remova as linhas com número de pedido repetido. A decisão volta ao correto? O número de entregadores fica igual ao da verdade?", cen: [{rot: "Testar: remover repetidas", muda: {ldup: true}}]},
-      {tipo: "disc", q: "Na amostra, como você percebe que uma linha está repetida? Que coluna identifica o pedido, e que comando do pandas encontraria as repetições?", dica: "Dica: o mesmo número de pedido aparece duas vezes, com a mesma data e o mesmo valor. Lembre do drop_duplicates do NB04 (seção 6)."},
+      {tipo: "disc", q: "Na amostra, como você percebe que uma linha está repetida? Que coluna identifica o pedido, e que comando do pandas encontraria as repetições?", dica: "Dica: o mesmo número de pedido aparece duas vezes, com a mesma data e o mesmo valor. Veja “Linha repetida” na aba Conceitos."},
       {tipo: "disc", q: "Que controle de qualidade evitaria o problema na origem?", dica: "Dica: a base deveria aceitar dois pedidos com o mesmo número? Onde a repetição nasce?"}
     ],
     calc(rows){ const se = rows.filter(x => x.reg === "SE"), linhas = se.length, distintos = new Set(se.map(x => x.id)).size;
@@ -476,7 +476,7 @@ const DEC = {
       {tipo: "teste", q: "Exclua as datas impossíveis. Resolve? O prazo fica igual ao da verdade?", cen: [{rot: "Testar: excluir datas impossíveis", muda: {ldatas: true}}]},
       {tipo: "teste", q: "Use medidas robustas, com e sem a exclusão das datas. O que acontece com o prazo prometido?", cen: [{rot: "Só medidas robustas", muda: {lmed: true}}, {rot: "Robustas e excluir datas", muda: {lmed: true, ldatas: true}}]},
       {tipo: "disc", q: "Com cada prazo prometido, que parte dos pedidos do Norte chegaria no prazo? Que risco existe em prometer um prazo longo demais? E curto demais?", dica: "Dica: a última linha da tabela mostra a parte dos pedidos que, na verdade, chega dentro do prazo prometido."},
-      {tipo: "disc", q: "A regra “média + 1 desvio” é boa? Que alternativa você sugeriria?", dica: "Dica: lembre dos percentis do NB04. Que percentual dos pedidos você quer entregar dentro do prazo prometido?"}
+      {tipo: "disc", q: "A regra “média + 1 desvio” é boa? Que alternativa você sugeriria?", dica: "Dica: veja “percentil” na aba Conceitos. Que percentual dos pedidos você quer entregar dentro do prazo prometido?"}
     ],
     calc(rows, s){ const v = rows.filter(x => x.reg === "N" && x.prazo !== null).map(x => x.prazo);
       const m = media(v), dp = desvio(v), md = mediana(v), rob = 1.4826 * mad(v), c = s.lmed ? md + rob : m + dp, p = Math.max(1, Math.ceil(c));
@@ -569,7 +569,7 @@ ${ORDEM.map((k, i) => `<tr><td>${i + 1}</td><td>${DEC[k].area}</td><td>${DEC[k].
 
 const CONCEITOS = `<section class="card prose">
 <h2>Por que tratar antes de medir</h2>
-<p>Uma base pode ter defeitos que não geram nenhuma mensagem de erro: a conta roda e o resultado sai com cara de certo. Antes de calcular um indicador, olhe a base: quantas linhas há, o que falta, qual é o menor e o maior valor, como as categorias estão escritas. No pandas: <span class="formula">info()</span>, <span class="formula">isna().sum()</span>, <span class="formula">describe()</span> e <span class="formula">value_counts()</span>, da Aula 3 e do NB04.</p>
+<p>Uma base pode ter defeitos que não geram nenhuma mensagem de erro: a conta roda e o resultado sai com cara de certo. Antes de calcular um indicador, olhe a base: quantas linhas há, o que falta, qual é o menor e o maior valor, como as categorias estão escritas. No pandas: <span class="formula">info()</span>, <span class="formula">isna().sum()</span>, <span class="formula">describe()</span> e <span class="formula">value_counts()</span>, da Aula 3.</p>
 
 <h2>Faltante (Grupos 1 e 5)</h2>
 <p>Valor que deveria existir e não está na base. No pandas, aparece como <span class="formula">NaN</span>; McKinney (2022, cap. 7) chama o dado ausente de NA, de <i>not available</i>. Antes de tratar, pergunte <b>por que</b> ele falta:</p>
@@ -582,10 +582,10 @@ const CONCEITOS = `<section class="card prose">
 <p>Saídas comuns, cada uma com um custo: descartar a linha; descartar a coluna; substituir (média, mediana ou valor mais frequente); criar uma categoria própria; manter e explicar. <b>Substituir pela média não muda a média</b>: se a falta tem motivo, o erro continua, só fica escondido. No simulador, “contar como atraso” e “preencher com a nota dos atrasados” são hipóteses de pior caso, para testar se a decisão muda; não são métodos publicados. No pandas: <span class="formula">isna()</span>, <span class="formula">dropna()</span>, <span class="formula">fillna()</span> (McKinney, 2022, seção 7.1).</p>
 
 <h2>Linha repetida (Grupo 2)</h2>
-<p>A mesma unidade aparece mais de uma vez. Infla contagens e somas. Para encontrar, defina a <b>chave</b>: a coluna que identifica a unidade (aqui, o número do pedido). Linha repetida nem sempre é erro: na base do NB04, cada linha é um item, e um pedido com 3 itens aparece 3 vezes. No pandas: <span class="formula">duplicated()</span> e <span class="formula">drop_duplicates(subset="pedido")</span> (McKinney, 2022, seção 7.2).</p>
+<p>A mesma unidade aparece mais de uma vez. Infla contagens e somas. Para encontrar, defina a <b>chave</b>: a coluna que identifica a unidade (aqui, o número do pedido). Linha repetida nem sempre é erro: numa base com uma linha por item vendido, um pedido com 3 itens aparece 3 vezes, sem erro nenhum. No pandas: <span class="formula">duplicated()</span> e <span class="formula">drop_duplicates(subset="pedido")</span> (McKinney, 2022, seção 7.2).</p>
 
 <h2>Valor impossível (Grupos 3 e 6)</h2>
-<p>Valor preenchido, mas fora do que é possível: entrega antes da compra, entrega dez anos depois, produto de 0 g. É diferente do <i>outlier</i>, o valor extremo que é raro mas pode ser verdadeiro (NB04, seção 13). Uma <b>regra de validação</b> (o intervalo possível para a coluna) encontra esses valores; o <span class="formula">describe()</span> mostra o menor e o maior. Saídas: corrigir na origem, excluir da conta registrando quantos saíram, ou usar uma medida robusta.</p>
+<p>Valor preenchido, mas fora do que é possível: entrega antes da compra, entrega dez anos depois, produto de 0 g. É diferente do <i>outlier</i>, o valor extremo que é raro mas pode ser verdadeiro. Uma <b>regra de validação</b> (o intervalo possível para a coluna) encontra esses valores; o <span class="formula">describe()</span> mostra o menor e o maior. Saídas: corrigir na origem, excluir da conta registrando quantos saíram, ou usar uma medida robusta.</p>
 
 <h2>Categoria inconsistente (Grupo 4)</h2>
 <p>A mesma coisa escrita de jeitos diferentes (“casa”, “CASA”, “Casa e Decoração”) ou uma coisa na categoria errada (um fone de ouvido em “Casa”). Na hora de agrupar (<span class="formula">groupby</span>), a soma vai para o grupo errado. O <span class="formula">value_counts()</span> mostra o que existe em cada coluna; uma tabela de referência (de-para) corrige, com <span class="formula">replace()</span> ou <span class="formula">map()</span> no pandas (McKinney, 2022, seção 7.2).</p>
@@ -594,6 +594,7 @@ const CONCEITOS = `<section class="card prose">
 <ul>
 <li><b>Média</b> = soma ÷ quantidade. Um único valor extremo pode mudá-la muito.</li>
 <li><b>Mediana</b> = o valor do meio, com os dados em ordem. Resiste a valores extremos.</li>
+<li><b>Percentil</b>: o P90 é o valor abaixo do qual ficam 90% dos dados, com os dados em ordem (a mediana é o P50). Como a mediana, resiste a poucos valores extremos. No pandas: <span class="formula">quantile(0.9)</span>.</li>
 <li><b>Desvio padrão</b>: mede quanto os valores se afastam da média e também sofre com extremos.</li>
 <li><b>Desvio absoluto mediano (MAD)</b> = mediana das distâncias de cada valor até a mediana: <span class="formula">MAD = mediana(|x − mediana(x)|)</span>. Multiplicado por 1,4826, fica na mesma escala do desvio padrão quando os dados se parecem com a curva normal (Rousseeuw e Croux, 1993): <span class="formula">desvio robusto = 1,4826 × MAD</span>.</li>
 </ul>
