@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quanto Custa um Dado Ruim</title>
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2433; --muted:#5d6577; --line:#e2e0d8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --pos:#2f7d4f; --neg:#b4443a; --warn:#a86b00; --warn-soft:#fbf0d9; --chip:#efede6; --bad-soft:#f8e3e0; --ok-soft:#e1f1e7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+    --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --warn-soft:#3a2f1a; --chip:#262b36; --bad-soft:#3a2321; --ok-soft:#1e3527;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --card:#1c2029; --ink:#e8eaf0; --muted:#a2a9b8; --line:#2c3240;
+  --accent:#6fb0de; --accent-soft:#1d3346; --pos:#5cc08a; --neg:#ec7a6f; --warn:#e3a640; --warn-soft:#3a2f1a; --chip:#262b36; --bad-soft:#3a2321; --ok-soft:#1e3527;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.5}
+header{padding:20px 16px 8px;max-width:1240px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;max-width:1240px;margin:12px auto 0;padding:0 16px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit;font-size:14px}
+.tab.guia{border-style:dashed}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff;border-style:solid}
+main{max-width:1240px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start}
+main.uma{grid-template-columns:minmax(0,1fr)}
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-size:18px;margin:0 0 6px}
+.card h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:18px 0 6px}
+.card p{margin:0 0 8px}
+.prose{max-width:900px}
+.prose h2{font-size:20px;margin:22px 0 8px}
+.prose h2:first-child{margin-top:0}
+.prose ul,.prose ol{margin:0 0 10px;padding-left:22px}
+.prose li{margin-bottom:4px}
+.formula{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:14px;background:var(--chip);border-radius:6px;padding:2px 6px;white-space:nowrap}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--muted);margin:0 6px 4px 0}
+.notice{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:13px;margin:8px 0 12px}
+.bloco{border-left:3px solid var(--accent);padding:2px 0 2px 10px;margin:0 0 10px}
+.bloco b.t{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent)}
+.roteiro li{margin-bottom:4px}
+.q{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 10px}
+.q .tipo{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:2px 8px;margin-bottom:4px}
+.q .tipo.teste{background:var(--accent-soft);color:var(--accent)}
+.q .tipo.disc{background:var(--chip);color:var(--muted)}
+.q p{margin:0 0 6px}
+.q .btns{display:flex;flex-wrap:wrap;gap:6px}
+.btn{border:1px solid var(--accent);background:var(--card);color:var(--accent);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
+.btn[aria-pressed="true"]{background:var(--accent);color:#fff}
+.q .saida{margin-top:8px;font-size:14px;background:var(--accent-soft);border-radius:8px;padding:6px 10px;display:none}
+.q .saida.on{display:block}
+.q .saida div+div{margin-top:4px}
+.q .dica{font-size:13px;color:var(--muted);margin:0}
+.ctl{margin:10px 0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.ctl label b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:10px 0;font-size:14px}
+.chk input{margin-top:3px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.chk small{display:block;color:var(--muted);font-size:12px}
+.radio{margin:10px 0;font-size:14px}
+.radio>b{display:block;margin-bottom:4px}
+.reset{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;font-size:13px;margin-top:4px}
+.grupo-ctl{border:1px solid var(--line);border-radius:10px;padding:4px 12px 10px;margin-top:6px}
+.grupo-ctl>p{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:8px 0 0}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+@media (max-width:560px){.cols{grid-template-columns:minmax(0,1fr)}}
+.col{border-radius:10px;padding:10px 12px;background:var(--chip)}
+.col span{display:block;font-size:12px;color:var(--muted)}
+.col .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3;margin:2px 0}
+.col .d{font-size:13px;margin-top:2px}
+.col.bad{background:var(--bad-soft)} .col.ok{background:var(--ok-soft)}
+.conseq{background:var(--warn-soft);border-radius:10px;padding:8px 12px;margin-top:8px;font-size:14px}
+.conseq div+div{margin-top:4px}
+.conta{background:var(--chip);border-radius:10px;padding:10px 12px;font-size:14px}
+.conta div+div{margin-top:6px}
+.conta .f{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:13px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:600;white-space:normal;vertical-align:bottom}
+table.txt td,table.txt th{text-align:left;white-space:normal;vertical-align:top}
+td.bad{background:var(--bad-soft)}
+td.ok{background:var(--ok-soft)}
+th.verd,td.verd{background:var(--accent-soft)}
+td.l{text-align:left}
+tr.rem td{text-decoration:line-through;color:var(--muted)}
+tr.rem td.motivo,tr.rem td.verd{text-decoration:none}
+tr.tot td{font-weight:600}
+.legenda{font-size:12px;color:var(--muted);margin:6px 0 0}
+.legenda .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.toggles{display:flex;flex-wrap:wrap;gap:4px 16px}
+.toggles .chk{margin:6px 0}
+.timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:1240px;margin:0 auto;padding:0 16px 24px}
+.timer button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+.timer output{font-size:22px;font-variant-numeric:tabular-nums;min-width:80px}
+footer{max-width:1240px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:12px}
+footer p{margin:0 0 6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Quanto Custa um Dado Ruim</h1>
+  <p class="sub">Aula 4 · Métodos e Ferramentas de Data Science · FGV MBA. Comece pelas abas <b>Instruções</b> e <b>Conceitos</b>; depois abra a aba do seu grupo.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<main id="main"></main>
+<div class="timer">
+  <span>Cronômetro:</span>
+  <button data-min="40">Trabalho em grupo · 40 min</button>
+  <button data-min="5">Apresentação · 5 min</button>
+  <button id="stop">Parar</button>
+  <output id="clock">--:--</output>
+</div>
+<footer>
+  <p><b>Aviso: as regras de decisão da empresa e os tratamentos “contar como atraso” e “preencher com a nota dos atrasados” são modelos para fins didáticos apenas, não fórmulas publicadas.</b> Empresa, produtos, dados, defeitos e valores são fictícios e gerados por simulação, com semente fixa: os números se repetem em qualquer computador. Como os dados foram simulados, conhecemos a verdade; na vida real, você só vê a base como está.</p>
+  <p>Referências: Rubin, D. B. Inference and missing data. <i>Biometrika</i>, 63(3), 1976. Rousseeuw, P. J.; Croux, C. Alternatives to the median absolute deviation. <i>Journal of the American Statistical Association</i>, 88(424), 1993. McKinney, W. <i>Python for Data Analysis</i>. 3. ed. O’Reilly, 2022, cap. 7 (Data Cleaning and Preparation).</p>
+</footer>
+
+<script>
+// ---------- utilidades ----------
+const $ = id => document.getElementById(id);
+function rngFrom(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r){ let u = 0, v = 0; while(!u) u = r(); while(!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+const fmt = (v, d = 0) => v.toLocaleString("pt-BR", {maximumFractionDigits: d, minimumFractionDigits: d});
+const pct = (v, d = 1) => fmt(v * 100, d) + "%";
+const reais = (v, d = 0) => "R$ " + fmt(v, d);
+const brl = v => "R$ " + (Math.abs(v) >= 1e6 ? fmt(v / 1e6, 1) + " mi" : Math.abs(v) >= 1e3 ? fmt(v / 1e3, 0) + " mil" : fmt(v, 0));
+const pick = (r, pares) => { let u = r(), acc = 0; for (const [v, p] of pares){ acc += p; if (u < acc) return v; } return pares[pares.length - 1][0]; };
+function shuffle(a, r){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const soma = a => a.reduce((x, y) => x + y, 0);
+const media = a => soma(a) / a.length;
+const desvio = a => { const m = media(a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); };
+const mediana = a => { const s = a.slice().sort((x, y) => x - y), n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };
+const mad = a => { const m = mediana(a); return mediana(a.map(y => Math.abs(y - m))); };
+const D0 = Date.UTC(2026, 0, 1);
+const diaCurto = dia => { const d = new Date(D0 + dia * 86400000); return String(d.getUTCDate()).padStart(2, "0") + "/" + String(d.getUTCMonth() + 1).padStart(2, "0"); };
+const dezAnos = dia => { const d = new Date(D0 + dia * 86400000); return (Date.UTC(d.getUTCFullYear() + 10, d.getUTCMonth(), d.getUTCDate()) - D0) / 86400000; };
+const dataStr = dia => { const d = new Date(D0 + dia * 86400000); return String(d.getUTCDate()).padStart(2, "0") + "/" + String(d.getUTCMonth() + 1).padStart(2, "0") + "/" + d.getUTCFullYear(); };
+
+// ---------- a base verdadeira (fictícia) ----------
+const N = 5000, ANO = 100;   // a base é uma amostra de 1% dos pedidos de um ano
+const PROM = {SE: 7, S: 9, CO: 10, NE: 12, N: 15};
+const PATRASO = {A: 0.08, B: 0.14, C: 0.24};
+const CATS = [["Casa", 0.22, 160], ["Eletrônicos", 0.20, 220], ["Beleza", 0.22, 80], ["Esporte", 0.18, 110], ["Brinquedos", 0.18, 90]];
+const PRODUTOS = {
+  "Casa": ["Jogo de toalhas", "Panela antiaderente", "Luminária de mesa", "Tapete de sala", "Organizador de gavetas"],
+  "Eletrônicos": ["Fone Bluetooth", "Caixa de som portátil", "Smartwatch", "Carregador portátil", "Teclado sem fio"],
+  "Beleza": ["Perfume", "Hidratante", "Protetor solar", "Kit de maquiagem", "Shampoo"],
+  "Esporte": ["Tênis de corrida", "Garrafa térmica", "Bola de futebol", "Tapete de ioga", "Corda de pular"],
+  "Brinquedos": ["Quebra-cabeça", "Boneca", "Carrinho de controle", "Jogo de tabuleiro", "Blocos de montar"]
+};
+const CAT_DO_PRODUTO = {}; Object.entries(PRODUTOS).forEach(([c, ps]) => ps.forEach(p => CAT_DO_PRODUTO[p] = c));
+const BASE = (() => { const r = rngFrom(3), r2 = rngFrom(5), out = [];
+  for (let i = 0; i < N; i++){
+    const transp = pick(r, [["A", 0.40], ["B", 0.35], ["C", 0.25]]);
+    const reg = pick(r, [["SE", 0.45], ["S", 0.15], ["NE", 0.20], ["CO", 0.10], ["N", 0.10]]);
+    const prom = PROM[reg], atrasou = r() < PATRASO[transp];
+    const prazo = atrasou ? prom + 1 + Math.floor(Math.exp(1.2 + 0.6 * gauss(r))) : Math.max(1, prom - Math.floor(r() * prom * 0.5));
+    const nota = atrasou ? pick(r, [[1, 0.35], [2, 0.3], [3, 0.25], [4, 0.1]]) : pick(r, [[3, 0.10], [4, 0.30], [5, 0.60]]);
+    const cat = pick(r, CATS.map(([n, p]) => [n, p]));
+    const valor = Math.round(CATS.find(x => x[0] === cat)[2] * Math.exp(0.5 * gauss(r) - 0.125) * 100) / 100;
+    const produto = PRODUTOS[cat][Math.floor(r2() * 5)], compra = Math.floor(r2() * 330);
+    out.push({id: "P" + String(i + 1).padStart(5, "0"), transp, reg, prom, prazo, nota, cat, produto, valor, compra, pv: prazo, nv: nota, catV: cat});
+  }
+  return out; })();
+
+// ordem fixa em que os defeitos aparecem (mover o controle só acrescenta ou tira linhas do fim da fila)
+const ORD = (() => { const r = rngFrom(17), ids = f => BASE.filter(f).map(x => x.id);
+  return {
+    cAtrasados: shuffle(ids(x => x.transp === "C" && x.pv > x.prom), r),
+    outrosAtrasados: shuffle(ids(x => x.transp !== "C" && x.pv > x.prom), r),
+    noPrazo: shuffle(ids(x => x.pv <= x.prom), r),
+    datas: shuffle(ids(() => true), r).map(id => ({id, tipo: r() < 0.7 ? "ano" : "troca"})),
+    eletronicos: shuffle(ids(x => x.cat === "Eletrônicos"), r),
+    sudeste: shuffle(ids(x => x.reg === "SE"), r)
+  }; })();
+
+// ---------- os defeitos (cada aba traz só o defeito que a sua decisão investiga) ----------
+function sujar(g, st){
+  const rows = BASE.map(x => ({...x})), porId = new Map(rows.map(x => [x.id, x]));
+  if (g === "transp" || g === "nota"){
+    // pedido sem confirmação de entrega: a transportadora não registra a entrega
+    const k = Math.round(N * st.falt / 100);
+    const a = ORD.cAtrasados.slice(0, Math.min(Math.round(k * 0.35), ORD.cAtrasados.length));
+    const b = ORD.outrosAtrasados.slice(0, Math.min(Math.round(k * 0.2), ORD.outrosAtrasados.length));
+    const c = ORD.noPrazo.slice(0, Math.max(0, k - a.length - b.length));
+    [...a, ...b, ...c].forEach(id => { const x = porId.get(id); x.prazo = null; x.nota = null; x.falt = true; });
+  }
+  if (g === "bonus" || g === "prazoNorte"){
+    // data digitada errado: ano trocado (2036) ou data de compra e de entrega trocadas de campo
+    ORD.datas.slice(0, Math.round(N * st.datas / 100)).forEach(({id, tipo}) => { const x = porId.get(id); x.prazo = tipo === "ano" ? dezAnos(x.compra + x.pv) - x.compra : -x.pv; x.dataRuim = tipo; });
+  }
+  if (g === "categoria"){
+    // eletrônicos de um vendedor do marketplace cadastrados como Casa
+    ORD.eletronicos.slice(0, Math.round(ORD.eletronicos.length * st.cad / 100)).forEach(id => { const x = porId.get(id); x.cat = "Casa"; x.catRuim = true; });
+  }
+  if (g === "entregadores"){
+    // a integração com o marketplace grava de novo pedidos do Sudeste
+    return rows.concat(ORD.sudeste.slice(0, Math.round(N * st.dup / 100)).map(id => ({...porId.get(id), dup: true})));
+  }
+  return rows;
+}
+const compraVista = x => x.dataRuim === "troca" ? x.compra + x.pv : x.compra;
+const entregaVista = x => x.prazo === null ? null : compraVista(x) + x.prazo;
+
+// ---------- os tratamentos ----------
+function tratar(g, rows, st){
+  const out = rows.map(x => ({...x}));
+  if (g === "transp" && st.lfalt) out.forEach(x => { if (x.prazo === null) x.contaAtraso = true; });
+  if (g === "entregadores" && st.ldup){ const vistos = new Set(); out.forEach(x => { if (vistos.has(x.id)) x.rem = "removida: repetida"; vistos.add(x.id); }); }
+  if ((g === "bonus" || g === "prazoNorte") && st.ldatas) out.forEach(x => { if (x.prazo !== null && (x.prazo < 0 || x.prazo > 120)) x.rem = "excluída: data impossível"; });
+  if (g === "categoria" && st.lcad) out.forEach(x => { const c = CAT_DO_PRODUTO[x.produto]; if (c !== x.cat){ x.catAntes = x.cat; x.cat = c; x.corr = true; } });
+  if (g === "nota" && st.imput !== "nenhum"){
+    const resp = out.filter(x => x.nota !== null), base = st.imput === "media" ? resp : resp.filter(x => x.prazo > x.prom);
+    const v = media(base.map(x => x.nota));
+    out.forEach(x => { if (x.nota === null){ x.nota = v; x.imput = true; } });
+  }
+  return out;
+}
+const ativas = rows => rows.filter(x => !x.rem);
+
+// ---------- controles ----------
+const CTL = {
+  falt: {tipo: "slider", rot: "Pedidos sem confirmação de entrega (% da base)", min: 0, max: 30, step: 1, f: v => fmt(v) + "%"},
+  dup: {tipo: "slider", rot: "Linhas gravadas em dobro (% da base)", min: 0, max: 20, step: 1, f: v => fmt(v) + "%"},
+  datas: {tipo: "slider", rot: "Datas digitadas errado (% da base)", min: 0, max: 5, step: 0.5, f: v => fmt(v, 1) + "%"},
+  cad: {tipo: "slider", rot: "Eletrônicos cadastrados como Casa (% dos pedidos de eletrônicos)", min: 0, max: 50, step: 5, f: v => fmt(v) + "%"},
+  lfalt: {tipo: "check", rot: "Contar pedido sem confirmação como atrasado", ajuda: "Hipótese de pior caso: todo pedido sem confirmação entra na conta como atraso. Serve para testar se a decisão muda; é uma hipótese do simulador, não um método publicado."},
+  ldup: {tipo: "check", rot: "Remover linhas com número de pedido repetido", ajuda: "Fica uma linha por número de pedido, como o drop_duplicates(subset=\"pedido\") do pandas."},
+  ldatas: {tipo: "check", rot: "Excluir datas impossíveis", ajuda: "Sai da conta o pedido com prazo negativo (entrega antes da compra) ou acima de 120 dias."},
+  lmed: {tipo: "check", rot: "Usar medidas robustas", ajuda: "Mediana no lugar da média (e, no Grupo 6, desvio robusto no lugar do desvio padrão). A regra muda nas três colunas, inclusive na da verdade."},
+  lcad: {tipo: "check", rot: "Corrigir a categoria pelo cadastro de produtos", ajuda: "Cada produto tem uma categoria no cadastro oficial da empresa (uma tabela de-para produto → categoria). O pedido passa a ter a categoria do seu produto."},
+  imput: {tipo: "radio", rot: "Pedidos sem nota", ops: [["nenhum", "Não tratar: usar só as notas recebidas"], ["media", "Preencher com a nota média de quem respondeu"], ["atrasados", "Preencher com a nota média de quem recebeu com atraso (hipótese do simulador)"]]}
+};
+const PADRAO = {falt: 15, dup: 8, datas: 2, cad: 25, lfalt: false, ldup: false, ldatas: false, lmed: false, lcad: false, imput: "nenhum"};
+
+// ---------- peças de tabela ----------
+const th = (t, c = "") => `<th class="${c}">${t}</th>`;
+const td = (t, c = "") => `<td class="${c}">${t}</td>`;
+const tabela = (cab, linhas) => `<div class="tbl"><table><tr>${cab.join("")}</tr>${linhas.join("")}</table></div>`;
+function escolher(rows, filtros, total = 12){
+  const usados = new Set(), sel = [];
+  const chave = x => x.id + (x.dup ? "d" : "");
+  filtros.forEach(([f, n]) => rows.filter(x => !usados.has(chave(x)) && f(x)).slice(0, n).forEach(x => { usados.add(chave(x)); sel.push(x); }));
+  rows.filter(x => !usados.has(chave(x))).slice(0, Math.max(0, total - sel.length)).forEach(x => { usados.add(chave(x)); sel.push(x); });
+  return sel.sort((a, b) => a.id.localeCompare(b.id));
+}
+const atrasoTxt = x => x.pv > x.prom ? "atrasou" : "no prazo";
+
+// ---------- as seis decisões ----------
+const DEC = {
+  transp: {
+    nome: "Escolher a transportadora", area: "Operações", indicador: "taxa de atraso por transportadora",
+    situacao: "O diretor de operações vai concentrar todas as entregas de 2027 numa única transportadora: a que atrasa menos. Hoje a Entrega Já trabalha com três, a A, a B e a C. Cada atraso custa à empresa um cupom de R$ 20, dado ao cliente como compensação.",
+    regra: "Taxa de atraso de cada transportadora = pedidos que atrasaram ÷ pedidos com confirmação de entrega. Contratar a de menor taxa. O pedido sem confirmação fica de fora da conta, porque não tem data de entrega e, portanto, não tem prazo real.",
+    olhar: "Na tabela por transportadora, compare quantos pedidos cada uma deixou sem confirmação. Na amostra, veja quais pedidos ficaram sem data de entrega e de que transportadora eles são.",
+    controles: ["falt", "lfalt"], temTrat: s => s.lfalt,
+    perguntas: [
+      {tipo: "teste", q: "Com a base como está, qual transportadora tem a menor taxa de atraso? Qual tem mais pedidos sem confirmação? Isso chama a atenção?", cen: [{rot: "Testar: base como está", muda: {}}]},
+      {tipo: "teste", q: "O pedido sem confirmação sai da conta: some do numerador (atrasados) e do denominador (pedidos com confirmação). Mude os pedidos sem confirmação para 0%, 5% e 15%. O que acontece com a taxa da C? E com a da A e da B? Use “A conta, passo a passo” para ver os números.", cen: [{rot: "0% (nenhum sem confirmação)", muda: {falt: 0}}, {rot: "5%", muda: {falt: 5}}, {rot: "15%", muda: {falt: 15}}]},
+      {tipo: "teste", q: "Conte os pedidos sem confirmação como atrasados. Quem vence agora? A taxa de cada uma fica igual à da verdade?", cen: [{rot: "Testar: contar como atrasado", muda: {lfalt: true}}]},
+      {tipo: "disc", q: "Por que a C, justamente a que tem mais pedidos sem confirmação, aparece com a menor taxa de atraso? A falta de confirmação parece acontecer ao acaso?", dica: "Dica: marque “Mostrar o que de fato aconteceu” e veja o prazo real dos pedidos da C que ficaram sem confirmação."},
+      {tipo: "disc", q: "Que pergunta você faria à transportadora C antes de assinar? Que regra de qualidade evitaria o problema?", dica: "Dica: quem registra a entrega? O contrato poderia exigir a confirmação de todo pedido, ou tratar o pedido sem confirmação como atraso?"}
+    ],
+    calc(rows){ const d = {};
+      ["A", "B", "C"].forEach(k => { const p = rows.filter(x => x.transp === k), conf = p.filter(x => x.prazo !== null);
+        const sem = p.length - conf.length, atr = conf.filter(x => x.prazo > x.prom).length, trat = p.some(x => x.contaAtraso);
+        const num = atr + (trat ? sem : 0), den = trat ? p.length : conf.length;
+        d[k] = {ped: p.length, conf: conf.length, sem, atr, num, den, taxa: num / den, trat}; });
+      const melhor = ["A", "B", "C"].sort((a, b) => d[a].taxa - d[b].taxa)[0];
+      return {d, chave: melhor, decisao: "Contratar " + melhor, valor: "atraso: A " + pct(d.A.taxa) + " · B " + pct(d.B.taxa) + " · C " + pct(d.C.taxa)}; },
+    tabela({rv, rs, rt, trat}){
+      const estrela = (r, k) => r.chave === k ? " ★" : "";
+      return tabela([th("Transportadora"), th("Pedidos"), th("Sem confirmação"), th("Atrasados entre os confirmados"), th("Taxa: como está"), ...(trat ? [th("Taxa: depois do trat.")] : []), th("Taxa: verdade", "verd")],
+        ["A", "B", "C"].map(k => { const s = rs.d[k];
+          return `<tr>${td(k)}${td(fmt(s.ped))}${td(fmt(s.sem) + " (" + pct(s.sem / s.ped, 0) + ")")}${td(fmt(s.atr))}${td(pct(s.taxa) + estrela(rs, k))}${trat ? td(pct(rt.d[k].taxa) + estrela(rt, k)) : ""}${td(pct(rv.d[k].taxa) + estrela(rv, k), "verd")}</tr>`; }))
+        + `<p class="legenda">★ = menor taxa, a transportadora que seria contratada.</p>`;
+    },
+    conta({rv, rs, rt, trat}){
+      const lin = (r, f) => ["A", "B", "C"].map(k => `${k}: ${f(r.d[k])} = <b>${pct(r.d[k].taxa)}</b>`).join(" · ");
+      return `<div><b>Como está</b> · taxa = atrasados ÷ pedidos com confirmação<br><span class="f">${lin(rs, d => fmt(d.atr) + " ÷ " + fmt(d.conf))}</span><br>Contratar a de menor taxa: <b>${rs.chave}</b>.</div>`
+        + (trat ? `<div><b>Depois do tratamento</b> · taxa = (atrasados + sem confirmação) ÷ todos os pedidos<br><span class="f">${lin(rt, d => "(" + fmt(d.atr) + " + " + fmt(d.sem) + ") ÷ " + fmt(d.ped))}</span><br>Contratar: <b>${rt.chave}</b>.</div>` : "")
+        + `<div><b>Verdade</b> · todos os pedidos têm confirmação: taxa = atrasados ÷ pedidos<br><span class="f">${lin(rv, d => fmt(d.atr) + " ÷ " + fmt(d.conf))}</span><br>Contratar: <b>${rv.chave}</b>.</div>`;
+    },
+    consequencia(r, rv){
+      if (r.chave === rv.chave) return "mesma transportadora da verdade: a escolha está certa (confira se a taxa também está).";
+      const extra = (rv.d[r.chave].taxa - rv.d[rv.chave].taxa) * N * ANO;
+      return `contratar a ${r.chave} em vez da ${rv.chave}. Na verdade, a ${r.chave} atrasa ${pct(rv.d[r.chave].taxa)} e a ${rv.chave}, ${pct(rv.d[rv.chave].taxa)}: são cerca de <b>${fmt(Math.round(extra / 1000))} mil atrasos a mais por ano</b> (500 mil pedidos) e <b>${brl(extra * 20)} por ano em cupons</b>.`;
+    },
+    amostra(T){
+      const sel = escolher(T, [[x => x.transp === "C" && x.falt, 4], [x => x.transp === "A" && x.falt, 1], [x => x.transp === "B" && x.falt, 1], [x => x.transp === "C" && !x.falt && x.pv > x.prom, 1], [x => x.transp === "C" && !x.falt, 2], [x => x.transp !== "C" && !x.falt, 3]]);
+      return {cols: ["Pedido", "Transp.", "Compra", "Entrega", "Prazo real (dias)", "Prometido (dias)", "Atrasou?"],
+        linhas: sel.map(x => ({cells: [[x.id], [x.transp], [dataStr(x.compra)], [x.prazo === null ? "—" : dataStr(entregaVista(x)), x.falt], [x.prazo === null ? "—" : fmt(x.prazo), x.falt], [x.prom],
+          x.contaAtraso ? ["sim (tratado)", false, true] : [x.prazo === null ? "—" : x.prazo > x.prom ? "sim" : "não", x.falt]],
+          verd: `entregue em ${diaCurto(x.compra + x.pv)} · ${x.pv} dias · ${atrasoTxt(x)}`}))};
+    }
+  },
+
+  entregadores: {
+    nome: "Contratar entregadores no Sudeste", area: "RH", indicador: "pedidos por dia no Sudeste",
+    situacao: "O RH vai contratar entregadores próprios para o Sudeste, onde está quase metade dos clientes. Cada entregador dá conta de 40 pedidos por dia e custa R$ 4 mil por mês. Desde março, parte dos pedidos chega à base por uma integração com um marketplace.",
+    regra: "Pedidos por dia no Sudeste = linhas do Sudeste na base × 100 ÷ 365 (a base é 1% de um ano). Entregadores = pedidos por dia ÷ 40, arredondado para cima. Custo = entregadores × R$ 4 mil × 12 meses.",
+    olhar: "Na tabela, compare o número de linhas do Sudeste com o número de pedidos diferentes. Na amostra, leia o número de cada pedido, a data e o valor.",
+    controles: ["dup", "ldup"], temTrat: s => s.ldup,
+    perguntas: [
+      {tipo: "teste", q: "Com a base como está, quantos entregadores o RH contrataria? E na verdade? Quanto custa a diferença por ano?", cen: [{rot: "Testar: base como está", muda: {}}]},
+      {tipo: "teste", q: "Na tabela, quantas linhas do Sudeste há, e quantos números de pedido diferentes? Compare 4%, 8% e 16% de linhas gravadas em dobro: como o erro cresce?", cen: [{rot: "4%", muda: {dup: 4}}, {rot: "8%", muda: {dup: 8}}, {rot: "16%", muda: {dup: 16}}]},
+      {tipo: "teste", q: "Remova as linhas com número de pedido repetido. A decisão volta ao correto? O número de entregadores fica igual ao da verdade?", cen: [{rot: "Testar: remover repetidas", muda: {ldup: true}}]},
+      {tipo: "disc", q: "Na amostra, como você percebe que uma linha está repetida? Que coluna identifica o pedido, e que comando do pandas encontraria as repetições?", dica: "Dica: o mesmo número de pedido aparece duas vezes, com a mesma data e o mesmo valor. Lembre do drop_duplicates do NB04 (seção 6)."},
+      {tipo: "disc", q: "Que controle de qualidade evitaria o problema na origem?", dica: "Dica: a base deveria aceitar dois pedidos com o mesmo número? Onde a repetição nasce?"}
+    ],
+    calc(rows){ const se = rows.filter(x => x.reg === "SE"), linhas = se.length, distintos = new Set(se.map(x => x.id)).size;
+      const pdia = linhas * ANO / 365, n = Math.ceil(pdia / 40);
+      return {linhas, distintos, rep: linhas - distintos, pdia, n, custo: n * 4000 * 12, chave: n, decisao: n + " entregadores · " + brl(n * 48000) + " por ano", valor: fmt(pdia, 0) + " pedidos por dia"}; },
+    tabela({rv, rs, rt, trat}){
+      const L = [["Linhas do Sudeste na base", r => fmt(r.linhas)], ["Números de pedido diferentes", r => fmt(r.distintos)], ["Linhas com número repetido", r => fmt(r.rep)],
+        ["Pedidos por dia", r => fmt(r.pdia, 1)], ["Entregadores", r => fmt(r.n)], ["Custo por ano", r => reais(r.custo)]];
+      return tabela([th("Sudeste"), th("Como está"), ...(trat ? [th("Depois do tratamento")] : []), th("Verdade", "verd")],
+        L.map(([n, f]) => `<tr>${td(n)}${td(f(rs))}${trat ? td(f(rt)) : ""}${td(f(rv), "verd")}</tr>`));
+    },
+    conta({rv, rs, rt, trat}){
+      const lin = (t, r) => `<div><b>${t}</b><br><span class="f">pedidos por dia = ${fmt(r.linhas)} linhas × 100 ÷ 365 = ${fmt(r.pdia, 1)}<br>entregadores = ${fmt(r.pdia, 1)} ÷ 40 = ${fmt(r.pdia / 40, 2)} → ${r.n} (para cima)<br>custo = ${r.n} × R$ 4.000 × 12 = ${reais(r.custo)}</span></div>`;
+      return lin("Como está", rs) + (trat ? lin("Depois do tratamento", rt) : "") + lin("Verdade", rv);
+    },
+    consequencia(r, rv){
+      if (r.chave === rv.chave) return "mesmo número de entregadores da verdade.";
+      const dif = r.n - rv.n;
+      return `${dif > 0 ? "contratar" : "deixar de contratar"} <b>${Math.abs(dif)} entregador${Math.abs(dif) > 1 ? "es" : ""}</b> ${dif > 0 ? "a mais" : "necessários"}: <b>${brl(Math.abs(dif) * 48000)} por ano</b>${dif > 0 ? " pagos por entregas que não existem" : ""}.`;
+    },
+    amostra(T){
+      const se = T.filter(x => x.reg === "SE"), dupIds = se.filter(x => x.dup).slice(0, 3).map(x => x.id);
+      const sel = escolher(se, [[x => dupIds.includes(x.id), 6], [x => !dupIds.includes(x.id), 6]]);
+      return {cols: ["Pedido", "Região", "Compra", "Produto", "Valor", "Transp."],
+        linhas: sel.map(x => ({rem: x.rem, cells: [[x.id, x.dup], [x.reg], [dataStr(x.compra)], [x.produto, false, false, "l"], [reais(x.valor, 2)], [x.transp]],
+          verd: x.dup ? "cópia: o pedido foi feito uma vez só" : "pedido real"}))};
+    }
+  },
+
+  bonus: {
+    nome: "Pagar o bônus da logística", area: "Financeiro", indicador: "prazo médio de entrega",
+    situacao: "O time de logística recebe um bônus de R$ 300 mil se o prazo médio de entrega do ano ficar em até 10 dias. O financeiro precisa dizer se o time bateu a meta. As datas de compra e de entrega são digitadas num formulário pelos parceiros de entrega.",
+    regra: "Prazo real de cada pedido = data de entrega − data da compra, em dias. Prazo médio = soma dos prazos ÷ número de pedidos. Paga o bônus se o prazo médio for de até 10 dias.",
+    olhar: "Na tabela, compare o menor e o maior prazo com o que é possível para uma entrega. Na amostra, leia as datas de compra e de entrega de cada pedido.",
+    controles: ["datas", "ldatas", "lmed"], temTrat: s => s.ldatas || s.lmed,
+    perguntas: [
+      {tipo: "teste", q: "Com a base como está, o time recebe o bônus? E na verdade? Na tabela, o menor e o maior prazo são possíveis?", cen: [{rot: "Testar: base como está", muda: {}}]},
+      {tipo: "teste", q: "Quantas datas erradas bastam para mudar a decisão? Quanto a média muda?", cen: [{rot: "Nenhuma data errada", muda: {datas: 0}}, {rot: "0,5%", muda: {datas: 0.5}}, {rot: "1%", muda: {datas: 1}}]},
+      {tipo: "teste", q: "Compare as duas saídas: excluir as datas impossíveis ou usar a mediana. As duas acertam a decisão? O número fica igual ao da verdade?", cen: [{rot: "Excluir datas impossíveis", muda: {ldatas: true}}, {rot: "Usar a mediana", muda: {lmed: true}}]},
+      {tipo: "disc", q: "Na amostra, que datas são impossíveis, e por quê? Que regra simples as encontraria antes da conta?", dica: "Dica: o ano da entrega faz sentido? A entrega pode ser antes da compra? Lembre do describe(), que mostra o menor e o maior valor."},
+      {tipo: "disc", q: "Qual é o jeito justo de definir a meta: média ou mediana?", dica: "Dica: com a mediana, um pedido que demorou 60 dias pesa o mesmo que um de 11. Isso é bom ou ruim para o cliente?"}
+    ],
+    calc(rows, s){ const v = rows.filter(x => x.prazo !== null).map(x => x.prazo), m = media(v), md = mediana(v), ind = s.lmed ? md : m, ok = ind <= 10;
+      return {n: v.length, soma: soma(v), media: m, mediana: md, min: Math.min(...v), max: Math.max(...v), imposs: v.filter(y => y < 0 || y > 120).length, ind, lmed: s.lmed,
+        chave: ok, decisao: ok ? "Paga o bônus" : "Não paga o bônus", valor: (s.lmed ? "mediana " : "média ") + fmt(ind, 1) + " dias"}; },
+    tabela({rv, rs, rt, trat}){
+      const L = [["Pedidos com data de entrega", r => fmt(r.n)], ["Datas impossíveis (prazo &lt; 0 ou &gt; 120 dias)", r => fmt(r.imposs)], ["Menor prazo (dias)", r => fmt(r.min)], ["Maior prazo (dias)", r => fmt(r.max)],
+        ["Média (dias)", r => fmt(r.media, 1)], ["Mediana (dias)", r => fmt(r.mediana, 1)], ["Decisão", r => r.decisao]];
+      return tabela([th("Prazo de entrega"), th("Como está"), ...(trat ? [th("Depois do tratamento")] : []), th("Verdade", "verd")],
+        L.map(([n, f]) => `<tr>${td(n)}${td(f(rs))}${trat ? td(f(rt)) : ""}${td(f(rv), "verd")}</tr>`));
+    },
+    conta({rv, rs, rt, trat}){
+      const lin = (t, r) => `<div><b>${t}</b><br><span class="f">${r.lmed ? `mediana = valor do meio dos ${fmt(r.n)} prazos em ordem = ${fmt(r.mediana, 1)} dias` : `prazo médio = ${fmt(r.soma)} dias ÷ ${fmt(r.n)} pedidos = ${fmt(r.media, 1)} dias`}</span><br>${fmt(r.ind, 1)} ${r.ind <= 10 ? "≤" : "&gt;"} 10 dias: <b>${r.decisao.toLowerCase()}</b>.</div>`;
+      return lin("Como está", rs) + (trat ? lin("Depois do tratamento", rt) : "") + lin("Verdade", rv);
+    },
+    consequencia(r, rv){
+      if (r.chave === rv.chave) return "mesma decisão da verdade.";
+      return r.chave ? "a empresa <b>paga R$ 300 mil</b> por uma meta que não foi cumprida." : `o time cumpriu a meta (na verdade, ${rv.valor}) e <b>deixa de receber R$ 300 mil</b>.`;
+    },
+    amostra(T){
+      const sel = escolher(T, [[x => x.dataRuim === "ano", 3], [x => x.dataRuim === "troca", 2], [x => !x.dataRuim, 7]]);
+      return {cols: ["Pedido", "Compra", "Entrega", "Prazo real (dias)"],
+        linhas: sel.map(x => ({rem: x.rem, cells: [[x.id], [dataStr(compraVista(x)), x.dataRuim === "troca"], [dataStr(entregaVista(x)), !!x.dataRuim], [fmt(x.prazo), !!x.dataRuim]],
+          verd: `${diaCurto(x.compra)} → ${diaCurto(x.compra + x.pv)}: ${x.pv} dias`}))};
+    }
+  },
+
+  categoria: {
+    nome: "Ampliar o estoque de uma categoria", area: "Comercial", indicador: "faturamento por categoria",
+    situacao: "O comercial vai ampliar o estoque da categoria que mais faturou no ano. Desde março, os vendedores do marketplace cadastram os próprios produtos e escolhem a categoria do pedido numa lista.",
+    regra: "Faturamento de cada categoria = soma do valor dos pedidos da base × 100 (a base é 1% de um ano), agrupada pela categoria escrita no pedido. Ampliar a categoria de maior faturamento.",
+    olhar: "Na tabela, compare o faturamento e o número de pedidos de cada categoria. Na amostra, que mostra pedidos registrados como Casa, leia o nome de cada produto.",
+    controles: ["cad", "lcad"], temTrat: s => s.lcad,
+    perguntas: [
+      {tipo: "teste", q: "Com a base como está, qual categoria vence? E na verdade?", cen: [{rot: "Testar: base como está", muda: {}}]},
+      {tipo: "teste", q: "Compare 5%, 10% e 25% de eletrônicos cadastrados como Casa. A partir de quando a decisão muda? Quanto Casa ganha e quanto Eletrônicos perde?", cen: [{rot: "5%", muda: {cad: 5}}, {rot: "10%", muda: {cad: 10}}, {rot: "25%", muda: {cad: 25}}]},
+      {tipo: "teste", q: "Corrija a categoria pelo cadastro de produtos. O que muda no ranking? O faturamento fica igual ao da verdade?", cen: [{rot: "Testar: corrigir a categoria", muda: {lcad: true}}]},
+      {tipo: "disc", q: "Na amostra de pedidos registrados como Casa, que produtos não deveriam estar lá? Que comando do pandas mostraria os produtos de cada categoria?", dica: "Dica: value_counts() na coluna do produto, só com os pedidos de Casa."},
+      {tipo: "disc", q: "Onde o erro nasce, e como evitá-lo?", dica: "Dica: quem escolhe a categoria? E se ela viesse do cadastro do produto, e não da escolha do vendedor?"}
+    ],
+    calc(rows){ const f = {}, n = {}; CATS.forEach(([c]) => { f[c] = 0; n[c] = 0; });
+      rows.forEach(x => { f[x.cat] += x.valor; n[x.cat]++; });
+      const ord = CATS.map(([c]) => c).sort((a, b) => f[b] - f[a]);
+      return {f, n, ord, chave: ord[0], decisao: "Ampliar " + ord[0], valor: ord.slice(0, 2).map(c => `${c} ${brl(f[c] * ANO)}`).join(" · ")}; },
+    tabela({rv, rs, rt, trat}){
+      const estrela = (r, c) => r.chave === c ? " ★" : "";
+      return tabela([th("Categoria"), th("Pedidos: como está"), th("Faturamento: como está"), ...(trat ? [th("Depois do tratamento")] : []), th("Verdade", "verd")],
+        rv.ord.map(c => `<tr>${td(c)}${td(fmt(rs.n[c]))}${td(brl(rs.f[c] * ANO) + estrela(rs, c))}${trat ? td(brl(rt.f[c] * ANO) + estrela(rt, c)) : ""}${td(brl(rv.f[c] * ANO) + estrela(rv, c), "verd")}</tr>`))
+        + `<p class="legenda">Faturamento por ano. ★ = maior faturamento, a categoria que seria ampliada.</p>`;
+    },
+    conta({rv, rs, rt, trat}){
+      const lin = (t, r) => `<div><b>${t}</b><br><span class="f">${["Casa", "Eletrônicos"].map(c => `${c}: ${reais(r.f[c], 0)} (${fmt(r.n[c])} pedidos) × 100 = ${brl(r.f[c] * ANO)}`).join("<br>")}</span><br>Maior faturamento: <b>${r.chave}</b>.</div>`;
+      return lin("Como está", rs) + (trat ? lin("Depois do tratamento", rt) : "") + lin("Verdade", rv);
+    },
+    consequencia(r, rv){
+      if (r.chave === rv.chave) return "mesma categoria da verdade.";
+      return `ampliar ${r.chave} em vez de ${rv.chave}. Na verdade, ${r.chave} faturou ${brl(rv.f[r.chave] * ANO)} e ${rv.chave}, ${brl(rv.f[rv.chave] * ANO)}: a empresa aposta na categoria que fatura <b>${brl((rv.f[rv.chave] - rv.f[r.chave]) * ANO)} a menos por ano</b>.`;
+    },
+    amostra(T){
+      const casa = T.filter(x => (x.catAntes || x.cat) === "Casa");
+      const sel = escolher(casa, [[x => x.catRuim, 5], [x => !x.catRuim, 7]]);
+      return {cols: ["Pedido", "Produto", "Categoria no pedido", "Valor"],
+        linhas: sel.map(x => ({cells: [[x.id], [x.produto, x.catRuim, false, "l"], x.corr ? [x.cat + " (era Casa)", false, true, "l"] : [x.cat, false, false, "l"], [reais(x.valor, 2)]],
+          verd: "categoria do produto: " + x.catV}))};
+    }
+  },
+
+  nota: {
+    nome: "Reportar a satisfação ao conselho", area: "Diretoria", indicador: "nota média de satisfação",
+    situacao: "O conselho cobra uma nota média de satisfação de pelo menos 4,2, numa escala de 1 a 5. A pesquisa é enviada por e-mail logo depois da confirmação de entrega. A diretoria vai reportar a média das notas recebidas no ano.",
+    regra: "Nota reportada = soma das notas recebidas ÷ número de notas recebidas. Meta batida se a nota for de pelo menos 4,2.",
+    olhar: "Na tabela, compare a nota de quem recebeu no prazo com a de quem recebeu com atraso, e veja quantos pedidos ficaram sem nota e por quê.",
+    controles: ["falt", "imput"], temTrat: s => s.imput !== "nenhum",
+    perguntas: [
+      {tipo: "teste", q: "Com a base como está, a meta foi batida? E na verdade? Na tabela, qual é a taxa de resposta?", cen: [{rot: "Testar: base como está", muda: {}}]},
+      {tipo: "teste", q: "Mude os pedidos sem confirmação para 0%, 5% e 15%. O que acontece com a nota reportada? Por quê?", cen: [{rot: "0% (nenhum sem confirmação)", muda: {falt: 0}}, {rot: "5%", muda: {falt: 5}}, {rot: "15%", muda: {falt: 15}}]},
+      {tipo: "teste", q: "Compare os dois tratamentos: preencher com a nota média de quem respondeu, ou com a de quem recebeu com atraso. Qual acerta a decisão? Algum acerta o número?", cen: [{rot: "Média de quem respondeu", muda: {imput: "media"}}, {rot: "Média de quem atrasou", muda: {imput: "atrasados"}}]},
+      {tipo: "disc", q: "Quem ficou sem nota: mais o cliente satisfeito ou o insatisfeito? O que isso faz com a média?", dica: "Dica: a pesquisa só sai depois da confirmação de entrega. Marque “Mostrar o que de fato aconteceu” e veja a nota que esses clientes dariam."},
+      {tipo: "disc", q: "Como reportar a nota ao conselho com honestidade sobre a limitação?", dica: "Dica: além da nota, que número da tabela você mostraria junto (a taxa de resposta, por exemplo)?"}
+    ],
+    calc(rows){ const resp = rows.filter(x => x.nota !== null), s = soma(resp.map(x => x.nota)), m = s / resp.length, imput = rows.filter(x => x.imput);
+      return {n: resp.length, soma: s, m, nImput: imput.length, vImput: imput.length ? imput[0].nota : null, chave: m >= 4.2, decisao: m >= 4.2 ? "Meta batida" : "Meta não batida", valor: "nota " + fmt(m, 2)}; },
+    tabela({S, ver}){
+      const grupos = [["Recebeu no prazo", x => x.prazo !== null && x.prazo <= x.prom], ["Recebeu com atraso", x => x.prazo !== null && x.prazo > x.prom], ["Sem confirmação de entrega", x => x.prazo === null]];
+      const linhas = grupos.map(([n, f]) => { const g = S.filter(f), c = g.filter(x => x.nota !== null);
+        return `<tr>${td(n)}${td(fmt(g.length))}${td(fmt(c.length))}${td(c.length ? fmt(media(c.map(x => x.nota)), 2) : "—")}${ver ? td(g.length ? fmt(media(g.map(x => x.nv)), 2) : "—", "verd") : ""}</tr>`; });
+      const resp = S.filter(x => x.nota !== null);
+      linhas.push(`<tr class="tot">${td("Total")}${td(fmt(S.length))}${td(fmt(resp.length) + " (" + pct(resp.length / S.length, 0) + " de resposta)")}${td(fmt(media(resp.map(x => x.nota)), 2))}${ver ? td(fmt(media(S.map(x => x.nv)), 2), "verd") : ""}</tr>`);
+      return tabela([th("Situação da entrega (base como está)"), th("Pedidos"), th("Com nota"), th("Nota média"), ...(ver ? [th("Nota que dariam (só o simulador sabe)", "verd")] : [])], linhas);
+    },
+    conta({rv, rs, rt, trat}){
+      return `<div><b>Como está</b><br><span class="f">nota = ${fmt(rs.soma)} pontos ÷ ${fmt(rs.n)} notas recebidas = ${fmt(rs.m, 2)}</span><br>${fmt(rs.m, 2)} ${rs.chave ? "≥" : "&lt;"} 4,2: <b>${rs.decisao.toLowerCase()}</b>.</div>`
+        + (trat ? (rt.nImput ? `<div><b>Depois do tratamento</b><br><span class="f">nota = (${fmt(rs.soma)} + ${fmt(rt.nImput)} pedidos sem nota × ${fmt(rt.vImput, 2)}) ÷ ${fmt(rt.n)} = ${fmt(rt.m, 2)}</span><br><b>${rt.decisao}</b>.</div>` : `<div><b>Depois do tratamento</b><br>Não há pedido sem nota para preencher: a conta é a mesma da base como está.</div>`) : "")
+        + `<div><b>Verdade</b> · todos os clientes responderiam<br><span class="f">nota = ${fmt(rv.soma)} pontos ÷ ${fmt(rv.n)} notas = ${fmt(rv.m, 2)}</span><br><b>${rv.decisao}</b>.</div>`;
+    },
+    consequencia(r, rv){
+      if (r.chave === rv.chave) return `mesma decisão da verdade (nota reportada ${fmt(r.m, 2)}; a de todos os clientes é ${fmt(rv.m, 2)}).`;
+      return r.chave ? `o conselho é informado de que a meta foi batida (${fmt(r.m, 2)}), mas a nota de todos os clientes é ${fmt(rv.m, 2)}: <b>a diretoria comemora uma meta que não cumpriu e não aprova o plano de melhoria</b>.`
+        : `o conselho é informado de que a meta não foi batida (${fmt(r.m, 2)}), mas a nota de todos os clientes é ${fmt(rv.m, 2)}: <b>a empresa gasta num plano de melhoria que não precisava</b>.`;
+    },
+    amostra(T){
+      const sel = escolher(T, [[x => x.falt && x.transp === "C", 4], [x => x.falt, 1], [x => !x.falt && x.prazo > x.prom, 3], [x => !x.falt, 4]]);
+      return {cols: ["Pedido", "Transp.", "Entrega", "Atrasou?", "Nota"],
+        linhas: sel.map(x => ({cells: [[x.id], [x.transp], [x.prazo === null ? "—" : dataStr(entregaVista(x)), x.falt], [x.prazo === null ? "—" : x.prazo > x.prom ? "sim" : "não", x.falt],
+          x.imput ? [fmt(x.nota, 2) + " (preenchida)", false, true] : [x.nota === null ? "—" : fmt(x.nota), x.falt]],
+          verd: `${atrasoTxt(x)} · daria nota ${x.nv}`}))};
+    }
+  },
+
+  prazoNorte: {
+    nome: "Prometer o prazo no Norte", area: "Marketing", indicador: "média + 1 desvio padrão do prazo",
+    situacao: "O marketing vai mostrar, na página de compra, o prazo de entrega para a região Norte. A regra, usada há anos, é prometer a média do prazo real mais um desvio padrão, arredondada para cima. Prometer demais afasta o cliente na compra; prometer de menos gera atraso e nota baixa depois.",
+    regra: "Prazo prometido = média + 1 desvio padrão do prazo real dos pedidos do Norte, arredondado para cima. Com medidas robustas: mediana + 1 desvio robusto (1,4826 × MAD).",
+    olhar: "Na tabela, compare o menor e o maior prazo, a média com a mediana e o desvio padrão com o desvio robusto. Na amostra, leia as datas dos pedidos do Norte.",
+    controles: ["datas", "ldatas", "lmed"], temTrat: s => s.ldatas || s.lmed,
+    perguntas: [
+      {tipo: "teste", q: "Com a base como está, que prazo seria prometido? E na verdade? Olhe o maior prazo do Norte na tabela.", cen: [{rot: "Testar: base como está", muda: {}}]},
+      {tipo: "teste", q: "Exclua as datas impossíveis. Resolve? O prazo fica igual ao da verdade?", cen: [{rot: "Testar: excluir datas impossíveis", muda: {ldatas: true}}]},
+      {tipo: "teste", q: "Use medidas robustas, com e sem a exclusão das datas. O que acontece com o prazo prometido?", cen: [{rot: "Só medidas robustas", muda: {lmed: true}}, {rot: "Robustas e excluir datas", muda: {lmed: true, ldatas: true}}]},
+      {tipo: "disc", q: "Com cada prazo prometido, que parte dos pedidos do Norte chegaria no prazo? Que risco existe em prometer um prazo longo demais? E curto demais?", dica: "Dica: a última linha da tabela mostra a parte dos pedidos que, na verdade, chega dentro do prazo prometido."},
+      {tipo: "disc", q: "A regra “média + 1 desvio” é boa? Que alternativa você sugeriria?", dica: "Dica: lembre dos percentis do NB04. Que percentual dos pedidos você quer entregar dentro do prazo prometido?"}
+    ],
+    calc(rows, s){ const v = rows.filter(x => x.reg === "N" && x.prazo !== null).map(x => x.prazo);
+      const m = media(v), dp = desvio(v), md = mediana(v), rob = 1.4826 * mad(v), c = s.lmed ? md + rob : m + dp, p = Math.max(1, Math.ceil(c));
+      const prazosV = BASE.filter(x => x.reg === "N").map(x => x.pv), noPrazo = prazosV.filter(y => y <= p).length / prazosV.length;
+      return {n: v.length, min: Math.min(...v), max: Math.max(...v), imposs: v.filter(y => y < 0 || y > 120).length, media: m, dp, mediana: md, mad: mad(v), rob, c, p, noPrazo, lmed: s.lmed,
+        chave: p, decisao: "Prometer " + fmt(p) + " dias", valor: (s.lmed ? "mediana + desvio robusto = " : "média + desvio = ") + fmt(c, 1) + " dias"}; },
+    tabela({rv, rs, rt, trat}){
+      const L = [["Pedidos do Norte com data de entrega", r => fmt(r.n)], ["Datas impossíveis (prazo &lt; 0 ou &gt; 120 dias)", r => fmt(r.imposs)], ["Menor prazo (dias)", r => fmt(r.min)], ["Maior prazo (dias)", r => fmt(r.max)],
+        ["Média (dias)", r => fmt(r.media, 1)], ["Desvio padrão (dias)", r => fmt(r.dp, 1)], ["Mediana (dias)", r => fmt(r.mediana, 1)], ["Desvio robusto: 1,4826 × MAD (dias)", r => fmt(r.rob, 1)],
+        ["Prazo prometido", r => fmt(r.p) + " dias"], ["Pedidos que chegam no prazo prometido (na verdade)", r => pct(r.noPrazo, 0)]];
+      return tabela([th("Prazo no Norte"), th("Como está"), ...(trat ? [th("Depois do tratamento")] : []), th("Verdade", "verd")],
+        L.map(([n, f]) => `<tr>${td(n)}${td(f(rs))}${trat ? td(f(rt)) : ""}${td(f(rv), "verd")}</tr>`));
+    },
+    conta({rv, rs, rt, trat}){
+      const lin = (t, r) => `<div><b>${t}</b><br><span class="f">${r.lmed ? `mediana + 1,4826 × MAD = ${fmt(r.mediana, 1)} + 1,4826 × ${fmt(r.mad, 1)} = ${fmt(r.c, 1)}` : `média + desvio padrão = ${fmt(r.media, 1)} + ${fmt(r.dp, 1)} = ${fmt(r.c, 1)}`} → <b>${fmt(r.p)} dias</b> (para cima)</span></div>`;
+      return lin("Como está", rs) + (trat ? lin("Depois do tratamento", rt) : "") + lin("Verdade", rv);
+    },
+    consequencia(r, rv){
+      if (r.chave === rv.chave) return `mesmo prazo da verdade: ${fmt(r.p)} dias, com ${pct(r.noPrazo, 0)} dos pedidos chegando no prazo.`;
+      return `prometer ${fmt(r.p)} dias, quando a regra aplicada ao dado certo daria ${fmt(rv.p)}. Na verdade, ${pct(r.noPrazo, 0)} dos pedidos do Norte chegam em até ${fmt(r.p)} dias`
+        + (r.p > 60 ? ": <b>um prazo que nenhum cliente aceitaria na hora da compra</b>." : r.p < rv.p ? ": <b>mais clientes recebem depois do prometido</b>." : ": <b>um prazo mais longo que o necessário afasta clientes</b>.");
+    },
+    amostra(T){
+      const norte = T.filter(x => x.reg === "N");
+      const sel = escolher(norte, [[x => x.dataRuim === "ano", 2], [x => x.dataRuim === "troca", 2], [x => !x.dataRuim, 8]]);
+      return {cols: ["Pedido", "Região", "Compra", "Entrega", "Prazo real (dias)"],
+        linhas: sel.map(x => ({rem: x.rem, cells: [[x.id], [x.reg], [dataStr(compraVista(x)), x.dataRuim === "troca"], [dataStr(entregaVista(x)), !!x.dataRuim], [fmt(x.prazo), !!x.dataRuim]],
+          verd: `${diaCurto(x.compra)} → ${diaCurto(x.compra + x.pv)}: ${x.pv} dias`}))};
+    }
+  }
+};
+const ORDEM = ["transp", "entregadores", "bonus", "categoria", "nota", "prazoNorte"];
+const ROTEIRO = `<h3>Roteiro da apresentação (5 min)</h3><ol class="roteiro">
+  <li><b>A decisão e o indicador:</b> como a conta é feita (quadro “A conta, passo a passo”).</li>
+  <li><b>O defeito que vocês encontraram</b> na tabela e na amostra, e quanto ele muda o indicador: como está × verdade.</li>
+  <li><b>O tratamento:</b> o que ele corrige e o que não corrige (depois do tratamento × verdade).</li>
+  <li><b>A consequência</b> de decidir com o dado como está (quadro “Consequência”).</li>
+  <li><b>A regra de qualidade</b> que vocês recomendam para evitar o problema na origem.</li></ol>`;
+
+// ---------- abas de leitura ----------
+const INSTRUCOES = `<section class="card prose">
+<h2>A situação</h2>
+<p>A <b>Entrega Já</b> é uma empresa fictícia de comércio eletrônico que vende e entrega produtos em todo o Brasil. Nesta semana, seis áreas da empresa vão tomar decisões importantes, todas com números tirados da mesma base de pedidos do último ano.</p>
+<p>O time de dados desconfia que a base tem defeitos, mas ninguém sabe ainda quais, onde estão, nem se eles mudam alguma decisão. <b>Cada grupo faz o papel do analista de uma das decisões:</b> precisa investigar a base, encontrar o defeito que afeta a sua conta, medir quanto ele muda o indicador, testar um tratamento e recomendar à diretoria o que fazer.</p>
+
+<h2>Os dados</h2>
+<p>A base tem <b>5.000 pedidos</b>, uma amostra de 1% dos cerca de 500 mil pedidos do ano. Cada linha é um pedido. Por isso, para chegar ao total do ano, as contas multiplicam por 100.</p>
+<div class="tbl"><table class="txt">
+<tr><th>Coluna</th><th>O que guarda</th></tr>
+<tr><td>Pedido</td><td>número do pedido (P00001, P00002…). Cada pedido tem um número só.</td></tr>
+<tr><td>Transportadora</td><td>quem entregou: A, B ou C.</td></tr>
+<tr><td>Região</td><td>região do cliente: SE, S, CO, NE ou N.</td></tr>
+<tr><td>Produto e categoria</td><td>o produto comprado e a categoria registrada no pedido (Casa, Eletrônicos, Beleza, Esporte, Brinquedos).</td></tr>
+<tr><td>Valor</td><td>valor do pedido, em R$.</td></tr>
+<tr><td>Data da compra</td><td>dia em que o cliente comprou.</td></tr>
+<tr><td>Data de entrega</td><td>dia em que o cliente recebeu. Quem registra é a transportadora, no sistema da Entrega Já: esse registro é a <b>confirmação de entrega</b>.</td></tr>
+<tr><td>Prazo real</td><td>dias entre a compra e a entrega (data de entrega − data da compra).</td></tr>
+<tr><td>Prazo prometido</td><td>dias prometidos ao cliente na compra, por região: SE 7, S 9, CO 10, NE 12, N 15.</td></tr>
+<tr><td>Atrasou?</td><td>“sim” quando o prazo real passa do prometido.</td></tr>
+<tr><td>Nota</td><td>de 1 a 5, dada pelo cliente na pesquisa de satisfação, que é enviada por e-mail logo depois da confirmação de entrega.</td></tr>
+</table></div>
+<p><b>Pedido sem confirmação de entrega:</b> a transportadora não registrou a entrega. A base não diz se o pedido chegou no prazo, chegou atrasado ou se perdeu: a data de entrega, o prazo real e o “atrasou?” ficam vazios (aparecem como “—”). Como a pesquisa só sai depois da confirmação, esse pedido também fica sem nota.</p>
+
+<h2>Verdade, como está e depois do tratamento</h2>
+<p>Os dados foram simulados. Por isso o simulador conhece a <b>verdade</b>: a base sem nenhum defeito. Em cada aba de grupo você vê três versões da mesma conta, sempre com a mesma regra de decisão:</p>
+<ul>
+<li><b>Verdade</b>: a conta feita com a base perfeita. Na vida real ninguém vê essa coluna; aqui ela serve para medir o tamanho do erro.</li>
+<li><b>Como está</b>: a conta feita com a base do jeito que ela chegou, com o defeito.</li>
+<li><b>Depois do tratamento</b>: a conta depois do tratamento que vocês marcarem.</li>
+</ul>
+<p>Os quadros de decisão ficam <span style="background:var(--ok-soft);padding:0 4px;border-radius:4px">verdes</span> quando a decisão é a mesma da verdade e <span style="background:var(--bad-soft);padding:0 4px;border-radius:4px">vermelhos</span> quando é diferente. Em cada aba, a base traz o tipo de defeito que afeta aquela decisão. Por isso os números de uma aba não se comparam com os de outra.</p>
+
+<h2>O que cada grupo faz (40 minutos)</h2>
+<ol>
+<li><b>Leia</b> estas Instruções e a aba Conceitos (5 minutos). Depois, na aba do grupo, a situação, a regra de decisão e o que olhar.</li>
+<li><b>Investigue</b> a tabela do indicador e a amostra da base, sem marcar nada. Que defeito vocês encontram? Em que linhas? Como ele entra na conta?</li>
+<li><b>Responda às perguntas na ordem.</b> Nas perguntas “Teste no simulador”, o botão <b>Testar</b> muda os controles por vocês e escreve o resultado embaixo da pergunta. Nas de “Discussão” não há botão: a dica ajuda.</li>
+<li><b>Acompanhe “A conta, passo a passo”</b>: ele mostra, com os números de cada versão, como o indicador é calculado.</li>
+<li><b>Prepare 5 minutos</b> para a diretoria, seguindo o roteiro da aba.</li>
+</ol>
+<p>Na amostra da base há duas opções: <b>Destacar defeitos</b> pinta as células com defeito, e <b>Mostrar o que de fato aconteceu</b> acrescenta uma coluna com a verdade de cada linha. Use as duas só depois de investigar.</p>
+
+<h2>Os seis grupos</h2>
+<div class="tbl"><table class="txt">
+<tr><th>Grupo</th><th>Área</th><th>Decisão</th><th>Indicador</th></tr>
+${ORDEM.map((k, i) => `<tr><td>${i + 1}</td><td>${DEC[k].area}</td><td>${DEC[k].nome}</td><td>${DEC[k].indicador}</td></tr>`).join("")}
+</table></div>
+<div class="notice"><b>As regras de decisão da Entrega Já e alguns tratamentos são para fins didáticos apenas</b>, não fórmulas publicadas. Empresa, produtos e números são fictícios.</div>
+</section>`;
+
+const CONCEITOS = `<section class="card prose">
+<h2>Por que tratar antes de medir</h2>
+<p>Uma base pode ter defeitos que não geram nenhuma mensagem de erro: a conta roda e o resultado sai com cara de certo. Antes de calcular um indicador, olhe a base: quantas linhas há, o que falta, qual é o menor e o maior valor, como as categorias estão escritas. No pandas: <span class="formula">info()</span>, <span class="formula">isna().sum()</span>, <span class="formula">describe()</span> e <span class="formula">value_counts()</span>, da Aula 3 e do NB04.</p>
+
+<h2>Faltante (Grupos 1 e 5)</h2>
+<p>Valor que deveria existir e não está na base. No pandas, aparece como <span class="formula">NaN</span>; McKinney (2022, cap. 7) chama o dado ausente de NA, de <i>not available</i>. Antes de tratar, pergunte <b>por que</b> ele falta:</p>
+<ul>
+<li><b>ao acaso</b>: um lote de registros se perdeu, sem relação com o que eles diriam;</li>
+<li><b>por algo que você vê na base</b>: os clientes de uma região respondem menos, e a região está na base;</li>
+<li><b>pelo próprio valor que falta</b>: o cliente insatisfeito não responde a pesquisa.</li>
+</ul>
+<p>Rubin (1976) estudou quando é possível ignorar o motivo da falta. Quando a falta depende do próprio valor que falta, ignorar os faltantes distorce o resultado: a média de quem ficou na base deixa de representar todos.</p>
+<p>Saídas comuns, cada uma com um custo: descartar a linha; descartar a coluna; substituir (média, mediana ou valor mais frequente); criar uma categoria própria; manter e explicar. <b>Substituir pela média não muda a média</b>: se a falta tem motivo, o erro continua, só fica escondido. No simulador, “contar como atraso” e “preencher com a nota dos atrasados” são hipóteses de pior caso, para testar se a decisão muda; não são métodos publicados. No pandas: <span class="formula">isna()</span>, <span class="formula">dropna()</span>, <span class="formula">fillna()</span> (McKinney, 2022, seção 7.1).</p>
+
+<h2>Linha repetida (Grupo 2)</h2>
+<p>A mesma unidade aparece mais de uma vez. Infla contagens e somas. Para encontrar, defina a <b>chave</b>: a coluna que identifica a unidade (aqui, o número do pedido). Linha repetida nem sempre é erro: na base do NB04, cada linha é um item, e um pedido com 3 itens aparece 3 vezes. No pandas: <span class="formula">duplicated()</span> e <span class="formula">drop_duplicates(subset="pedido")</span> (McKinney, 2022, seção 7.2).</p>
+
+<h2>Valor impossível (Grupos 3 e 6)</h2>
+<p>Valor preenchido, mas fora do que é possível: entrega antes da compra, entrega dez anos depois, produto de 0 g. É diferente do <i>outlier</i>, o valor extremo que é raro mas pode ser verdadeiro (NB04, seção 13). Uma <b>regra de validação</b> (o intervalo possível para a coluna) encontra esses valores; o <span class="formula">describe()</span> mostra o menor e o maior. Saídas: corrigir na origem, excluir da conta registrando quantos saíram, ou usar uma medida robusta.</p>
+
+<h2>Categoria inconsistente (Grupo 4)</h2>
+<p>A mesma coisa escrita de jeitos diferentes (“casa”, “CASA”, “Casa e Decoração”) ou uma coisa na categoria errada (um fone de ouvido em “Casa”). Na hora de agrupar (<span class="formula">groupby</span>), a soma vai para o grupo errado. O <span class="formula">value_counts()</span> mostra o que existe em cada coluna; uma tabela de referência (de-para) corrige, com <span class="formula">replace()</span> ou <span class="formula">map()</span> no pandas (McKinney, 2022, seção 7.2).</p>
+
+<h2>Medidas robustas (Grupos 3 e 6)</h2>
+<ul>
+<li><b>Média</b> = soma ÷ quantidade. Um único valor extremo pode mudá-la muito.</li>
+<li><b>Mediana</b> = o valor do meio, com os dados em ordem. Resiste a valores extremos.</li>
+<li><b>Desvio padrão</b>: mede quanto os valores se afastam da média e também sofre com extremos.</li>
+<li><b>Desvio absoluto mediano (MAD)</b> = mediana das distâncias de cada valor até a mediana: <span class="formula">MAD = mediana(|x − mediana(x)|)</span>. Multiplicado por 1,4826, fica na mesma escala do desvio padrão quando os dados se parecem com a curva normal (Rousseeuw e Croux, 1993): <span class="formula">desvio robusto = 1,4826 × MAD</span>.</li>
+</ul>
+<p>Medidas robustas resistem ao erro, mas não o corrigem: o dado errado continua na base.</p>
+
+<h2>Tratar também é decidir</h2>
+<p>Todo tratamento é uma hipótese sobre o dado e muda os números: registre o que foi feito e quantas linhas mudaram. Um tratamento pode acertar a decisão e errar o número. A correção de verdade é na origem, com uma regra de qualidade: campo obrigatório, número de pedido único, lista fechada de categorias, validação de datas.</p>
+
+<h2>Referências</h2>
+<ul>
+<li>MCKINNEY, W. <i>Python for Data Analysis</i>. 3. ed. Sebastopol: O’Reilly, 2022. Cap. 7, Data Cleaning and Preparation (7.1 Handling Missing Data; 7.2 Data Transformation). Versão aberta: wesmckinney.com/book.</li>
+<li>RUBIN, D. B. Inference and missing data. <i>Biometrika</i>, 63(3), 1976.</li>
+<li>ROUSSEEUW, P. J.; CROUX, C. Alternatives to the median absolute deviation. <i>Journal of the American Statistical Association</i>, 88(424), 1993.</li>
+</ul>
+</section>`;
+
+// ---------- telas dos grupos ----------
+const main = $("main");
+let atual = "instrucoes", st = {...PADRAO}, ver = false, destacar = false;
+
+function tela(){
+  if (atual === "instrucoes" || atual === "conceitos"){ main.className = "uma"; main.innerHTML = atual === "instrucoes" ? INSTRUCOES : CONCEITOS; return; }
+  main.className = "";
+  const c = DEC[atual];
+  main.innerHTML = `<section class="card">
+      <span class="tag">Entrega Já (fictícia)</span><span class="tag">${c.area}</span>
+      <h2 style="margin-top:8px">${c.nome}</h2>
+      <div class="bloco"><b class="t">A situação</b>${c.situacao}</div>
+      <div class="bloco"><b class="t">A regra de decisão</b>${c.regra}</div>
+      <div class="bloco"><b class="t">O que olhar primeiro</b>${c.olhar}</div>
+      ${ROTEIRO}
+      <h3>Perguntas para o grupo</h3><div id="perguntas">${c.perguntas.map((p, i) => `<div class="q">
+        <span class="tipo ${p.tipo === "teste" ? "teste" : "disc"}">${p.tipo === "teste" ? "Teste no simulador" : "Discussão"}</span>
+        <p><b>${i + 1}.</b> ${p.q}</p>
+        ${p.cen ? `<div class="btns">${p.cen.map((cz, j) => `<button class="btn" data-q="${i}" data-c="${j}" aria-pressed="false">${cz.rot}</button>`).join("")}</div><div class="saida" id="saida${i}"></div>` : ""}
+        ${p.dica ? `<p class="dica">${p.dica}</p>` : ""}</div>`).join("")}</div>
+    </section>
+    <section class="card"><h2>Simulação</h2>
+      <div class="notice">5.000 pedidos <b>fictícios</b>, 1% de um ano. Nesta aba, a base traz o tipo de defeito que afeta a decisão do seu grupo. <b>Regras e tratamentos para fins didáticos apenas.</b></div>
+      <h3>Controles</h3><div id="ctls"></div>
+      <button class="reset" id="reset">Voltar à base inicial</button>
+      <h3>A decisão</h3><div id="decisao"></div><div class="conseq" id="conseq"></div>
+      <h3>Tabela do indicador</h3><div id="tabela"></div>
+      <h3>A conta, passo a passo</h3><div class="conta" id="conta"></div>
+      <p class="legenda">Aviso: fórmula para fins didáticos apenas (regra de decisão da empresa fictícia).</p>
+      <h3>Amostra da base (12 linhas)</h3>
+      <div class="toggles"><div class="chk"><input type="checkbox" id="t_dest" ${destacar ? "checked" : ""}><label for="t_dest"><b>Destacar defeitos</b></label></div>
+        <div class="chk"><input type="checkbox" id="t_ver" ${ver ? "checked" : ""}><label for="t_ver"><b>Mostrar o que de fato aconteceu</b></label></div></div>
+      <div id="amostra"></div>
+      <p class="legenda">— = valor vazio na base.
+        <span class="sw" style="background:var(--bad-soft)"></span>com defeito (aparece com “Destacar defeitos”) ·
+        <span class="sw" style="background:var(--ok-soft)"></span>alterado pelo tratamento ·
+        linha riscada = sai da conta com o tratamento ·
+        <span class="sw" style="background:var(--accent-soft)"></span>o que de fato aconteceu (só o simulador sabe).</p>
+    </section>`;
+  main.querySelectorAll("#perguntas .btn").forEach(b => b.addEventListener("click", () => testar(+b.dataset.q, +b.dataset.c, b)));
+  $("reset").addEventListener("click", () => { st = {...PADRAO}; limparTestes(); sincronizar(); desenhar(); });
+  $("t_dest").addEventListener("change", e => { destacar = e.target.checked; desenhar(); });
+  $("t_ver").addEventListener("change", e => { ver = e.target.checked; desenhar(); });
+  st = {...PADRAO};
+  montarControles(); desenhar();
+}
+
+function desenhar(){
+  const g = atual, c = DEC[g], S = sujar(g, st), Tall = tratar(g, S, st), T = ativas(Tall), trat = !!c.temTrat(st);
+  const sv = {lmed: st.lmed}, rv = c.calc(BASE, sv), rs = c.calc(S, sv), rt = c.calc(T, st);
+  const col = (tit, r) => `<div class="col ${r.chave === rv.chave ? "ok" : "bad"}"><span>${tit}</span><div class="v">${r.decisao}</div><div class="d">${r.valor}</div><span>${r.chave === rv.chave ? "mesma decisão da verdade" : "decisão diferente da verdade"}</span></div>`;
+  $("decisao").innerHTML = `<div class="cols">${col("Verdade (base perfeita)", rv)}${col("Como está (com o defeito)", rs)}${col(trat ? "Depois do tratamento" : "Depois do tratamento (nenhum marcado)", rt)}</div>`;
+  $("conseq").innerHTML = `<div><b>Consequência de decidir com a base como está:</b> ${c.consequencia(rs, rv)}</div>` + (trat ? `<div><b>Depois do tratamento:</b> ${c.consequencia(rt, rv)}</div>` : "");
+  const ctx = {rv, rs, rt, trat, S, ver, st};
+  $("tabela").innerHTML = c.tabela(ctx);
+  $("conta").innerHTML = c.conta(ctx);
+  const a = c.amostra(Tall), temRem = a.linhas.some(l => l.rem);
+  $("amostra").innerHTML = tabela([...a.cols.map(t => th(t)), ...(ver ? [th("O que de fato aconteceu", "verd")] : []), ...(temRem ? [th("Tratamento")] : [])],
+    a.linhas.map(l => `<tr class="${l.rem ? "rem" : ""}">${l.cells.map(([t, ruim, ok, extra]) => td(t, [ruim && destacar ? "bad" : "", ok ? "ok" : "", extra || ""].join(" "))).join("")}${ver ? td(l.verd, "verd l") : ""}${temRem ? td(l.rem || "", "motivo l") : ""}</tr>`));
+  return `verdade: <b>${rv.decisao}</b> (${rv.valor}); como está: <b>${rs.decisao}</b> (${rs.valor})` + (trat ? `; depois do tratamento: <b>${rt.decisao}</b> (${rt.valor})` : "") + ".";
+}
+
+function montarControles(){
+  const host = $("ctls"), c = DEC[atual];
+  const defeito = c.controles.filter(k => CTL[k].tipo === "slider"), trats = c.controles.filter(k => CTL[k].tipo !== "slider");
+  const caixa = (titulo, ks) => { const d = document.createElement("div"); d.className = "grupo-ctl"; d.innerHTML = `<p>${titulo}</p>`; ks.forEach(k => d.appendChild(controle(k))); host.appendChild(d); };
+  caixa("O defeito na base", defeito); caixa("Tratamentos", trats);
+}
+function controle(k){
+  const ct = CTL[k], d = document.createElement("div");
+  if (ct.tipo === "slider"){
+    d.className = "ctl";
+    d.innerHTML = `<label for="s_${k}">${ct.rot}<b id="v_${k}">${ct.f(st[k])}</b></label><input type="range" id="s_${k}" min="${ct.min}" max="${ct.max}" step="${ct.step}" value="${st[k]}">`;
+    d.querySelector("input").addEventListener("input", e => { st[k] = +e.target.value; manual(); });
+  } else if (ct.tipo === "check"){
+    d.className = "chk";
+    d.innerHTML = `<input type="checkbox" id="c_${k}" ${st[k] ? "checked" : ""}><label for="c_${k}"><b>${ct.rot}</b><small>${ct.ajuda}</small></label>`;
+    d.querySelector("input").addEventListener("change", e => { st[k] = e.target.checked; manual(); });
+  } else {
+    d.className = "radio";
+    d.innerHTML = `<b>${ct.rot}</b>` + ct.ops.map(([v, t]) => `<div class="chk"><input type="radio" name="r_${k}" id="r_${k}_${v}" value="${v}" ${st[k] === v ? "checked" : ""}><label for="r_${k}_${v}">${t}</label></div>`).join("");
+    d.querySelectorAll("input").forEach(i => i.addEventListener("change", e => { if (e.target.checked){ st[k] = e.target.value; manual(); } }));
+  }
+  return d;
+}
+function sincronizar(){
+  DEC[atual].controles.forEach(k => {
+    const ct = CTL[k];
+    if (ct.tipo === "slider"){ $("s_" + k).value = st[k]; $("v_" + k).textContent = ct.f(st[k]); }
+    else if (ct.tipo === "check") $("c_" + k).checked = !!st[k];
+    else ct.ops.forEach(([v]) => { $("r_" + k + "_" + v).checked = st[k] === v; });
+  });
+}
+function limparTestes(){
+  document.querySelectorAll("#perguntas .btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+  document.querySelectorAll("#perguntas .saida").forEach(s => { s.classList.remove("on"); s.innerHTML = ""; delete s.dataset.linhas; });
+}
+function manual(){
+  document.querySelectorAll("#perguntas .btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+  sincronizar(); desenhar();
+}
+function testar(qi, ci, botao){
+  const cz = DEC[atual].perguntas[qi].cen[ci];
+  st = {...PADRAO, ...cz.muda};
+  document.querySelectorAll("#perguntas .btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+  botao.setAttribute("aria-pressed", "true");
+  sincronizar();
+  const txt = desenhar();
+  const saida = $("saida" + qi), nome = cz.rot.replace(/^Testar: /, "");
+  const ant = saida.dataset.linhas ? JSON.parse(saida.dataset.linhas) : {};
+  ant[ci] = `<div>${nome.charAt(0).toUpperCase() + nome.slice(1)}: ${txt}</div>`;
+  saida.dataset.linhas = JSON.stringify(ant);
+  saida.innerHTML = Object.keys(ant).sort().map(k => ant[k]).join("");
+  saida.classList.add("on");
+}
+
+// ---------- navegação ----------
+const tabs = $("tabs");
+function abrir(k){
+  atual = k;
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.k === k)));
+  history.replaceState(null, "", "#" + k);
+  tela();
+}
+const ABAS = [["instrucoes", "Instruções", true], ["conceitos", "Conceitos", true], ...ORDEM.map((k, i) => [k, `Grupo ${i + 1} · ${DEC[k].nome}`, false])];
+ABAS.forEach(([k, rot, guia]) => { const b = document.createElement("button"); b.className = "tab" + (guia ? " guia" : ""); b.setAttribute("role", "tab"); b.dataset.k = k; b.textContent = rot; b.addEventListener("click", () => abrir(k)); tabs.appendChild(b); });
+let tm = null;
+document.querySelectorAll(".timer button[data-min]").forEach(b => b.addEventListener("click", () => { clearInterval(tm); let r = +b.dataset.min * 60; const o = $("clock"); const tick = () => { o.textContent = String(Math.floor(r / 60)).padStart(2, "0") + ":" + String(r % 60).padStart(2, "0"); if (r-- <= 0){ clearInterval(tm); o.textContent = "Tempo!"; } }; tick(); tm = setInterval(tick, 1000); }));
+$("stop").addEventListener("click", () => { clearInterval(tm); $("clock").textContent = "--:--"; });
+const valida = k => DEC[k] || k === "instrucoes" || k === "conceitos";
+window.addEventListener("hashchange", () => { const k = location.hash.slice(1); if (valida(k) && k !== atual) abrir(k); });
+const h0 = location.hash.slice(1); abrir(valida(h0) ? h0 : "instrucoes");
+</script>
+</body>
+</html>
