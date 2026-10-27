@@ -7,3 +7,4 @@ Simuladores em HTML usados nas discussões em grupo. Abra o caso no navegador, a
 | 1 | [Calculadora de Valor e Risco](https://carloscarlim.github.io/fgv-mfds/casos/aula01_valor_e_risco.html) |
 | 2 | [Da Pergunta à Técnica](https://carloscarlim.github.io/fgv-mfds/casos/aula02_pergunta_tecnica.html) |
 | 4 | [Quanto Custa um Dado Ruim](https://carloscarlim.github.io/fgv-mfds/casos/aula04_dado_ruim.html) |
+| 5 | [Guia do slide para a diretoria](https://carloscarlim.github.io/fgv-mfds/casos/aula05_guia_slide.html) |

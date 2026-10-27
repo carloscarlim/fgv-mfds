@@ -22,7 +22,7 @@ Ao final, você será capaz de **formular** uma pergunta de negócio que dados c
 | Aula 3 | Python para Ciência de Dados (a aula inteira no Colab) |
 | Antes da Aula 4 | **Trabalho em grupo** (até 3 alunos, conteúdo até a Aula 3; entrega individual no ECLASS) |
 | Aula 4 | Análise exploratória: o que a média esconde |
-| Aula 5 | Análise exploratória: andam juntos. E daí? · **apresentação do trabalho final** |
+| Aula 5 | Análise exploratória: andam juntos. E daí? · **lançamento do trabalho final** |
 
 As entregas são enviadas pelo ECLASS. As datas exatas estão no calendário do ECLASS.
 
@@ -31,15 +31,15 @@ As entregas são enviadas pelo ECLASS. As datas exatas estão no calendário do 
 | Componente | Peso |
 |---|---|
 | **Trabalho em grupo** (até 3 alunos; conteúdo até a Aula 3; entrega individual no ECLASS antes da Aula 4) | 30% |
-| **Trabalho final individual** (nota de 0 a 10; apresentado na Aula 5) | 70% |
+| **Trabalho final individual** (nota de 0 a 10; lançado na Aula 5; entrega no ECLASS: notebook e até 5 slides; o vídeo de até 5 minutos fica no seu Google Drive e você entrega o link) | 70% |
 
 - Não há outras tarefas.
 - O enunciado do trabalho em grupo está em `tarefas/TG_enunciado.md`; a entrega é o notebook, no ECLASS.
-- O formato e a rubrica do trabalho final serão divulgados no enunciado e no ECLASS.
+- O enunciado do trabalho final, com as regras de negócio e os critérios dos slides e do vídeo, o notebook e o modelo de slides estão no ECLASS, com o prazo.
 - Pedidos de revisão: até 7 dias depois da divulgação da nota.
 
 ## Regras
-- **Uso de IA generativa:** pode usar como tutor (entender um erro, revisar um comando, explicar um conceito). Não pode pedir que ela faça a análise ou escreva seus textos. Os enunciados dizem como declarar o uso.
+- **Uso de IA generativa:** pode usar como tutor (entender um erro, revisar um comando, explicar um conceito). Não pode pedir que ela faça a análise ou escreva seus textos. No vídeo do trabalho final, você explica e executa o seu próprio trabalho.
 - **Integridade:** no trabalho em grupo, o código e as respostas são do grupo; não compartilhe com outros grupos. No trabalho final, individual, não compartilhe código, respostas ou textos. Textos muito parecidos são sinalizados e tratados conforme o regulamento da FGV.
 - **Fontes:** cite qualquer fonte externa que usar.
 - **Atrasos:** entregas fora do prazo seguem o regulamento acadêmico da FGV.
