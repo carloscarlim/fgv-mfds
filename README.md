@@ -18,6 +18,7 @@ Siga o [checklist de preparação](docs/setup.md) e rode o notebook de teste:
 | `dados/` | Recortes de dados públicos usados em aula, com fonte citada |
 | `casos/` | Simuladores interativos (HTML) das discussões em grupo |
 | `tarefas/` | Enunciados e modelos de entrega das tarefas de casa |
+| `gabaritos/` | Gabaritos dos notebooks das aulas já dadas |
 | `docs/` | Guia do aluno, checklist técnico e cheat sheet |
 
 ## Aulas
