@@ -1,5 +1,5 @@
-# Nunca publicar gabaritos, sementes, entregas ou notas neste repositório público
-gabaritos/
+# Nunca publicar sementes, entregas ou notas neste repositório público.
+# Os gabaritos entram só pelo publicar.py --gabaritos N, depois de cada aula (pasta gabaritos/).
 entregas/
 notas/
 *.secret
